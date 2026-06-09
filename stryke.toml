@@ -271,6 +271,9 @@ exports = [
     "polars__str_zfill",
     "polars__df_cast_column",
     "polars__df_extend",
+    "polars__np_clip",
+    "polars__np_where",
+    "polars__fft_rfftfreq",
 ]
 
 [scripts]

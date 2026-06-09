@@ -1110,6 +1110,75 @@ pub extern "C" fn polars__arr_logspace(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
+#[no_mangle]
+pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let lo = args.get("lower").and_then(|v| v.as_f64());
+        let hi = args.get("upper").and_then(|v| v.as_f64());
+        if lo.is_none() && hi.is_none() {
+            bail!("must provide at least one of `lower`, `upper`");
+        }
+        let out = arr.mapv(|x| {
+            let mut v = x;
+            if let Some(l) = lo {
+                if v < l {
+                    v = l;
+                }
+            }
+            if let Some(h) = hi {
+                if v > h {
+                    v = h;
+                }
+            }
+            v
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.where(cond, a, b)` — elementwise; cond non-zero ⇒ a, else b.
+#[no_mangle]
+pub extern "C" fn polars__np_where(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let cond = get_array(&args, "cond")?;
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if cond.shape() != a.shape() || cond.shape() != b.shape() {
+            bail!("where: shape mismatch");
+        }
+        let data: Vec<f64> = cond
+            .iter()
+            .zip(a.iter())
+            .zip(b.iter())
+            .map(|((&c, &x), &y)| if c != 0.0 { x } else { y })
+            .collect();
+        let out = ArrayD::from_shape_vec(IxDyn(cond.shape()), data).context("where shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.fft.rfftfreq(n, d)` — sample frequencies for `rfft` output (length `n/2+1`).
+#[no_mangle]
+pub extern "C" fn polars__fft_rfftfreq(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let d = args.get("d").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let m = n / 2 + 1;
+        let n_f = n as f64;
+        let data: Vec<f64> = (0..m).map(|k| k as f64 / (n_f * d)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[m]), data).context("rfftfreq shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// Real eigenvalues of a symmetric matrix (descending).
 #[no_mangle]
 pub extern "C" fn polars__linalg_eigvalsh(args: *const c_char) -> *mut c_char {

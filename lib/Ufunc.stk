@@ -74,4 +74,17 @@ fn Polars::Ufunc::hypot        ($a, $b) { Polars::_decode("np_hypot",        pol
 fn Polars::Ufunc::floor_divide ($a, $b) { Polars::_decode("np_floor_divide", polars__np_floor_divide(to_json({ a => $a, b => $b })))->{array} }
 fn Polars::Ufunc::copysign     ($a, $b) { Polars::_decode("np_copysign",     polars__np_copysign    (to_json({ a => $a, b => $b })))->{array} }
 
+## `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
+fn Polars::Ufunc::clip ($arr, $lower, $upper) {
+    my %req = (array => $arr)
+    $req{lower} = $lower if defined $lower
+    $req{upper} = $upper if defined $upper
+    Polars::_decode("np_clip", polars__np_clip(to_json(\%req)))->{array}
+}
+
+## `np.where(cond, a, b)` — elementwise; cond non-zero ⇒ a, else b.
+fn Polars::Ufunc::where ($cond, $a, $b) {
+    Polars::_decode("np_where", polars__np_where(to_json({ cond => $cond, a => $a, b => $b })))->{array}
+}
+
 1
