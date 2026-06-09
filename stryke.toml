@@ -20,6 +20,13 @@ exports = [
     "polars__df_dtypes",
     "polars__df_select",
     "polars__df_to_json",
+    "polars__df_describe",
+    "polars__df_drop",
+    "polars__df_rename",
+    "polars__df_sort",
+    "polars__df_filter_gt",
+    "polars__df_filter_lt",
+    "polars__df_filter_eq",
 ]
 
 [scripts]

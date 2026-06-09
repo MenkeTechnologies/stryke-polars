@@ -14,7 +14,7 @@ unless ($have_cdylib) {
     exit 0
 }
 
-p "1..11"
+p "1..19"
 
 my $i = 0
 
@@ -138,4 +138,83 @@ if ($@) {
 } else {
     my $ok = ref($rt) eq "HASH" && ref($rt->{id}) eq "ARRAY" && scalar(@{$rt->{id}}) == 5 && $rt->{id}[0] == 1 && $rt->{id}[4] == 5
     p ($ok ? "ok $i - df_to_json round-trip preserves id column" : "not ok $i - df_to_json round-trip failed")
+}
+
+# ── P1.1b: describe / drop / rename / sort / filter ─────────────────
+
+# describe: produces a stats frame with a `describe` column + numeric cols
+my $desc
+eval { $desc = Polars::DataFrame::describe(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_describe call: $@"
+} else {
+    my $ok = ref($desc) eq "HASH" && ref($desc->{id}) eq "ARRAY" && scalar(@{$desc->{id}}) >= 5
+    p ($ok ? "ok $i - df_describe returns stats for id" : "not ok $i - df_describe wrong shape")
+}
+
+# drop: remove `name` → only id + score remain
+my $dropped
+eval { $dropped = Polars::DataFrame::drop(\%frame, ["name"]) }
+$i++
+if ($@) {
+    p "not ok $i - df_drop call: $@"
+} else {
+    my $ok = ref($dropped) eq "HASH" && exists $dropped->{id} && exists $dropped->{score} && !exists $dropped->{name}
+    p ($ok ? "ok $i - df_drop removed name" : "not ok $i - df_drop wrong shape")
+}
+
+# rename: id → uid
+my $renamed
+eval { $renamed = Polars::DataFrame::rename(\%frame, { id => "uid" }) }
+$i++
+if ($@) {
+    p "not ok $i - df_rename call: $@"
+} else {
+    my $ok = ref($renamed) eq "HASH" && exists $renamed->{uid} && !exists $renamed->{id}
+    p ($ok ? "ok $i - df_rename id → uid" : "not ok $i - df_rename wrong shape")
+}
+
+# sort: score descending → top row has score == 5.5
+my $sorted
+eval { $sorted = Polars::DataFrame::sort(\%frame, ["score"], 1) }
+$i++
+if ($@) {
+    p "not ok $i - df_sort call: $@"
+} else {
+    my $top = ref($sorted) eq "HASH" && ref($sorted->{score}) eq "ARRAY" ? $sorted->{score}[0] : undef
+    p (defined($top) && $top == 5.5 ? "ok $i - df_sort score desc → top=5.5" : "not ok $i - df_sort wrong top=" . (defined($top) ? $top : "undef"))
+}
+
+# filter_gt: score > 3.0 → 3 rows (score in {3.25, 4.0, 5.5})
+my $gt
+eval { $gt = Polars::DataFrame::filter_gt(\%frame, "score", 3.0) }
+$i++
+if ($@) {
+    p "not ok $i - df_filter_gt call: $@"
+} else {
+    my $n = ref($gt) eq "HASH" && ref($gt->{score}) eq "ARRAY" ? scalar(@{$gt->{score}}) : -1
+    p ($n == 3 ? "ok $i - df_filter_gt score > 3.0 → 3 rows" : "not ok $i - df_filter_gt wrong nrows=$n")
+}
+
+# filter_lt: id < 3 → 2 rows (id in {1, 2})
+my $lt
+eval { $lt = Polars::DataFrame::filter_lt(\%frame, "id", 3) }
+$i++
+if ($@) {
+    p "not ok $i - df_filter_lt call: $@"
+} else {
+    my $n = ref($lt) eq "HASH" && ref($lt->{id}) eq "ARRAY" ? scalar(@{$lt->{id}}) : -1
+    p ($n == 2 ? "ok $i - df_filter_lt id < 3 → 2 rows" : "not ok $i - df_filter_lt wrong nrows=$n")
+}
+
+# filter_eq: name == "bob" → 1 row
+my $eq
+eval { $eq = Polars::DataFrame::filter_eq(\%frame, "name", "bob") }
+$i++
+if ($@) {
+    p "not ok $i - df_filter_eq call: $@"
+} else {
+    my $n = ref($eq) eq "HASH" && ref($eq->{name}) eq "ARRAY" ? scalar(@{$eq->{name}}) : -1
+    p ($n == 1 ? "ok $i - df_filter_eq name == bob → 1 row" : "not ok $i - df_filter_eq wrong nrows=$n")
 }

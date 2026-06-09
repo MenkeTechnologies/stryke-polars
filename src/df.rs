@@ -269,3 +269,172 @@ pub extern "C" fn polars__df_to_json(args: *const c_char) -> *mut c_char {
         return_frame(df)
     })
 }
+
+// ── P1.1b: describe / drop / rename / sort / filter ────────────────────────
+
+/// pandas `df.describe()` — count/mean/std/min/25%/50%/75%/max per numeric col.
+///
+/// Args:   `{frame, percentiles?: [f64, ...]}`
+/// Result: `{frame}` (describe stats as a DataFrame)
+#[no_mangle]
+pub extern "C" fn polars__df_describe(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let pct: Option<Vec<f64>> = args
+            .get("percentiles")
+            .and_then(|v| v.as_array())
+            .map(|arr| arr.iter().filter_map(|x| x.as_f64()).collect());
+        let stats = df.describe(pct.as_deref()).context("DataFrame::describe")?;
+        return_frame(stats)
+    })
+}
+
+/// Drop one or more columns by name.
+///
+/// Args:   `{frame, columns: [name, ...]}`
+/// Result: `{frame}` (without dropped columns)
+#[no_mangle]
+pub extern "C" fn polars__df_drop(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut df = get_frame(&args)?;
+        let cols = args
+            .get("columns")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `columns`"))?;
+        for v in cols {
+            let name = v
+                .as_str()
+                .ok_or_else(|| anyhow!("`columns` entries must be strings"))?;
+            df = df.drop(name).context(format!("drop({name})"))?;
+        }
+        return_frame(df)
+    })
+}
+
+/// Rename one or more columns.
+///
+/// Args:   `{frame, mapping: {old: new, ...}}`
+/// Result: `{frame}` (with renamed columns)
+#[no_mangle]
+pub extern "C" fn polars__df_rename(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut df = get_frame(&args)?;
+        let map = args
+            .get("mapping")
+            .and_then(|v| v.as_object())
+            .ok_or_else(|| anyhow!("missing argument `mapping`"))?;
+        for (old, new_v) in map {
+            let new = new_v
+                .as_str()
+                .ok_or_else(|| anyhow!("mapping[{old}] must be a string"))?;
+            df.rename(old, new.into())
+                .context(format!("rename({old} → {new})"))?;
+        }
+        return_frame(df)
+    })
+}
+
+/// Sort by columns.
+///
+/// Args:   `{frame, by: [name, ...], descending?: [bool, ...] | bool}`
+/// Result: `{frame}` (sorted)
+#[no_mangle]
+pub extern "C" fn polars__df_sort(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let by_arr = args
+            .get("by")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `by`"))?;
+        let by: Vec<PlSmallStr> = by_arr
+            .iter()
+            .filter_map(|v| v.as_str().map(PlSmallStr::from))
+            .collect();
+        if by.is_empty() {
+            return Err(anyhow!("`by` must list at least one column name"));
+        }
+        let descending = parse_bool_vec(args.get("descending"), by.len());
+        let opts = SortMultipleOptions::default().with_order_descending_multi(descending);
+        let sorted = df.sort(by, opts).context("DataFrame::sort")?;
+        return_frame(sorted)
+    })
+}
+
+fn parse_bool_vec(v: Option<&Value>, n: usize) -> Vec<bool> {
+    match v {
+        Some(Value::Bool(b)) => vec![*b; n],
+        Some(Value::Array(arr)) => {
+            let mut out: Vec<bool> = arr.iter().map(|x| x.as_bool().unwrap_or(false)).collect();
+            out.resize(n, false);
+            out
+        }
+        _ => vec![false; n],
+    }
+}
+
+/// Filter rows where `column > value` (numeric / string / bool).
+#[no_mangle]
+pub extern "C" fn polars__df_filter_gt(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| filter_cmp(&args, FilterOp::Gt))
+}
+
+/// Filter rows where `column < value`.
+#[no_mangle]
+pub extern "C" fn polars__df_filter_lt(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| filter_cmp(&args, FilterOp::Lt))
+}
+
+/// Filter rows where `column == value`.
+#[no_mangle]
+pub extern "C" fn polars__df_filter_eq(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| filter_cmp(&args, FilterOp::Eq))
+}
+
+#[derive(Clone, Copy)]
+enum FilterOp {
+    Gt,
+    Lt,
+    Eq,
+}
+
+fn filter_cmp(args: &Value, op: FilterOp) -> Result<Value> {
+    let df = get_frame(args)?;
+    let col_name = args
+        .get("column")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| anyhow!("missing argument `column`"))?;
+    let val = args
+        .get("value")
+        .ok_or_else(|| anyhow!("missing argument `value`"))?;
+
+    let lit_expr = json_to_lit(val)?;
+    let col_expr = col(col_name);
+    let expr = match op {
+        FilterOp::Gt => col_expr.gt(lit_expr),
+        FilterOp::Lt => col_expr.lt(lit_expr),
+        FilterOp::Eq => col_expr.eq(lit_expr),
+    };
+
+    let result = df.lazy().filter(expr).collect().context("filter")?;
+    return_frame(result)
+}
+
+fn json_to_lit(v: &Value) -> Result<Expr> {
+    match v {
+        Value::Null => Ok(lit(NULL)),
+        Value::Bool(b) => Ok(lit(*b)),
+        Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                Ok(lit(i))
+            } else if let Some(f) = n.as_f64() {
+                Ok(lit(f))
+            } else {
+                Err(anyhow!("unsupported numeric literal: {n}"))
+            }
+        }
+        Value::String(s) => Ok(lit(s.clone())),
+        _ => Err(anyhow!(
+            "filter `value` must be null/bool/number/string (got: {v:?})"
+        )),
+    }
+}

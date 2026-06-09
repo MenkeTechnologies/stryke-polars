@@ -62,4 +62,50 @@ fn Polars::DataFrame::to_json ($cols) {
     Polars::_decode("df_to_json", polars__df_to_json(to_json({ frame => $cols })))->{frame}
 }
 
+# ── stats / structure ────────────────────────────────────────────────
+
+## `df.describe()` — count/mean/std/min/25%/50%/75%/max per numeric col.
+## Optional `$percentiles` arrayref overrides the default `[0.25, 0.50, 0.75]`.
+fn Polars::DataFrame::describe ($cols, $percentiles) {
+    my %req = (frame => $cols)
+    $req{percentiles} = $percentiles if defined $percentiles
+    Polars::_decode("df_describe", polars__df_describe(to_json(\%req)))->{frame}
+}
+
+## Drop columns by name. `$names` is an arrayref of column names.
+fn Polars::DataFrame::drop ($cols, $names) {
+    Polars::_decode("df_drop", polars__df_drop(to_json({ frame => $cols, columns => $names })))->{frame}
+}
+
+## Rename columns. `$mapping` is a hashref `{ old => new, ... }`.
+fn Polars::DataFrame::rename ($cols, $mapping) {
+    Polars::_decode("df_rename", polars__df_rename(to_json({ frame => $cols, mapping => $mapping })))->{frame}
+}
+
+## Sort by `$by` (arrayref of column names). `$descending` is either
+## undef (default ascending), a single bool (applied to every key), or
+## an arrayref of bools per key.
+fn Polars::DataFrame::sort ($cols, $by, $descending) {
+    my %req = (frame => $cols, by => $by)
+    $req{descending} = $descending if defined $descending
+    Polars::_decode("df_sort", polars__df_sort(to_json(\%req)))->{frame}
+}
+
+# ── filter ───────────────────────────────────────────────────────────
+
+## Rows where `column > value` (numeric/string/bool).
+fn Polars::DataFrame::filter_gt ($cols, $column, $value) {
+    Polars::_decode("df_filter_gt", polars__df_filter_gt(to_json({ frame => $cols, column => $column, value => $value })))->{frame}
+}
+
+## Rows where `column < value`.
+fn Polars::DataFrame::filter_lt ($cols, $column, $value) {
+    Polars::_decode("df_filter_lt", polars__df_filter_lt(to_json({ frame => $cols, column => $column, value => $value })))->{frame}
+}
+
+## Rows where `column == value`.
+fn Polars::DataFrame::filter_eq ($cols, $column, $value) {
+    Polars::_decode("df_filter_eq", polars__df_filter_eq(to_json({ frame => $cols, column => $column, value => $value })))->{frame}
+}
+
 1
