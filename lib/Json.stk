@@ -1,0 +1,80 @@
+## lib/Json.stk — `use Polars::Json`
+##
+## Wrappers around the cdylib `polars__*` exports for the `json_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Json
+
+use Polars
+
+## JSON flatten.
+fn Polars::Json::flatten ($array) {
+    Polars::_decode("json_flatten", polars__json_flatten(to_json({ array => $array })))->{values}
+}
+
+## JSON get.
+fn Polars::Json::get ($key, $value) {
+    Polars::_decode("json_get", polars__json_get(to_json({ key => $key, value => $value })))->{result}
+}
+
+## JSON has.
+fn Polars::Json::has ($key, $value) {
+    Polars::_decode("json_has", polars__json_has(to_json({ key => $key, value => $value })))->{has}
+}
+
+## JSON is null.
+fn Polars::Json::is_null ($value) {
+    Polars::_decode("json_is_null", polars__json_is_null(to_json({ value => $value })))->{is_null}
+}
+
+## JSON keys.
+fn Polars::Json::keys ($value) {
+    Polars::_decode("json_keys", polars__json_keys(to_json({ value => $value })))->{keys}
+}
+
+## JSON len.
+fn Polars::Json::len ($value) {
+    Polars::_decode("json_len", polars__json_len(to_json({ value => $value })))->{len}
+}
+
+## JSON merge.
+fn Polars::Json::merge ($a, $b) {
+    Polars::_decode("json_merge", polars__json_merge(to_json({ a => $a, b => $b })))->{value}
+}
+
+## JSON parse.
+fn Polars::Json::parse ($value) {
+    Polars::_decode("json_parse", polars__json_parse(to_json({ value => $value })))->{value}
+}
+
+## JSON path.
+fn Polars::Json::path ($path, $value) {
+    Polars::_decode("json_path", polars__json_path(to_json({ path => $path, value => $value })))->{result}
+}
+
+## JSON pluck.
+fn Polars::Json::pluck ($key, $array) {
+    Polars::_decode("json_pluck", polars__json_pluck(to_json({ key => $key, array => $array })))->{values}
+}
+
+## JSON pretty.
+fn Polars::Json::pretty ($value) {
+    Polars::_decode("json_pretty", polars__json_pretty(to_json({ value => $value })))->{text}
+}
+
+## JSON stringify.
+fn Polars::Json::stringify ($value) {
+    Polars::_decode("json_stringify", polars__json_stringify(to_json({ value => $value })))->{text}
+}
+
+## JSON type.
+fn Polars::Json::type ($value) {
+    Polars::_decode("json_type", polars__json_type(to_json({ value => $value })))->{type}
+}
+
+## JSON values.
+fn Polars::Json::values ($value) {
+    Polars::_decode("json_values", polars__json_values(to_json({ value => $value })))->{values}
+}
+

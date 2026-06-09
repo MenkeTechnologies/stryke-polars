@@ -1,0 +1,216 @@
+## lib/Dist.stk — `use Polars::Dist`
+##
+## Wrappers around the cdylib `polars__*` exports for the `dist_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Dist
+
+use Polars
+
+## Beta cdf.
+fn Polars::Dist::beta_cdf ($x, $a, $b) {
+    Polars::_decode("dist_beta_cdf", polars__dist_beta_cdf(to_json({ x => $x, a => $a, b => $b })))->{cdf}
+}
+
+## Beta pdf.
+fn Polars::Dist::beta_pdf ($x, $a, $b) {
+    Polars::_decode("dist_beta_pdf", polars__dist_beta_pdf(to_json({ x => $x, a => $a, b => $b })))->{pdf}
+}
+
+## Binom pmf.
+fn Polars::Dist::binom_pmf ($k, $n, $p) {
+    Polars::_decode("dist_binom_pmf", polars__dist_binom_pmf(to_json({ k => $k, n => $n, p => $p })))->{pmf}
+}
+
+## Distance braycurtis.
+fn Polars::Dist::braycurtis ($a, $b) {
+    Polars::_decode("dist_braycurtis", polars__dist_braycurtis(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Distance canberra.
+fn Polars::Dist::canberra ($a, $b) {
+    Polars::_decode("dist_canberra", polars__dist_canberra(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Distance cdist.
+fn Polars::Dist::cdist ($a, $b) {
+    Polars::_decode("dist_cdist", polars__dist_cdist(to_json({ a => $a, b => $b })))->{array}
+}
+
+## Distance chebyshev.
+fn Polars::Dist::chebyshev ($a, $b) {
+    Polars::_decode("dist_chebyshev", polars__dist_chebyshev(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Chi2 cdf.
+fn Polars::Dist::chi2_cdf ($x, $df) {
+    Polars::_decode("dist_chi2_cdf", polars__dist_chi2_cdf(to_json({ x => $x, df => $df })))->{cdf}
+}
+
+## Chi2 pdf.
+fn Polars::Dist::chi2_pdf ($x, $df) {
+    Polars::_decode("dist_chi2_pdf", polars__dist_chi2_pdf(to_json({ x => $x, df => $df })))->{pdf}
+}
+
+## Chi2 sf.
+fn Polars::Dist::chi2_sf ($x, $df) {
+    Polars::_decode("dist_chi2_sf", polars__dist_chi2_sf(to_json({ x => $x, df => $df })))->{sf}
+}
+
+## Distance cosine.
+fn Polars::Dist::cosine ($a, $b) {
+    Polars::_decode("dist_cosine", polars__dist_cosine(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Distance cosine_similarity.
+fn Polars::Dist::cosine_similarity ($a, $b) {
+    Polars::_decode("dist_cosine_similarity", polars__dist_cosine_similarity(to_json({ a => $a, b => $b })))->{similarity}
+}
+
+## Distance euclidean.
+fn Polars::Dist::euclidean ($a, $b) {
+    Polars::_decode("dist_euclidean", polars__dist_euclidean(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Exp cdf.
+fn Polars::Dist::exp_cdf ($x, $lambda) {
+    my %req = (x => $x)
+    $req{lambda} = $lambda if defined $lambda
+    Polars::_decode("dist_exp_cdf", polars__dist_exp_cdf(to_json(\%req)))->{cdf}
+}
+
+## Exp pdf.
+fn Polars::Dist::exp_pdf ($x, $lambda) {
+    my %req = (x => $x)
+    $req{lambda} = $lambda if defined $lambda
+    Polars::_decode("dist_exp_pdf", polars__dist_exp_pdf(to_json(\%req)))->{pdf}
+}
+
+## Gamma cdf.
+fn Polars::Dist::gamma_cdf ($x, $k, $theta) {
+    my %req = (x => $x, k => $k)
+    $req{theta} = $theta if defined $theta
+    Polars::_decode("dist_gamma_cdf", polars__dist_gamma_cdf(to_json(\%req)))->{cdf}
+}
+
+## Gamma pdf.
+fn Polars::Dist::gamma_pdf ($x, $k, $theta) {
+    my %req = (x => $x, k => $k)
+    $req{theta} = $theta if defined $theta
+    Polars::_decode("dist_gamma_pdf", polars__dist_gamma_pdf(to_json(\%req)))->{pdf}
+}
+
+## Geom pmf.
+fn Polars::Dist::geom_pmf ($k, $p) {
+    Polars::_decode("dist_geom_pmf", polars__dist_geom_pmf(to_json({ k => $k, p => $p })))->{pmf}
+}
+
+## Distance hamming.
+fn Polars::Dist::hamming ($a, $b) {
+    Polars::_decode("dist_hamming", polars__dist_hamming(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Distance jaccard.
+fn Polars::Dist::jaccard ($a, $b) {
+    Polars::_decode("dist_jaccard", polars__dist_jaccard(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Lognormal cdf.
+fn Polars::Dist::lognormal_cdf ($x, $mu, $sigma) {
+    my %req = (x => $x)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("dist_lognormal_cdf", polars__dist_lognormal_cdf(to_json(\%req)))->{cdf}
+}
+
+## Lognormal pdf.
+fn Polars::Dist::lognormal_pdf ($x, $mu, $sigma) {
+    my %req = (x => $x)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("dist_lognormal_pdf", polars__dist_lognormal_pdf(to_json(\%req)))->{pdf}
+}
+
+## Distance mahalanobis.
+fn Polars::Dist::mahalanobis ($a, $b, $cov_inv) {
+    Polars::_decode("dist_mahalanobis", polars__dist_mahalanobis(to_json({ a => $a, b => $b, cov_inv => $cov_inv })))->{distance}
+}
+
+## Distance manhattan.
+fn Polars::Dist::manhattan ($a, $b) {
+    Polars::_decode("dist_manhattan", polars__dist_manhattan(to_json({ a => $a, b => $b })))->{distance}
+}
+
+## Distance minkowski.
+fn Polars::Dist::minkowski ($a, $b, $p) {
+    my %req = (a => $a, b => $b)
+    $req{p} = $p if defined $p
+    Polars::_decode("dist_minkowski", polars__dist_minkowski(to_json(\%req)))->{distance}
+}
+
+## Negbinom pmf.
+fn Polars::Dist::negbinom_pmf ($k, $r, $p) {
+    Polars::_decode("dist_negbinom_pmf", polars__dist_negbinom_pmf(to_json({ k => $k, r => $r, p => $p })))->{pmf}
+}
+
+## Normal cdf.
+fn Polars::Dist::normal_cdf ($x, $mu, $sigma) {
+    my %req = (x => $x)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("dist_normal_cdf", polars__dist_normal_cdf(to_json(\%req)))->{cdf}
+}
+
+## Normal pdf.
+fn Polars::Dist::normal_pdf ($x, $mu, $sigma) {
+    my %req = (x => $x)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("dist_normal_pdf", polars__dist_normal_pdf(to_json(\%req)))->{pdf}
+}
+
+## Normal ppf.
+fn Polars::Dist::normal_ppf ($p, $mu, $sigma) {
+    my %req = (p => $p)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("dist_normal_ppf", polars__dist_normal_ppf(to_json(\%req)))->{ppf}
+}
+
+## Distance pdist.
+fn Polars::Dist::pdist ($matrix) {
+    Polars::_decode("dist_pdist", polars__dist_pdist(to_json({ matrix => $matrix })))->{array}
+}
+
+## Poisson pmf.
+fn Polars::Dist::poisson_pmf ($k, $lambda) {
+    Polars::_decode("dist_poisson_pmf", polars__dist_poisson_pmf(to_json({ k => $k, lambda => $lambda })))->{pmf}
+}
+
+## T cdf.
+fn Polars::Dist::t_cdf ($x, $df) {
+    Polars::_decode("dist_t_cdf", polars__dist_t_cdf(to_json({ x => $x, df => $df })))->{cdf}
+}
+
+## T pdf.
+fn Polars::Dist::t_pdf ($x, $df) {
+    Polars::_decode("dist_t_pdf", polars__dist_t_pdf(to_json({ x => $x, df => $df })))->{pdf}
+}
+
+## Uniform cdf.
+fn Polars::Dist::uniform_cdf ($x, $lo, $hi) {
+    my %req = (x => $x)
+    $req{lo} = $lo if defined $lo
+    $req{hi} = $hi if defined $hi
+    Polars::_decode("dist_uniform_cdf", polars__dist_uniform_cdf(to_json(\%req)))->{cdf}
+}
+
+## Uniform pdf.
+fn Polars::Dist::uniform_pdf ($x, $lo, $hi) {
+    my %req = (x => $x)
+    $req{lo} = $lo if defined $lo
+    $req{hi} = $hi if defined $hi
+    Polars::_decode("dist_uniform_pdf", polars__dist_uniform_pdf(to_json(\%req)))->{pdf}
+}
+

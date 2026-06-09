@@ -44,6 +44,7 @@ fn get_arr_str(args: &Value, key: &str) -> Result<Vec<String>> {
 
 // ── parse / format / construct ─────────────────────────────────────────────
 
+/// datetime64 datetime64.
 #[no_mangle]
 pub extern "C" fn polars__dt64_datetime64(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -53,6 +54,7 @@ pub extern "C" fn polars__dt64_datetime64(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 from iso.
 #[no_mangle]
 pub extern "C" fn polars__dt64_from_iso(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -65,6 +67,7 @@ pub extern "C" fn polars__dt64_from_iso(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 to iso.
 #[no_mangle]
 pub extern "C" fn polars__dt64_to_iso(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -78,6 +81,7 @@ pub extern "C" fn polars__dt64_to_iso(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 to timestamp.
 #[no_mangle]
 pub extern "C" fn polars__dt64_to_timestamp(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -91,6 +95,7 @@ pub extern "C" fn polars__dt64_to_timestamp(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// datetime64 from timestamp.
 #[no_mangle]
 pub extern "C" fn polars__dt64_from_timestamp(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -108,6 +113,7 @@ pub extern "C" fn polars__dt64_from_timestamp(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// datetime64 now.
 #[no_mangle]
 pub extern "C" fn polars__dt64_now(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -118,6 +124,7 @@ pub extern "C" fn polars__dt64_now(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 today.
 #[no_mangle]
 pub extern "C" fn polars__dt64_today(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -172,6 +179,7 @@ dt64_component!(
     |d: NaiveDateTime| d.iso_week().week() as i64
 );
 
+/// datetime64 is leap year.
 #[no_mangle]
 pub extern "C" fn polars__dt64_is_leap_year(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -188,6 +196,7 @@ pub extern "C" fn polars__dt64_is_leap_year(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// datetime64 days in month.
 #[no_mangle]
 pub extern "C" fn polars__dt64_days_in_month(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -212,6 +221,7 @@ pub extern "C" fn polars__dt64_days_in_month(args: *const c_char) -> *mut c_char
 
 // ── arithmetic ──────────────────────────────────────────────────────────────
 
+/// datetime64 add days.
 #[no_mangle]
 pub extern "C" fn polars__dt64_add_days(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -226,6 +236,7 @@ pub extern "C" fn polars__dt64_add_days(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 add hours.
 #[no_mangle]
 pub extern "C" fn polars__dt64_add_hours(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -240,6 +251,7 @@ pub extern "C" fn polars__dt64_add_hours(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 add minutes.
 #[no_mangle]
 pub extern "C" fn polars__dt64_add_minutes(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -254,6 +266,7 @@ pub extern "C" fn polars__dt64_add_minutes(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 add seconds.
 #[no_mangle]
 pub extern "C" fn polars__dt64_add_seconds(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -268,6 +281,7 @@ pub extern "C" fn polars__dt64_add_seconds(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 add weeks.
 #[no_mangle]
 pub extern "C" fn polars__dt64_add_weeks(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -282,6 +296,7 @@ pub extern "C" fn polars__dt64_add_weeks(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 diff days.
 #[no_mangle]
 pub extern "C" fn polars__dt64_diff_days(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -306,6 +321,7 @@ pub extern "C" fn polars__dt64_diff_days(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 diff seconds.
 #[no_mangle]
 pub extern "C" fn polars__dt64_diff_seconds(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -330,6 +346,7 @@ pub extern "C" fn polars__dt64_diff_seconds(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// datetime64 diff hours.
 #[no_mangle]
 pub extern "C" fn polars__dt64_diff_hours(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -354,6 +371,7 @@ pub extern "C" fn polars__dt64_diff_hours(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 diff minutes.
 #[no_mangle]
 pub extern "C" fn polars__dt64_diff_minutes(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -380,6 +398,7 @@ pub extern "C" fn polars__dt64_diff_minutes(args: *const c_char) -> *mut c_char 
 
 // ── ranges ──────────────────────────────────────────────────────────────────
 
+/// datetime64 date range.
 #[no_mangle]
 pub extern "C" fn polars__dt64_date_range(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -397,6 +416,7 @@ pub extern "C" fn polars__dt64_date_range(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 arange.
 #[no_mangle]
 pub extern "C" fn polars__dt64_arange(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -415,6 +435,7 @@ pub extern "C" fn polars__dt64_arange(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 business day count.
 #[no_mangle]
 pub extern "C" fn polars__dt64_business_day_count(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -435,6 +456,7 @@ pub extern "C" fn polars__dt64_business_day_count(args: *const c_char) -> *mut c
     })
 }
 
+/// datetime64 is busday.
 #[no_mangle]
 pub extern "C" fn polars__dt64_is_busday(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -448,6 +470,7 @@ pub extern "C" fn polars__dt64_is_busday(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 busday offset.
 #[no_mangle]
 pub extern "C" fn polars__dt64_busday_offset(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -475,6 +498,7 @@ pub extern "C" fn polars__dt64_busday_offset(args: *const c_char) -> *mut c_char
 
 // ── max/min / sort ─────────────────────────────────────────────────────────
 
+/// datetime64 min.
 #[no_mangle]
 pub extern "C" fn polars__dt64_min(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -488,6 +512,7 @@ pub extern "C" fn polars__dt64_min(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 max.
 #[no_mangle]
 pub extern "C" fn polars__dt64_max(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -501,6 +526,7 @@ pub extern "C" fn polars__dt64_max(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 sort.
 #[no_mangle]
 pub extern "C" fn polars__dt64_sort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -512,6 +538,7 @@ pub extern "C" fn polars__dt64_sort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 unique.
 #[no_mangle]
 pub extern "C" fn polars__dt64_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -530,6 +557,7 @@ pub extern "C" fn polars__dt64_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// datetime64 truncate day.
 #[no_mangle]
 pub extern "C" fn polars__dt64_truncate_day(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -546,6 +574,7 @@ pub extern "C" fn polars__dt64_truncate_day(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// datetime64 truncate hour.
 #[no_mangle]
 pub extern "C" fn polars__dt64_truncate_hour(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -562,6 +591,7 @@ pub extern "C" fn polars__dt64_truncate_hour(args: *const c_char) -> *mut c_char
     })
 }
 
+/// datetime64 truncate month.
 #[no_mangle]
 pub extern "C" fn polars__dt64_truncate_month(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -578,6 +608,7 @@ pub extern "C" fn polars__dt64_truncate_month(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// datetime64 truncate year.
 #[no_mangle]
 pub extern "C" fn polars__dt64_truncate_year(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -594,6 +625,7 @@ pub extern "C" fn polars__dt64_truncate_year(args: *const c_char) -> *mut c_char
     })
 }
 
+/// datetime64 format.
 #[no_mangle]
 pub extern "C" fn polars__dt64_format(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

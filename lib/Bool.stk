@@ -1,0 +1,65 @@
+## lib/Bool.stk — `use Polars::Bool`
+##
+## Wrappers around the cdylib `polars__*` exports for the `bool_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Bool
+
+use Polars
+
+## Boolean all.
+fn Polars::Bool::all () {
+    Polars::_decode("bool_all", polars__bool_all(to_json({})))->{all}
+}
+
+## Boolean and.
+fn Polars::Bool::and ($a, $b) {
+    Polars::_decode("bool_and", polars__bool_and(to_json({ a => $a, b => $b })))->{data}
+}
+
+## Boolean any.
+fn Polars::Bool::any () {
+    Polars::_decode("bool_any", polars__bool_any(to_json({})))->{any}
+}
+
+## Boolean count false.
+fn Polars::Bool::count_false () {
+    Polars::_decode("bool_count_false", polars__bool_count_false(to_json({})))->{count_false}
+}
+
+## Boolean count true.
+fn Polars::Bool::count_true () {
+    Polars::_decode("bool_count_true", polars__bool_count_true(to_json({})))->{count_true}
+}
+
+## Boolean indices false.
+fn Polars::Bool::indices_false () {
+    Polars::_decode("bool_indices_false", polars__bool_indices_false(to_json({})))->{indices}
+}
+
+## Boolean indices true.
+fn Polars::Bool::indices_true () {
+    Polars::_decode("bool_indices_true", polars__bool_indices_true(to_json({})))->{indices}
+}
+
+## Boolean negate.
+fn Polars::Bool::negate () {
+    Polars::_decode("bool_negate", polars__bool_negate(to_json({})))->{data}
+}
+
+## Boolean or.
+fn Polars::Bool::or ($a, $b) {
+    Polars::_decode("bool_or", polars__bool_or(to_json({ a => $a, b => $b })))->{data}
+}
+
+## Boolean to int.
+fn Polars::Bool::to_int () {
+    Polars::_decode("bool_to_int", polars__bool_to_int(to_json({})))->{data}
+}
+
+## Boolean xor.
+fn Polars::Bool::xor ($a, $b) {
+    Polars::_decode("bool_xor", polars__bool_xor(to_json({ a => $a, b => $b })))->{data}
+}
+

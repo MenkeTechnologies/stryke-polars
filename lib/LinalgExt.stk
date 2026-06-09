@@ -1,0 +1,102 @@
+## lib/LinalgExt.stk — `use Polars::LinalgExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `linalg_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::LinalgExt
+
+use Polars
+
+## Linear algebra condition number.
+fn Polars::LinalgExt::condition_number ($matrix) {
+    Polars::_decode("linalg_condition_number", polars__linalg_condition_number(to_json({ matrix => $matrix })))->{condition}
+}
+
+## Linear algebra expm.
+fn Polars::LinalgExt::expm ($matrix) {
+    Polars::_decode("linalg_expm", polars__linalg_expm(to_json({ matrix => $matrix })))->{matrix}
+}
+
+## Linear algebra frobenius norm.
+fn Polars::LinalgExt::frobenius_norm ($matrix) {
+    Polars::_decode("linalg_frobenius_norm", polars__linalg_frobenius_norm(to_json({ matrix => $matrix })))->{frobenius}
+}
+
+## Linear algebra gram schmidt.
+fn Polars::LinalgExt::gram_schmidt ($matrix) {
+    Polars::_decode("linalg_gram_schmidt", polars__linalg_gram_schmidt(to_json({ matrix => $matrix })))->{matrix}
+}
+
+## Linear algebra inf norm.
+fn Polars::LinalgExt::inf_norm ($matrix) {
+    Polars::_decode("linalg_inf_norm", polars__linalg_inf_norm(to_json({ matrix => $matrix })))->{inf_norm}
+}
+
+## Linear algebra inner.
+fn Polars::LinalgExt::inner ($a, $b) {
+    Polars::_decode("linalg_inner", polars__linalg_inner(to_json({ a => $a, b => $b })))->{inner}
+}
+
+## Linear algebra is orthogonal.
+fn Polars::LinalgExt::is_orthogonal ($matrix) {
+    Polars::_decode("linalg_is_orthogonal", polars__linalg_is_orthogonal(to_json({ matrix => $matrix })))->{is_orthogonal}
+}
+
+## Linear algebra is symmetric.
+fn Polars::LinalgExt::is_symmetric ($matrix) {
+    Polars::_decode("linalg_is_symmetric", polars__linalg_is_symmetric(to_json({ matrix => $matrix })))->{is_symmetric}
+}
+
+## Linear algebra l1 norm.
+fn Polars::LinalgExt::l1_norm ($matrix) {
+    Polars::_decode("linalg_l1_norm", polars__linalg_l1_norm(to_json({ matrix => $matrix })))->{l1}
+}
+
+## Linear algebra l2 norm.
+fn Polars::LinalgExt::l2_norm ($matrix) {
+    Polars::_decode("linalg_l2_norm", polars__linalg_l2_norm(to_json({ matrix => $matrix })))->{l2}
+}
+
+## Linear algebra lstsq v2.
+fn Polars::LinalgExt::lstsq_v2 ($a, $b) {
+    Polars::_decode("linalg_lstsq_v2", polars__linalg_lstsq_v2(to_json({ a => $a, b => $b })))->{array}
+}
+
+## Linear algebra matrix power v2.
+fn Polars::LinalgExt::matrix_power_v2 ($matrix, $p) {
+    my %req = (matrix => $matrix)
+    $req{p} = $p if defined $p
+    Polars::_decode("linalg_matrix_power_v2", polars__linalg_matrix_power_v2(to_json(\%req)))->{matrix}
+}
+
+## Linear algebra matrix rank.
+fn Polars::LinalgExt::matrix_rank ($array) {
+    Polars::_decode("linalg_matrix_rank", polars__linalg_matrix_rank(to_json({ array => $array })))->{rank}
+}
+
+## Linear algebra normalize cols.
+fn Polars::LinalgExt::normalize_cols ($matrix) {
+    Polars::_decode("linalg_normalize_cols", polars__linalg_normalize_cols(to_json({ matrix => $matrix })))->{matrix}
+}
+
+## Linear algebra normalize rows.
+fn Polars::LinalgExt::normalize_rows ($matrix) {
+    Polars::_decode("linalg_normalize_rows", polars__linalg_normalize_rows(to_json({ matrix => $matrix })))->{matrix}
+}
+
+## Linear algebra tensordot.
+fn Polars::LinalgExt::tensordot ($a, $b) {
+    Polars::_decode("linalg_tensordot", polars__linalg_tensordot(to_json({ a => $a, b => $b })))->{array}
+}
+
+## Linear algebra trace v2.
+fn Polars::LinalgExt::trace_v2 ($array) {
+    Polars::_decode("linalg_trace_v2", polars__linalg_trace_v2(to_json({ array => $array })))->{trace}
+}
+
+## Linear algebra vdot.
+fn Polars::LinalgExt::vdot ($a, $b) {
+    Polars::_decode("linalg_vdot", polars__linalg_vdot(to_json({ a => $a, b => $b })))->{vdot}
+}
+

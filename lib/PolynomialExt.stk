@@ -1,0 +1,60 @@
+## lib/PolynomialExt.stk — `use Polars::PolynomialExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `poly_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::PolynomialExt
+
+use Polars
+
+## Polynomial chebyshev t.
+fn Polars::PolynomialExt::chebyshev_t ($x, $n) {
+    Polars::_decode("poly_chebyshev_t", polars__poly_chebyshev_t(to_json({ x => $x, n => $n })))->{array}
+}
+
+## Polynomial chebyshev u.
+fn Polars::PolynomialExt::chebyshev_u ($x, $n) {
+    Polars::_decode("poly_chebyshev_u", polars__poly_chebyshev_u(to_json({ x => $x, n => $n })))->{array}
+}
+
+## Polynomial hermite.
+fn Polars::PolynomialExt::hermite ($x, $n) {
+    Polars::_decode("poly_hermite", polars__poly_hermite(to_json({ x => $x, n => $n })))->{array}
+}
+
+## Polynomial laguerre.
+fn Polars::PolynomialExt::laguerre ($x, $n) {
+    Polars::_decode("poly_laguerre", polars__poly_laguerre(to_json({ x => $x, n => $n })))->{array}
+}
+
+## Polynomial legendre.
+fn Polars::PolynomialExt::legendre ($x, $n) {
+    Polars::_decode("poly_legendre", polars__poly_legendre(to_json({ x => $x, n => $n })))->{array}
+}
+
+## Polynomial polyadd v2.
+fn Polars::PolynomialExt::polyadd_v2 ($a, $b) {
+    Polars::_decode("poly_polyadd_v2", polars__poly_polyadd_v2(to_json({ a => $a, b => $b })))->{coefficients}
+}
+
+## Polynomial polyfit v2.
+fn Polars::PolynomialExt::polyfit_v2 ($x, $y, $deg) {
+    Polars::_decode("poly_polyfit_v2", polars__poly_polyfit_v2(to_json({ x => $x, y => $y, deg => $deg })))->{coefficients}
+}
+
+## Polynomial polymul v2.
+fn Polars::PolynomialExt::polymul_v2 ($a, $b) {
+    Polars::_decode("poly_polymul_v2", polars__poly_polymul_v2(to_json({ a => $a, b => $b })))->{coefficients}
+}
+
+## Polynomial polyroots real.
+fn Polars::PolynomialExt::polyroots_real ($coefficients) {
+    Polars::_decode("poly_polyroots_real", polars__poly_polyroots_real(to_json({ coefficients => $coefficients })))->{roots}
+}
+
+## Polynomial polysub v2.
+fn Polars::PolynomialExt::polysub_v2 ($a, $b) {
+    Polars::_decode("poly_polysub_v2", polars__poly_polysub_v2(to_json({ a => $a, b => $b })))->{coefficients}
+}
+

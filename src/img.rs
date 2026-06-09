@@ -135,6 +135,7 @@ fn erode_grid(grid: &[Vec<f64>], rows: usize, cols: usize, r: i64) -> Vec<Vec<f6
 
 // ── kernels ────────────────────────────────────────────────────────────────
 
+/// Image box blur.
 #[no_mangle]
 pub extern "C" fn polars__img_box_blur(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -146,6 +147,7 @@ pub extern "C" fn polars__img_box_blur(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image gaussian blur.
 #[no_mangle]
 pub extern "C" fn polars__img_gaussian_blur(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -174,6 +176,7 @@ pub extern "C" fn polars__img_gaussian_blur(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Image sharpen.
 #[no_mangle]
 pub extern "C" fn polars__img_sharpen(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -188,6 +191,7 @@ pub extern "C" fn polars__img_sharpen(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image sobel x.
 #[no_mangle]
 pub extern "C" fn polars__img_sobel_x(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -202,6 +206,7 @@ pub extern "C" fn polars__img_sobel_x(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image sobel y.
 #[no_mangle]
 pub extern "C" fn polars__img_sobel_y(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -216,6 +221,7 @@ pub extern "C" fn polars__img_sobel_y(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image sobel magnitude.
 #[no_mangle]
 pub extern "C" fn polars__img_sobel_magnitude(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -242,6 +248,7 @@ pub extern "C" fn polars__img_sobel_magnitude(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Image prewitt x.
 #[no_mangle]
 pub extern "C" fn polars__img_prewitt_x(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -256,6 +263,7 @@ pub extern "C" fn polars__img_prewitt_x(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image prewitt y.
 #[no_mangle]
 pub extern "C" fn polars__img_prewitt_y(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -270,6 +278,7 @@ pub extern "C" fn polars__img_prewitt_y(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image laplacian.
 #[no_mangle]
 pub extern "C" fn polars__img_laplacian(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -284,6 +293,7 @@ pub extern "C" fn polars__img_laplacian(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image emboss.
 #[no_mangle]
 pub extern "C" fn polars__img_emboss(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -300,6 +310,7 @@ pub extern "C" fn polars__img_emboss(args: *const c_char) -> *mut c_char {
 
 // ── morphology ──────────────────────────────────────────────────────────────
 
+/// Image dilate.
 #[no_mangle]
 pub extern "C" fn polars__img_dilate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -310,6 +321,7 @@ pub extern "C" fn polars__img_dilate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image erode.
 #[no_mangle]
 pub extern "C" fn polars__img_erode(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -320,6 +332,7 @@ pub extern "C" fn polars__img_erode(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image open.
 #[no_mangle]
 pub extern "C" fn polars__img_open(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -331,6 +344,7 @@ pub extern "C" fn polars__img_open(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image close.
 #[no_mangle]
 pub extern "C" fn polars__img_close(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -342,6 +356,7 @@ pub extern "C" fn polars__img_close(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image median filter.
 #[no_mangle]
 pub extern "C" fn polars__img_median_filter(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -368,6 +383,7 @@ pub extern "C" fn polars__img_median_filter(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Image threshold.
 #[no_mangle]
 pub extern "C" fn polars__img_threshold(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -387,6 +403,7 @@ pub extern "C" fn polars__img_threshold(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image invert.
 #[no_mangle]
 pub extern "C" fn polars__img_invert(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -402,6 +419,7 @@ pub extern "C" fn polars__img_invert(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image rotate90.
 #[no_mangle]
 pub extern "C" fn polars__img_rotate90(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -416,6 +434,7 @@ pub extern "C" fn polars__img_rotate90(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image rotate180.
 #[no_mangle]
 pub extern "C" fn polars__img_rotate180(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -430,6 +449,7 @@ pub extern "C" fn polars__img_rotate180(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image rotate270.
 #[no_mangle]
 pub extern "C" fn polars__img_rotate270(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -444,6 +464,7 @@ pub extern "C" fn polars__img_rotate270(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image flip horizontal.
 #[no_mangle]
 pub extern "C" fn polars__img_flip_horizontal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -458,6 +479,7 @@ pub extern "C" fn polars__img_flip_horizontal(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Image flip vertical.
 #[no_mangle]
 pub extern "C" fn polars__img_flip_vertical(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -472,6 +494,7 @@ pub extern "C" fn polars__img_flip_vertical(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Image crop.
 #[no_mangle]
 pub extern "C" fn polars__img_crop(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -498,6 +521,7 @@ pub extern "C" fn polars__img_crop(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image resize nearest.
 #[no_mangle]
 pub extern "C" fn polars__img_resize_nearest(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -522,6 +546,7 @@ pub extern "C" fn polars__img_resize_nearest(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Image resize bilinear.
 #[no_mangle]
 pub extern "C" fn polars__img_resize_bilinear(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -555,6 +580,7 @@ pub extern "C" fn polars__img_resize_bilinear(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Image histogram.
 #[no_mangle]
 pub extern "C" fn polars__img_histogram(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -578,6 +604,7 @@ pub extern "C" fn polars__img_histogram(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image equalize.
 #[no_mangle]
 pub extern "C" fn polars__img_equalize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -615,6 +642,7 @@ pub extern "C" fn polars__img_equalize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image contrast.
 #[no_mangle]
 pub extern "C" fn polars__img_contrast(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -637,6 +665,7 @@ pub extern "C" fn polars__img_contrast(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image brightness.
 #[no_mangle]
 pub extern "C" fn polars__img_brightness(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -652,6 +681,7 @@ pub extern "C" fn polars__img_brightness(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image gamma.
 #[no_mangle]
 pub extern "C" fn polars__img_gamma(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -667,6 +697,7 @@ pub extern "C" fn polars__img_gamma(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image normalize.
 #[no_mangle]
 pub extern "C" fn polars__img_normalize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -692,6 +723,7 @@ pub extern "C" fn polars__img_normalize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image mean.
 #[no_mangle]
 pub extern "C" fn polars__img_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -702,6 +734,7 @@ pub extern "C" fn polars__img_mean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image std.
 #[no_mangle]
 pub extern "C" fn polars__img_std(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -714,6 +747,7 @@ pub extern "C" fn polars__img_std(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image min.
 #[no_mangle]
 pub extern "C" fn polars__img_min(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -723,6 +757,7 @@ pub extern "C" fn polars__img_min(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image max.
 #[no_mangle]
 pub extern "C" fn polars__img_max(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -736,6 +771,7 @@ pub extern "C" fn polars__img_max(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image sum.
 #[no_mangle]
 pub extern "C" fn polars__img_sum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -745,6 +781,7 @@ pub extern "C" fn polars__img_sum(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image transpose.
 #[no_mangle]
 pub extern "C" fn polars__img_transpose(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -759,6 +796,7 @@ pub extern "C" fn polars__img_transpose(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image integral image.
 #[no_mangle]
 pub extern "C" fn polars__img_integral_image(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -783,6 +821,7 @@ pub extern "C" fn polars__img_integral_image(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Image pad.
 #[no_mangle]
 pub extern "C" fn polars__img_pad(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -801,6 +840,7 @@ pub extern "C" fn polars__img_pad(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image to grayscale.
 #[no_mangle]
 pub extern "C" fn polars__img_to_grayscale(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -821,6 +861,7 @@ pub extern "C" fn polars__img_to_grayscale(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image argmax 2d.
 #[no_mangle]
 pub extern "C" fn polars__img_argmax_2d(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -837,6 +878,7 @@ pub extern "C" fn polars__img_argmax_2d(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Image argmin 2d.
 #[no_mangle]
 pub extern "C" fn polars__img_argmin_2d(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

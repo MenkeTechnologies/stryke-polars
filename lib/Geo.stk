@@ -1,0 +1,81 @@
+## lib/Geo.stk — `use Polars::Geo`
+##
+## Wrappers around the cdylib `polars__*` exports for the `geo_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Geo
+
+use Polars
+
+## Geometric bbox.
+fn Polars::Geo::bbox ($x, $y) {
+    Polars::_decode("geo_bbox", polars__geo_bbox(to_json({ x => $x, y => $y })))->{x_min}
+}
+
+## Geometric bearing.
+fn Polars::Geo::bearing ($lat1, $lon1, $lat2, $lon2) {
+    Polars::_decode("geo_bearing", polars__geo_bearing(to_json({ lat1 => $lat1, lon1 => $lon1, lat2 => $lat2, lon2 => $lon2 })))->{bearing}
+}
+
+## Geometric centroid.
+fn Polars::Geo::centroid ($x, $y) {
+    Polars::_decode("geo_centroid", polars__geo_centroid(to_json({ x => $x, y => $y })))->{x}
+}
+
+## Geometric distance 2d.
+fn Polars::Geo::distance_2d ($x1, $y1, $x2, $y2) {
+    Polars::_decode("geo_distance_2d", polars__geo_distance_2d(to_json({ x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2 })))->{distance}
+}
+
+## Geometric distance 3d.
+fn Polars::Geo::distance_3d ($x1, $y1, $z1, $x2, $y2, $z2) {
+    Polars::_decode("geo_distance_3d", polars__geo_distance_3d(to_json({ x1 => $x1, y1 => $y1, z1 => $z1, x2 => $x2, y2 => $y2, z2 => $z2 })))->{distance}
+}
+
+## Geometric haversine.
+fn Polars::Geo::haversine ($lat1, $lon1, $lat2, $lon2, $radius) {
+    my %req = (lat1 => $lat1, lon1 => $lon1, lat2 => $lat2, lon2 => $lon2)
+    $req{radius} = $radius if defined $radius
+    Polars::_decode("geo_haversine", polars__geo_haversine(to_json(\%req)))->{distance}
+}
+
+## Geometric point in polygon.
+fn Polars::Geo::point_in_polygon ($x, $y, $px, $py) {
+    Polars::_decode("geo_point_in_polygon", polars__geo_point_in_polygon(to_json({ x => $x, y => $y, px => $px, py => $py })))->{inside}
+}
+
+## Geometric polygon area.
+fn Polars::Geo::polygon_area ($x, $y) {
+    Polars::_decode("geo_polygon_area", polars__geo_polygon_area(to_json({ x => $x, y => $y })))->{area}
+}
+
+## Geometric polygon perimeter.
+fn Polars::Geo::polygon_perimeter ($x, $y) {
+    Polars::_decode("geo_polygon_perimeter", polars__geo_polygon_perimeter(to_json({ x => $x, y => $y })))->{perimeter}
+}
+
+## Geometric rotate.
+fn Polars::Geo::rotate ($x, $y, $angle, $cx, $cy) {
+    my %req = (x => $x, y => $y, angle => $angle)
+    $req{cx} = $cx if defined $cx
+    $req{cy} = $cy if defined $cy
+    Polars::_decode("geo_rotate", polars__geo_rotate(to_json(\%req)))->{x}
+}
+
+## Geometric scale.
+fn Polars::Geo::scale ($x, $y, $sx, $sy) {
+    my %req = (x => $x, y => $y)
+    $req{sx} = $sx if defined $sx
+    $req{sy} = $sy if defined $sy
+    Polars::_decode("geo_scale", polars__geo_scale(to_json(\%req)))->{x}
+}
+
+## Geometric translate.
+fn Polars::Geo::translate ($x, $y, $tx, $ty) {
+    my %req = (x => $x, y => $y)
+    $req{tx} = $tx if defined $tx
+    $req{ty} = $ty if defined $ty
+    Polars::_decode("geo_translate", polars__geo_translate(to_json(\%req)))->{x}
+}
+

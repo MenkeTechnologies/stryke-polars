@@ -1,13 +1,333 @@
 ## lib/Masked.stk — `use Polars::Masked`
 ##
-## `np.ma.*` masked-array surface: `ma_array`, `ma_masked_array`,
-## `ma_masked_where`, `ma_masked_invalid`, `ma_filled`, `ma_compressed`,
-## `ma_mean`, `ma_std`, `ma_var`, … (~80 fns target).
-##
-## Phase status: scaffold only.
+## Wrappers around the cdylib `polars__*` exports for the `ma_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
 
 package Polars::Masked
 
 use Polars
 
-1
+## Masked array all.
+fn Polars::Masked::all ($masked) {
+    Polars::_decode("ma_all", polars__ma_all(to_json({ masked => $masked })))->{all}
+}
+
+## Masked array allmasked.
+fn Polars::Masked::allmasked ($masked) {
+    Polars::_decode("ma_allmasked", polars__ma_allmasked(to_json({ masked => $masked })))->{allmasked}
+}
+
+## Masked array anomalies.
+fn Polars::Masked::anomalies ($masked) {
+    Polars::_decode("ma_anomalies", polars__ma_anomalies(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array any.
+fn Polars::Masked::any ($masked) {
+    Polars::_decode("ma_any", polars__ma_any(to_json({ masked => $masked })))->{any}
+}
+
+## Masked array anymasked.
+fn Polars::Masked::anymasked ($masked) {
+    Polars::_decode("ma_anymasked", polars__ma_anymasked(to_json({ masked => $masked })))->{anymasked}
+}
+
+## Masked array argmax.
+fn Polars::Masked::argmax ($masked) {
+    Polars::_decode("ma_argmax", polars__ma_argmax(to_json({ masked => $masked })))->{argmax}
+}
+
+## Masked array argmin.
+fn Polars::Masked::argmin ($masked) {
+    Polars::_decode("ma_argmin", polars__ma_argmin(to_json({ masked => $masked })))->{argmin}
+}
+
+## Masked array array.
+fn Polars::Masked::array ($masked) {
+    Polars::_decode("ma_array", polars__ma_array(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array array equal.
+fn Polars::Masked::array_equal ($a, $b) {
+    Polars::_decode("ma_array_equal", polars__ma_array_equal(to_json({ a => $a, b => $b })))->{array_equal}
+}
+
+## Masked array average.
+fn Polars::Masked::average ($masked, $weights) {
+    my %req = (masked => $masked)
+    $req{weights} = $weights if defined $weights
+    Polars::_decode("ma_average", polars__ma_average(to_json(\%req)))->{average}
+}
+
+## Masked array clip.
+fn Polars::Masked::clip ($masked, $min, $max) {
+    my %req = (masked => $masked)
+    $req{min} = $min if defined $min
+    $req{max} = $max if defined $max
+    Polars::_decode("ma_clip", polars__ma_clip(to_json(\%req)))->{masked}
+}
+
+## Masked array compressed.
+fn Polars::Masked::compressed ($masked) {
+    Polars::_decode("ma_compressed", polars__ma_compressed(to_json({ masked => $masked })))->{data}
+}
+
+## Masked array concat.
+fn Polars::Masked::concat ($a, $b) {
+    Polars::_decode("ma_concat", polars__ma_concat(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array corrcoef.
+fn Polars::Masked::corrcoef ($a, $b) {
+    Polars::_decode("ma_corrcoef", polars__ma_corrcoef(to_json({ a => $a, b => $b })))->{corrcoef}
+}
+
+## Masked array count.
+fn Polars::Masked::count ($masked) {
+    Polars::_decode("ma_count", polars__ma_count(to_json({ masked => $masked })))->{count}
+}
+
+## Masked array count masked.
+fn Polars::Masked::count_masked ($masked) {
+    Polars::_decode("ma_count_masked", polars__ma_count_masked(to_json({ masked => $masked })))->{count_masked}
+}
+
+## Masked array count unique.
+fn Polars::Masked::count_unique ($masked) {
+    Polars::_decode("ma_count_unique", polars__ma_count_unique(to_json({ masked => $masked })))->{count_unique}
+}
+
+## Masked array cov.
+fn Polars::Masked::cov ($a, $b) {
+    Polars::_decode("ma_cov", polars__ma_cov(to_json({ a => $a, b => $b })))->{cov}
+}
+
+## Masked array cumprod.
+fn Polars::Masked::cumprod ($masked) {
+    Polars::_decode("ma_cumprod", polars__ma_cumprod(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array cumsum.
+fn Polars::Masked::cumsum ($masked) {
+    Polars::_decode("ma_cumsum", polars__ma_cumsum(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array diff.
+fn Polars::Masked::diff ($masked) {
+    Polars::_decode("ma_diff", polars__ma_diff(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array dot.
+fn Polars::Masked::dot ($a, $b) {
+    Polars::_decode("ma_dot", polars__ma_dot(to_json({ a => $a, b => $b })))->{dot}
+}
+
+## Masked array empty.
+fn Polars::Masked::empty ($n) {
+    my %req = ()
+    $req{n} = $n if defined $n
+    Polars::_decode("ma_empty", polars__ma_empty(to_json(\%req)))->{masked}
+}
+
+## Masked array filled.
+fn Polars::Masked::filled ($masked, $value) {
+    my %req = (masked => $masked)
+    $req{value} = $value if defined $value
+    Polars::_decode("ma_filled", polars__ma_filled(to_json(\%req)))->{data}
+}
+
+## Masked array flatten mask.
+fn Polars::Masked::flatten_mask ($masked) {
+    Polars::_decode("ma_flatten_mask", polars__ma_flatten_mask(to_json({ masked => $masked })))->{mask}
+}
+
+## Masked array getdata.
+fn Polars::Masked::getdata ($masked) {
+    Polars::_decode("ma_getdata", polars__ma_getdata(to_json({ masked => $masked })))->{data}
+}
+
+## Masked array getmask.
+fn Polars::Masked::getmask ($masked) {
+    Polars::_decode("ma_getmask", polars__ma_getmask(to_json({ masked => $masked })))->{mask}
+}
+
+## Masked array harden mask.
+fn Polars::Masked::harden_mask ($masked) {
+    Polars::_decode("ma_harden_mask", polars__ma_harden_mask(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array invert mask.
+fn Polars::Masked::invert_mask ($masked) {
+    Polars::_decode("ma_invert_mask", polars__ma_invert_mask(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array isMasked.
+fn Polars::Masked::isMasked ($masked) {
+    Polars::_decode("ma_isMasked", polars__ma_isMasked(to_json({ masked => $masked })))->{is_masked}
+}
+
+## Masked array mask all.
+fn Polars::Masked::mask_all ($masked) {
+    Polars::_decode("ma_mask_all", polars__ma_mask_all(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array mask and.
+fn Polars::Masked::mask_and ($a, $b) {
+    Polars::_decode("ma_mask_and", polars__ma_mask_and(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array mask or.
+fn Polars::Masked::mask_or ($a, $b) {
+    Polars::_decode("ma_mask_or", polars__ma_mask_or(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array masked equal.
+fn Polars::Masked::masked_equal ($data, $value) {
+    Polars::_decode("ma_masked_equal", polars__ma_masked_equal(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked greater.
+fn Polars::Masked::masked_greater ($data, $value) {
+    Polars::_decode("ma_masked_greater", polars__ma_masked_greater(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked greater equal.
+fn Polars::Masked::masked_greater_equal ($data, $value) {
+    Polars::_decode("ma_masked_greater_equal", polars__ma_masked_greater_equal(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked inside.
+fn Polars::Masked::masked_inside ($data, $lo, $hi) {
+    Polars::_decode("ma_masked_inside", polars__ma_masked_inside(to_json({ data => $data, lo => $lo, hi => $hi })))->{masked}
+}
+
+## Masked array masked invalid.
+fn Polars::Masked::masked_invalid ($data) {
+    Polars::_decode("ma_masked_invalid", polars__ma_masked_invalid(to_json({ data => $data })))->{masked}
+}
+
+## Masked array masked less.
+fn Polars::Masked::masked_less ($data, $value) {
+    Polars::_decode("ma_masked_less", polars__ma_masked_less(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked less equal.
+fn Polars::Masked::masked_less_equal ($data, $value) {
+    Polars::_decode("ma_masked_less_equal", polars__ma_masked_less_equal(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked not equal.
+fn Polars::Masked::masked_not_equal ($data, $value) {
+    Polars::_decode("ma_masked_not_equal", polars__ma_masked_not_equal(to_json({ data => $data, value => $value })))->{masked}
+}
+
+## Masked array masked outside.
+fn Polars::Masked::masked_outside ($data, $lo, $hi) {
+    Polars::_decode("ma_masked_outside", polars__ma_masked_outside(to_json({ data => $data, lo => $lo, hi => $hi })))->{masked}
+}
+
+## Masked array masked where.
+fn Polars::Masked::masked_where ($data, $condition) {
+    Polars::_decode("ma_masked_where", polars__ma_masked_where(to_json({ data => $data, condition => $condition })))->{masked}
+}
+
+## Masked array maximum.
+fn Polars::Masked::maximum ($a, $b) {
+    Polars::_decode("ma_maximum", polars__ma_maximum(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array median.
+fn Polars::Masked::median ($masked) {
+    Polars::_decode("ma_median", polars__ma_median(to_json({ masked => $masked })))->{median}
+}
+
+## Masked array minimum.
+fn Polars::Masked::minimum ($a, $b) {
+    Polars::_decode("ma_minimum", polars__ma_minimum(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array nomask.
+fn Polars::Masked::nomask ($masked) {
+    Polars::_decode("ma_nomask", polars__ma_nomask(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array ones.
+fn Polars::Masked::ones ($n) {
+    my %req = ()
+    $req{n} = $n if defined $n
+    Polars::_decode("ma_ones", polars__ma_ones(to_json(\%req)))->{masked}
+}
+
+## Masked array power.
+fn Polars::Masked::power ($a, $b) {
+    Polars::_decode("ma_power", polars__ma_power(to_json({ a => $a, b => $b })))->{masked}
+}
+
+## Masked array ravel.
+fn Polars::Masked::ravel ($masked) {
+    Polars::_decode("ma_ravel", polars__ma_ravel(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array repeat.
+fn Polars::Masked::repeat ($masked, $times) {
+    my %req = (masked => $masked)
+    $req{times} = $times if defined $times
+    Polars::_decode("ma_repeat", polars__ma_repeat(to_json(\%req)))->{masked}
+}
+
+## Masked array reverse.
+fn Polars::Masked::reverse ($masked) {
+    Polars::_decode("ma_reverse", polars__ma_reverse(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array set fill value.
+fn Polars::Masked::set_fill_value ($masked, $fill_value) {
+    my %req = (masked => $masked)
+    $req{fill_value} = $fill_value if defined $fill_value
+    Polars::_decode("ma_set_fill_value", polars__ma_set_fill_value(to_json(\%req)))->{masked}
+}
+
+## Masked array size.
+fn Polars::Masked::size ($masked) {
+    Polars::_decode("ma_size", polars__ma_size(to_json({ masked => $masked })))->{size}
+}
+
+## Masked array soften mask.
+fn Polars::Masked::soften_mask ($masked) {
+    Polars::_decode("ma_soften_mask", polars__ma_soften_mask(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array sort.
+fn Polars::Masked::sort ($masked) {
+    Polars::_decode("ma_sort", polars__ma_sort(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array std.
+fn Polars::Masked::std ($masked) {
+    Polars::_decode("ma_std", polars__ma_std(to_json({ masked => $masked })))->{std}
+}
+
+## Masked array take.
+fn Polars::Masked::take ($masked, $indices) {
+    my %req = (masked => $masked, indices => $indices)
+    Polars::_decode("ma_take", polars__ma_take(to_json(\%req)))
+}
+
+## Masked array unique.
+fn Polars::Masked::unique ($masked) {
+    Polars::_decode("ma_unique", polars__ma_unique(to_json({ masked => $masked })))->{masked}
+}
+
+## Masked array var.
+fn Polars::Masked::var ($masked) {
+    Polars::_decode("ma_var", polars__ma_var(to_json({ masked => $masked })))->{var}
+}
+
+## Masked array zeros.
+fn Polars::Masked::zeros ($n) {
+    my %req = ()
+    $req{n} = $n if defined $n
+    Polars::_decode("ma_zeros", polars__ma_zeros(to_json(\%req)))->{masked}
+}
+

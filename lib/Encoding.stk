@@ -1,0 +1,47 @@
+## lib/Encoding.stk — `use Polars::Encoding`
+##
+## Wrappers around the cdylib `polars__*` exports for the `enc_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Encoding
+
+use Polars
+
+## Encoding base64.
+fn Polars::Encoding::base64 ($value) {
+    Polars::_decode("enc_base64", polars__enc_base64(to_json({ value => $value })))->{encoded}
+}
+
+## Encoding binary.
+fn Polars::Encoding::binary ($data, $threshold) {
+    my %req = (data => $data)
+    $req{threshold} = $threshold if defined $threshold
+    Polars::_decode("enc_binary", polars__enc_binary(to_json(\%req)))->{array}
+}
+
+## Encoding hex.
+fn Polars::Encoding::hex ($value) {
+    Polars::_decode("enc_hex", polars__enc_hex(to_json({ value => $value })))->{encoded}
+}
+
+## Encoding label.
+fn Polars::Encoding::label ($labels) {
+    Polars::_decode("enc_label", polars__enc_label(to_json({ labels => $labels })))->{labels}
+}
+
+## Encoding one hot.
+fn Polars::Encoding::one_hot ($labels) {
+    Polars::_decode("enc_one_hot", polars__enc_one_hot(to_json({ labels => $labels })))->{array}
+}
+
+## Encoding target.
+fn Polars::Encoding::target ($target, $categories) {
+    Polars::_decode("enc_target", polars__enc_target(to_json({ target => $target, categories => $categories })))->{array}
+}
+
+## Encoding url.
+fn Polars::Encoding::url ($value) {
+    Polars::_decode("enc_url", polars__enc_url(to_json({ value => $value })))->{encoded}
+}
+

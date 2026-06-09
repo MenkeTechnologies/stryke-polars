@@ -1,0 +1,136 @@
+## lib/Stat.stk — `use Polars::Stat`
+##
+## Wrappers around the cdylib `polars__*` exports for the `stat_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Stat
+
+use Polars
+
+## Statistics covariance.
+fn Polars::Stat::covariance ($a, $b) {
+    Polars::_decode("stat_covariance", polars__stat_covariance(to_json({ a => $a, b => $b })))->{covariance}
+}
+
+## Statistics entropy.
+fn Polars::Stat::entropy ($data) {
+    Polars::_decode("stat_entropy", polars__stat_entropy(to_json({ data => $data })))->{entropy}
+}
+
+## Statistics geometric mean.
+fn Polars::Stat::geometric_mean ($data) {
+    Polars::_decode("stat_geometric_mean", polars__stat_geometric_mean(to_json({ data => $data })))->{geometric_mean}
+}
+
+## Statistics harmonic mean.
+fn Polars::Stat::harmonic_mean ($data) {
+    Polars::_decode("stat_harmonic_mean", polars__stat_harmonic_mean(to_json({ data => $data })))->{harmonic_mean}
+}
+
+## Statistics iqr.
+fn Polars::Stat::iqr ($data) {
+    Polars::_decode("stat_iqr", polars__stat_iqr(to_json({ data => $data })))->{iqr}
+}
+
+## Statistics jsd.
+fn Polars::Stat::jsd ($p, $q) {
+    Polars::_decode("stat_jsd", polars__stat_jsd(to_json({ p => $p, q => $q })))->{jsd}
+}
+
+## Statistics kl.
+fn Polars::Stat::kl ($p, $q) {
+    Polars::_decode("stat_kl", polars__stat_kl(to_json({ p => $p, q => $q })))->{kl}
+}
+
+## Statistics kurtosis.
+fn Polars::Stat::kurtosis ($data) {
+    Polars::_decode("stat_kurtosis", polars__stat_kurtosis(to_json({ data => $data })))->{kurtosis}
+}
+
+## Statistics mad.
+fn Polars::Stat::mad ($data) {
+    Polars::_decode("stat_mad", polars__stat_mad(to_json({ data => $data })))->{mad}
+}
+
+## Statistics mae.
+fn Polars::Stat::mae ($a, $b) {
+    Polars::_decode("stat_mae", polars__stat_mae(to_json({ a => $a, b => $b })))->{mae}
+}
+
+## Statistics mean.
+fn Polars::Stat::mean ($data) {
+    Polars::_decode("stat_mean", polars__stat_mean(to_json({ data => $data })))->{mean}
+}
+
+## Statistics median.
+fn Polars::Stat::median ($data) {
+    Polars::_decode("stat_median", polars__stat_median(to_json({ data => $data })))->{median}
+}
+
+## Statistics mode.
+fn Polars::Stat::mode ($data) {
+    Polars::_decode("stat_mode", polars__stat_mode(to_json({ data => $data })))->{mode}
+}
+
+## Statistics mse.
+fn Polars::Stat::mse ($a, $b) {
+    Polars::_decode("stat_mse", polars__stat_mse(to_json({ a => $a, b => $b })))->{mse}
+}
+
+## Statistics pearson.
+fn Polars::Stat::pearson ($a, $b) {
+    Polars::_decode("stat_pearson", polars__stat_pearson(to_json({ a => $a, b => $b })))->{pearson}
+}
+
+## Statistics percentile.
+fn Polars::Stat::percentile ($data, $p) {
+    Polars::_decode("stat_percentile", polars__stat_percentile(to_json({ data => $data, p => $p })))->{percentile}
+}
+
+## Statistics r2.
+fn Polars::Stat::r2 ($a, $b) {
+    Polars::_decode("stat_r2", polars__stat_r2(to_json({ a => $a, b => $b })))->{r2}
+}
+
+## Statistics rmse.
+fn Polars::Stat::rmse ($a, $b) {
+    Polars::_decode("stat_rmse", polars__stat_rmse(to_json({ a => $a, b => $b })))->{rmse}
+}
+
+## Statistics skewness.
+fn Polars::Stat::skewness ($data) {
+    Polars::_decode("stat_skewness", polars__stat_skewness(to_json({ data => $data })))->{skewness}
+}
+
+## Statistics spearman.
+fn Polars::Stat::spearman ($a, $b) {
+    Polars::_decode("stat_spearman", polars__stat_spearman(to_json({ a => $a, b => $b })))->{spearman}
+}
+
+## Statistics stdev.
+fn Polars::Stat::stdev ($data, $ddof) {
+    my %req = (data => $data)
+    $req{ddof} = $ddof if defined $ddof
+    Polars::_decode("stat_stdev", polars__stat_stdev(to_json(\%req)))->{stdev}
+}
+
+## Statistics trimmed mean.
+fn Polars::Stat::trimmed_mean ($data, $p) {
+    my %req = (data => $data)
+    $req{p} = $p if defined $p
+    Polars::_decode("stat_trimmed_mean", polars__stat_trimmed_mean(to_json(\%req)))->{trimmed_mean}
+}
+
+## Statistics variance.
+fn Polars::Stat::variance ($data, $ddof) {
+    my %req = (data => $data)
+    $req{ddof} = $ddof if defined $ddof
+    Polars::_decode("stat_variance", polars__stat_variance(to_json(\%req)))->{variance}
+}
+
+## Statistics zscore.
+fn Polars::Stat::zscore ($data) {
+    Polars::_decode("stat_zscore", polars__stat_zscore(to_json({ data => $data })))->{zscore}
+}
+

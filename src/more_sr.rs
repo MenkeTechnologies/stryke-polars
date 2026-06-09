@@ -151,6 +151,7 @@ fn from_str_vec(name: &str, data: Vec<Option<String>>) -> Series {
 
 // ── more series ops ────────────────────────────────────────────────────────
 
+/// Series argunique.
 #[no_mangle]
 pub extern "C" fn polars__sr_argunique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -172,6 +173,7 @@ pub extern "C" fn polars__sr_argunique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series drop duplicates.
 #[no_mangle]
 pub extern "C" fn polars__sr_drop_duplicates(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -183,6 +185,7 @@ pub extern "C" fn polars__sr_drop_duplicates(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Series argmax n.
 #[no_mangle]
 pub extern "C" fn polars__sr_argmax_n(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -196,6 +199,7 @@ pub extern "C" fn polars__sr_argmax_n(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series argmin n.
 #[no_mangle]
 pub extern "C" fn polars__sr_argmin_n(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -209,6 +213,7 @@ pub extern "C" fn polars__sr_argmin_n(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series nlargest.
 #[no_mangle]
 pub extern "C" fn polars__sr_nlargest(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -221,6 +226,7 @@ pub extern "C" fn polars__sr_nlargest(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series nsmallest.
 #[no_mangle]
 pub extern "C" fn polars__sr_nsmallest(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -233,6 +239,7 @@ pub extern "C" fn polars__sr_nsmallest(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series value range.
 #[no_mangle]
 pub extern "C" fn polars__sr_value_range(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -244,6 +251,7 @@ pub extern "C" fn polars__sr_value_range(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series first valid index.
 #[no_mangle]
 pub extern "C" fn polars__sr_first_valid_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -260,6 +268,7 @@ pub extern "C" fn polars__sr_first_valid_index(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Series last valid index.
 #[no_mangle]
 pub extern "C" fn polars__sr_last_valid_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -278,6 +287,7 @@ pub extern "C" fn polars__sr_last_valid_index(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Series to dict.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_dict(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -291,6 +301,7 @@ pub extern "C" fn polars__sr_to_dict(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series apply lambda.
 #[no_mangle]
 pub extern "C" fn polars__sr_apply_lambda(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -312,6 +323,7 @@ pub extern "C" fn polars__sr_apply_lambda(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series interpolate.
 #[no_mangle]
 pub extern "C" fn polars__sr_interpolate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -337,6 +349,7 @@ pub extern "C" fn polars__sr_interpolate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series pad value.
 #[no_mangle]
 pub extern "C" fn polars__sr_pad_value(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -354,6 +367,7 @@ pub extern "C" fn polars__sr_pad_value(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series truncate.
 #[no_mangle]
 pub extern "C" fn polars__sr_truncate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -368,6 +382,7 @@ pub extern "C" fn polars__sr_truncate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series normalize.
 #[no_mangle]
 pub extern "C" fn polars__sr_normalize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -385,6 +400,7 @@ pub extern "C" fn polars__sr_normalize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series standardize.
 #[no_mangle]
 pub extern "C" fn polars__sr_standardize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -403,6 +419,7 @@ pub extern "C" fn polars__sr_standardize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series softmax.
 #[no_mangle]
 pub extern "C" fn polars__sr_softmax(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -416,6 +433,7 @@ pub extern "C" fn polars__sr_softmax(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series logsumexp.
 #[no_mangle]
 pub extern "C" fn polars__sr_logsumexp(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -427,6 +445,7 @@ pub extern "C" fn polars__sr_logsumexp(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series normalize l2.
 #[no_mangle]
 pub extern "C" fn polars__sr_normalize_l2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -442,6 +461,7 @@ pub extern "C" fn polars__sr_normalize_l2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series normalize l1.
 #[no_mangle]
 pub extern "C" fn polars__sr_normalize_l1(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -457,6 +477,7 @@ pub extern "C" fn polars__sr_normalize_l1(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series dropna first.
 #[no_mangle]
 pub extern "C" fn polars__sr_dropna_first(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -474,6 +495,7 @@ pub extern "C" fn polars__sr_dropna_first(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series dropna last.
 #[no_mangle]
 pub extern "C" fn polars__sr_dropna_last(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -491,6 +513,7 @@ pub extern "C" fn polars__sr_dropna_last(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series argbottom.
 #[no_mangle]
 pub extern "C" fn polars__sr_argbottom(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -504,6 +527,7 @@ pub extern "C" fn polars__sr_argbottom(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series argtop.
 #[no_mangle]
 pub extern "C" fn polars__sr_argtop(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -517,6 +541,7 @@ pub extern "C" fn polars__sr_argtop(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series top k.
 #[no_mangle]
 pub extern "C" fn polars__sr_top_k(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -529,6 +554,7 @@ pub extern "C" fn polars__sr_top_k(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series bottom k.
 #[no_mangle]
 pub extern "C" fn polars__sr_bottom_k(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -541,6 +567,7 @@ pub extern "C" fn polars__sr_bottom_k(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series to numpy.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_numpy(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -551,6 +578,7 @@ pub extern "C" fn polars__sr_to_numpy(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series from numpy.
 #[no_mangle]
 pub extern "C" fn polars__sr_from_numpy(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -574,6 +602,7 @@ pub extern "C" fn polars__sr_from_numpy(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str at.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_at(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -591,6 +620,7 @@ pub extern "C" fn polars__sr_str_at(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str first.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_first(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -604,6 +634,7 @@ pub extern "C" fn polars__sr_str_first(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str last.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_last(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -617,6 +648,7 @@ pub extern "C" fn polars__sr_str_last(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str split n.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_split_n(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -636,6 +668,7 @@ pub extern "C" fn polars__sr_str_split_n(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str join.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_join(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -651,6 +684,7 @@ pub extern "C" fn polars__sr_str_join(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str strip chars.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_strip_chars(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -669,6 +703,7 @@ pub extern "C" fn polars__sr_str_strip_chars(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Series str pad right.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_pad_right(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -701,6 +736,7 @@ pub extern "C" fn polars__sr_str_pad_right(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series str center.
 #[no_mangle]
 pub extern "C" fn polars__sr_str_center(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -737,6 +773,7 @@ pub extern "C" fn polars__sr_str_center(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series quantile method.
 #[no_mangle]
 pub extern "C" fn polars__sr_quantile_method(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -761,6 +798,7 @@ pub extern "C" fn polars__sr_quantile_method(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Series cut.
 #[no_mangle]
 pub extern "C" fn polars__sr_cut(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -780,6 +818,7 @@ pub extern "C" fn polars__sr_cut(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series qcut.
 #[no_mangle]
 pub extern "C" fn polars__sr_qcut(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -806,6 +845,7 @@ pub extern "C" fn polars__sr_qcut(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series pivot count.
 #[no_mangle]
 pub extern "C" fn polars__sr_pivot_count(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -828,6 +868,7 @@ pub extern "C" fn polars__sr_pivot_count(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series div safe.
 #[no_mangle]
 pub extern "C" fn polars__sr_div_safe(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -852,6 +893,7 @@ pub extern "C" fn polars__sr_div_safe(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series swap.
 #[no_mangle]
 pub extern "C" fn polars__sr_swap(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -872,6 +914,7 @@ pub extern "C" fn polars__sr_swap(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series take.
 #[no_mangle]
 pub extern "C" fn polars__sr_take(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -890,6 +933,7 @@ pub extern "C" fn polars__sr_take(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series set.
 #[no_mangle]
 pub extern "C" fn polars__sr_set(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -910,6 +954,7 @@ pub extern "C" fn polars__sr_set(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series append.
 #[no_mangle]
 pub extern "C" fn polars__sr_append(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -924,6 +969,7 @@ pub extern "C" fn polars__sr_append(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series prepend.
 #[no_mangle]
 pub extern "C" fn polars__sr_prepend(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -939,6 +985,7 @@ pub extern "C" fn polars__sr_prepend(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series insert.
 #[no_mangle]
 pub extern "C" fn polars__sr_insert(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -960,6 +1007,7 @@ pub extern "C" fn polars__sr_insert(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series remove.
 #[no_mangle]
 pub extern "C" fn polars__sr_remove(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -976,6 +1024,7 @@ pub extern "C" fn polars__sr_remove(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count value.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_value(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -990,6 +1039,7 @@ pub extern "C" fn polars__sr_count_value(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count between.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_between(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1008,6 +1058,7 @@ pub extern "C" fn polars__sr_count_between(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count greater.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_greater(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1022,6 +1073,7 @@ pub extern "C" fn polars__sr_count_greater(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count less.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_less(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1036,6 +1088,7 @@ pub extern "C" fn polars__sr_count_less(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count nan.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_nan(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1046,6 +1099,7 @@ pub extern "C" fn polars__sr_count_nan(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count finite.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_finite(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1056,6 +1110,7 @@ pub extern "C" fn polars__sr_count_finite(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series count inf.
 #[no_mangle]
 pub extern "C" fn polars__sr_count_inf(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1066,6 +1121,7 @@ pub extern "C" fn polars__sr_count_inf(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series is sorted.
 #[no_mangle]
 pub extern "C" fn polars__sr_is_sorted(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1076,6 +1132,7 @@ pub extern "C" fn polars__sr_is_sorted(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series is sorted desc.
 #[no_mangle]
 pub extern "C" fn polars__sr_is_sorted_desc(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1086,6 +1143,7 @@ pub extern "C" fn polars__sr_is_sorted_desc(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Series partition.
 #[no_mangle]
 pub extern "C" fn polars__sr_partition(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1105,6 +1163,7 @@ pub extern "C" fn polars__sr_partition(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series to int.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_int(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1116,6 +1175,7 @@ pub extern "C" fn polars__sr_to_int(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series to bool.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_bool(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1127,6 +1187,7 @@ pub extern "C" fn polars__sr_to_bool(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series to str.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_str(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1138,6 +1199,7 @@ pub extern "C" fn polars__sr_to_str(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series cumcount.
 #[no_mangle]
 pub extern "C" fn polars__sr_cumcount(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1149,6 +1211,7 @@ pub extern "C" fn polars__sr_cumcount(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series rank dense.
 #[no_mangle]
 pub extern "C" fn polars__sr_rank_dense(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1171,6 +1234,7 @@ pub extern "C" fn polars__sr_rank_dense(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Series to index.
 #[no_mangle]
 pub extern "C" fn polars__sr_to_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

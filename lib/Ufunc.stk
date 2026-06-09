@@ -138,5 +138,3 @@ fn Polars::Ufunc::subtract_scalar ($arr, $scalar) { Polars::_decode("np_subtract
 fn Polars::Ufunc::multiply_scalar ($arr, $scalar) { Polars::_decode("np_multiply_scalar", polars__np_multiply_scalar(to_json({ array => $arr, scalar => $scalar })))->{array} }
 fn Polars::Ufunc::divide_scalar   ($arr, $scalar) { Polars::_decode("np_divide_scalar",   polars__np_divide_scalar  (to_json({ array => $arr, scalar => $scalar })))->{array} }
 fn Polars::Ufunc::power_scalar    ($arr, $scalar) { Polars::_decode("np_power_scalar",    polars__np_power_scalar   (to_json({ array => $arr, scalar => $scalar })))->{array} }
-
-1

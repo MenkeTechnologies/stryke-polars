@@ -155,5 +155,3 @@ fn Polars::Random::f ($n, $dfn, $dfd, $seed) {
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_f", polars__rand_f(to_json(\%req)))->{array}
 }
-
-1

@@ -39,6 +39,7 @@ fn as_i64(v: &Value) -> i64 {
 
 // ── construction ────────────────────────────────────────────────────────────
 
+/// Index new.
 #[no_mangle]
 pub extern "C" fn polars__idx_new(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -48,6 +49,7 @@ pub extern "C" fn polars__idx_new(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index range.
 #[no_mangle]
 pub extern "C" fn polars__idx_range(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -77,6 +79,7 @@ pub extern "C" fn polars__idx_range(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index from list.
 #[no_mangle]
 pub extern "C" fn polars__idx_from_list(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -85,6 +88,7 @@ pub extern "C" fn polars__idx_from_list(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index empty.
 #[no_mangle]
 pub extern "C" fn polars__idx_empty(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| return_index(vec![]))
@@ -92,6 +96,7 @@ pub extern "C" fn polars__idx_empty(args: *const c_char) -> *mut c_char {
 
 // ── basic ops ───────────────────────────────────────────────────────────────
 
+/// Index len.
 #[no_mangle]
 pub extern "C" fn polars__idx_len(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -100,6 +105,7 @@ pub extern "C" fn polars__idx_len(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index is empty.
 #[no_mangle]
 pub extern "C" fn polars__idx_is_empty(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -108,6 +114,7 @@ pub extern "C" fn polars__idx_is_empty(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index size.
 #[no_mangle]
 pub extern "C" fn polars__idx_size(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -116,6 +123,7 @@ pub extern "C" fn polars__idx_size(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index head.
 #[no_mangle]
 pub extern "C" fn polars__idx_head(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -126,6 +134,7 @@ pub extern "C" fn polars__idx_head(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index tail.
 #[no_mangle]
 pub extern "C" fn polars__idx_tail(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -137,6 +146,7 @@ pub extern "C" fn polars__idx_tail(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index reverse.
 #[no_mangle]
 pub extern "C" fn polars__idx_reverse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -146,6 +156,7 @@ pub extern "C" fn polars__idx_reverse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index slice.
 #[no_mangle]
 pub extern "C" fn polars__idx_slice(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -164,6 +175,7 @@ pub extern "C" fn polars__idx_slice(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index get.
 #[no_mangle]
 pub extern "C" fn polars__idx_get(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -186,6 +198,7 @@ pub extern "C" fn polars__idx_get(args: *const c_char) -> *mut c_char {
 
 // ── unique / nunique ───────────────────────────────────────────────────────
 
+/// Index unique.
 #[no_mangle]
 pub extern "C" fn polars__idx_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -199,6 +212,7 @@ pub extern "C" fn polars__idx_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index nunique.
 #[no_mangle]
 pub extern "C" fn polars__idx_nunique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -208,6 +222,7 @@ pub extern "C" fn polars__idx_nunique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index is unique.
 #[no_mangle]
 pub extern "C" fn polars__idx_is_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -217,6 +232,7 @@ pub extern "C" fn polars__idx_is_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index has duplicates.
 #[no_mangle]
 pub extern "C" fn polars__idx_has_duplicates(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -226,6 +242,7 @@ pub extern "C" fn polars__idx_has_duplicates(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Index duplicated.
 #[no_mangle]
 pub extern "C" fn polars__idx_duplicated(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -239,6 +256,7 @@ pub extern "C" fn polars__idx_duplicated(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index drop duplicates.
 #[no_mangle]
 pub extern "C" fn polars__idx_drop_duplicates(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -252,6 +270,7 @@ pub extern "C" fn polars__idx_drop_duplicates(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Index value counts.
 #[no_mangle]
 pub extern "C" fn polars__idx_value_counts(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -270,6 +289,7 @@ pub extern "C" fn polars__idx_value_counts(args: *const c_char) -> *mut c_char {
 
 // ── sort / argsort ─────────────────────────────────────────────────────────
 
+/// Index sort.
 #[no_mangle]
 pub extern "C" fn polars__idx_sort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -293,6 +313,7 @@ pub extern "C" fn polars__idx_sort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index argsort.
 #[no_mangle]
 pub extern "C" fn polars__idx_argsort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -318,6 +339,7 @@ pub extern "C" fn polars__idx_argsort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index is monotonic increasing.
 #[no_mangle]
 pub extern "C" fn polars__idx_is_monotonic_increasing(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -331,6 +353,7 @@ pub extern "C" fn polars__idx_is_monotonic_increasing(args: *const c_char) -> *m
     })
 }
 
+/// Index is monotonic decreasing.
 #[no_mangle]
 pub extern "C" fn polars__idx_is_monotonic_decreasing(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -346,6 +369,7 @@ pub extern "C" fn polars__idx_is_monotonic_decreasing(args: *const c_char) -> *m
 
 // ── set ops ────────────────────────────────────────────────────────────────
 
+/// Index union.
 #[no_mangle]
 pub extern "C" fn polars__idx_union(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -362,6 +386,7 @@ pub extern "C" fn polars__idx_union(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index intersection.
 #[no_mangle]
 pub extern "C" fn polars__idx_intersection(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -377,6 +402,7 @@ pub extern "C" fn polars__idx_intersection(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index difference.
 #[no_mangle]
 pub extern "C" fn polars__idx_difference(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -392,6 +418,7 @@ pub extern "C" fn polars__idx_difference(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index symmetric difference.
 #[no_mangle]
 pub extern "C" fn polars__idx_symmetric_difference(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -415,6 +442,7 @@ pub extern "C" fn polars__idx_symmetric_difference(args: *const c_char) -> *mut 
     })
 }
 
+/// Index append.
 #[no_mangle]
 pub extern "C" fn polars__idx_append(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -425,6 +453,7 @@ pub extern "C" fn polars__idx_append(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index repeat.
 #[no_mangle]
 pub extern "C" fn polars__idx_repeat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -441,6 +470,7 @@ pub extern "C" fn polars__idx_repeat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index take.
 #[no_mangle]
 pub extern "C" fn polars__idx_take(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -458,6 +488,7 @@ pub extern "C" fn polars__idx_take(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index delete.
 #[no_mangle]
 pub extern "C" fn polars__idx_delete(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -477,6 +508,7 @@ pub extern "C" fn polars__idx_delete(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index insert.
 #[no_mangle]
 pub extern "C" fn polars__idx_insert(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -495,6 +527,7 @@ pub extern "C" fn polars__idx_insert(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index drop.
 #[no_mangle]
 pub extern "C" fn polars__idx_drop(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -515,6 +548,7 @@ pub extern "C" fn polars__idx_drop(args: *const c_char) -> *mut c_char {
 
 // ── membership ─────────────────────────────────────────────────────────────
 
+/// Index contains.
 #[no_mangle]
 pub extern "C" fn polars__idx_contains(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -526,6 +560,7 @@ pub extern "C" fn polars__idx_contains(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index isin.
 #[no_mangle]
 pub extern "C" fn polars__idx_isin(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -540,6 +575,7 @@ pub extern "C" fn polars__idx_isin(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index get loc.
 #[no_mangle]
 pub extern "C" fn polars__idx_get_loc(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -551,6 +587,7 @@ pub extern "C" fn polars__idx_get_loc(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index get indexer.
 #[no_mangle]
 pub extern "C" fn polars__idx_get_indexer(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -575,6 +612,7 @@ pub extern "C" fn polars__idx_get_indexer(args: *const c_char) -> *mut c_char {
 
 // ── numeric aggregations ───────────────────────────────────────────────────
 
+/// Index min.
 #[no_mangle]
 pub extern "C" fn polars__idx_min(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -589,6 +627,7 @@ pub extern "C" fn polars__idx_min(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index max.
 #[no_mangle]
 pub extern "C" fn polars__idx_max(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -603,6 +642,7 @@ pub extern "C" fn polars__idx_max(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index sum.
 #[no_mangle]
 pub extern "C" fn polars__idx_sum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -614,6 +654,7 @@ pub extern "C" fn polars__idx_sum(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index mean.
 #[no_mangle]
 pub extern "C" fn polars__idx_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -630,6 +671,7 @@ pub extern "C" fn polars__idx_mean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index argmin.
 #[no_mangle]
 pub extern "C" fn polars__idx_argmin(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -644,6 +686,7 @@ pub extern "C" fn polars__idx_argmin(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index argmax.
 #[no_mangle]
 pub extern "C" fn polars__idx_argmax(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -660,6 +703,7 @@ pub extern "C" fn polars__idx_argmax(args: *const c_char) -> *mut c_char {
 
 // ── shift / rename / map ───────────────────────────────────────────────────
 
+/// Index shift.
 #[no_mangle]
 pub extern "C" fn polars__idx_shift(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -680,6 +724,7 @@ pub extern "C" fn polars__idx_shift(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index to list.
 #[no_mangle]
 pub extern "C" fn polars__idx_to_list(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -688,6 +733,7 @@ pub extern "C" fn polars__idx_to_list(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index to array.
 #[no_mangle]
 pub extern "C" fn polars__idx_to_array(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -705,6 +751,7 @@ pub extern "C" fn polars__idx_to_array(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index equals.
 #[no_mangle]
 pub extern "C" fn polars__idx_equals(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -718,6 +765,7 @@ pub extern "C" fn polars__idx_equals(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index identical.
 #[no_mangle]
 pub extern "C" fn polars__idx_identical(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -727,6 +775,7 @@ pub extern "C" fn polars__idx_identical(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index factorize.
 #[no_mangle]
 pub extern "C" fn polars__idx_factorize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -749,6 +798,7 @@ pub extern "C" fn polars__idx_factorize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index searchsorted.
 #[no_mangle]
 pub extern "C" fn polars__idx_searchsorted(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -763,6 +813,7 @@ pub extern "C" fn polars__idx_searchsorted(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index first.
 #[no_mangle]
 pub extern "C" fn polars__idx_first(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -771,6 +822,7 @@ pub extern "C" fn polars__idx_first(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index last.
 #[no_mangle]
 pub extern "C" fn polars__idx_last(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -779,6 +831,7 @@ pub extern "C" fn polars__idx_last(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index isnull.
 #[no_mangle]
 pub extern "C" fn polars__idx_isnull(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -788,6 +841,7 @@ pub extern "C" fn polars__idx_isnull(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index notnull.
 #[no_mangle]
 pub extern "C" fn polars__idx_notnull(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -797,6 +851,7 @@ pub extern "C" fn polars__idx_notnull(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index dropna.
 #[no_mangle]
 pub extern "C" fn polars__idx_dropna(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -806,6 +861,7 @@ pub extern "C" fn polars__idx_dropna(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index fillna.
 #[no_mangle]
 pub extern "C" fn polars__idx_fillna(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -819,6 +875,7 @@ pub extern "C" fn polars__idx_fillna(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index astype int.
 #[no_mangle]
 pub extern "C" fn polars__idx_astype_int(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -828,6 +885,7 @@ pub extern "C" fn polars__idx_astype_int(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index astype float.
 #[no_mangle]
 pub extern "C" fn polars__idx_astype_float(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -845,6 +903,7 @@ pub extern "C" fn polars__idx_astype_float(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index astype str.
 #[no_mangle]
 pub extern "C" fn polars__idx_astype_str(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -863,6 +922,7 @@ pub extern "C" fn polars__idx_astype_str(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index str upper.
 #[no_mangle]
 pub extern "C" fn polars__idx_str_upper(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -875,6 +935,7 @@ pub extern "C" fn polars__idx_str_upper(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index str lower.
 #[no_mangle]
 pub extern "C" fn polars__idx_str_lower(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -887,6 +948,7 @@ pub extern "C" fn polars__idx_str_lower(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index str len.
 #[no_mangle]
 pub extern "C" fn polars__idx_str_len(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -899,6 +961,7 @@ pub extern "C" fn polars__idx_str_len(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index str strip.
 #[no_mangle]
 pub extern "C" fn polars__idx_str_strip(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -913,6 +976,7 @@ pub extern "C" fn polars__idx_str_strip(args: *const c_char) -> *mut c_char {
 
 // ── MultiIndex (lightweight: tuples as nested arrays) ──────────────────────
 
+/// Index from tuples.
 #[no_mangle]
 pub extern "C" fn polars__idx_from_tuples(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -925,6 +989,7 @@ pub extern "C" fn polars__idx_from_tuples(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index from product.
 #[no_mangle]
 pub extern "C" fn polars__idx_from_product(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -953,6 +1018,7 @@ pub extern "C" fn polars__idx_from_product(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index get level values.
 #[no_mangle]
 pub extern "C" fn polars__idx_get_level_values(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -967,6 +1033,7 @@ pub extern "C" fn polars__idx_get_level_values(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Index swap levels.
 #[no_mangle]
 pub extern "C" fn polars__idx_swap_levels(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -989,6 +1056,7 @@ pub extern "C" fn polars__idx_swap_levels(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index nlevels.
 #[no_mangle]
 pub extern "C" fn polars__idx_nlevels(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1002,6 +1070,7 @@ pub extern "C" fn polars__idx_nlevels(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Index to frame.
 #[no_mangle]
 pub extern "C" fn polars__idx_to_frame(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

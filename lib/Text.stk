@@ -1,0 +1,154 @@
+## lib/Text.stk — `use Polars::Text`
+##
+## Wrappers around the cdylib `polars__*` exports for the `text_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Text
+
+use Polars
+
+## Text byte count.
+fn Polars::Text::byte_count ($text) {
+    Polars::_decode("text_byte_count", polars__text_byte_count(to_json({ text => $text })))->{byte_count}
+}
+
+## Text camel to snake.
+fn Polars::Text::camel_to_snake ($text) {
+    Polars::_decode("text_camel_to_snake", polars__text_camel_to_snake(to_json({ text => $text })))->{text}
+}
+
+## Text char count.
+fn Polars::Text::char_count ($text) {
+    Polars::_decode("text_char_count", polars__text_char_count(to_json({ text => $text })))->{char_count}
+}
+
+## Text char ngrams.
+fn Polars::Text::char_ngrams ($text, $n) {
+    my %req = (text => $text)
+    $req{n} = $n if defined $n
+    Polars::_decode("text_char_ngrams", polars__text_char_ngrams(to_json(\%req)))->{ngrams}
+}
+
+## Text cosine word.
+fn Polars::Text::cosine_word ($a, $b) {
+    Polars::_decode("text_cosine_word", polars__text_cosine_word(to_json({ a => $a, b => $b })))->{cosine}
+}
+
+## Text edit distance ratio.
+fn Polars::Text::edit_distance_ratio ($a, $b) {
+    Polars::_decode("text_edit_distance_ratio", polars__text_edit_distance_ratio(to_json({ a => $a, b => $b })))->{ratio}
+}
+
+## Text extract numbers.
+fn Polars::Text::extract_numbers ($text) {
+    Polars::_decode("text_extract_numbers", polars__text_extract_numbers(to_json({ text => $text })))->{numbers}
+}
+
+## Text jaccard.
+fn Polars::Text::jaccard ($a, $b) {
+    Polars::_decode("text_jaccard", polars__text_jaccard(to_json({ a => $a, b => $b })))->{jaccard}
+}
+
+## Text lcs.
+fn Polars::Text::lcs ($a, $b) {
+    Polars::_decode("text_lcs", polars__text_lcs(to_json({ a => $a, b => $b })))->{length}
+}
+
+## Text levenshtein.
+fn Polars::Text::levenshtein ($a, $b) {
+    Polars::_decode("text_levenshtein", polars__text_levenshtein(to_json({ a => $a, b => $b })))->{levenshtein}
+}
+
+## Text line count.
+fn Polars::Text::line_count ($text) {
+    Polars::_decode("text_line_count", polars__text_line_count(to_json({ text => $text })))->{line_count}
+}
+
+## Text lower.
+fn Polars::Text::lower ($text) {
+    Polars::_decode("text_lower", polars__text_lower(to_json({ text => $text })))->{text}
+}
+
+## Text ngrams.
+fn Polars::Text::ngrams ($text, $n) {
+    my %req = (text => $text)
+    $req{n} = $n if defined $n
+    Polars::_decode("text_ngrams", polars__text_ngrams(to_json(\%req)))->{ngrams}
+}
+
+## Text pad to.
+fn Polars::Text::pad_to ($text, $width, $pad) {
+    my %req = (text => $text)
+    $req{width} = $width if defined $width
+    $req{pad} = $pad if defined $pad
+    Polars::_decode("text_pad_to", polars__text_pad_to(to_json(\%req)))->{text}
+}
+
+## Text replace regex.
+fn Polars::Text::replace_regex ($text, $pattern, $replacement) {
+    Polars::_decode("text_replace_regex", polars__text_replace_regex(to_json({ text => $text, pattern => $pattern, replacement => $replacement })))->{text}
+}
+
+## Text reverse.
+fn Polars::Text::reverse ($text) {
+    Polars::_decode("text_reverse", polars__text_reverse(to_json({ text => $text })))->{text}
+}
+
+## Text sentence split.
+fn Polars::Text::sentence_split ($text) {
+    Polars::_decode("text_sentence_split", polars__text_sentence_split(to_json({ text => $text })))->{sentences}
+}
+
+## Text snake to camel.
+fn Polars::Text::snake_to_camel ($text) {
+    Polars::_decode("text_snake_to_camel", polars__text_snake_to_camel(to_json({ text => $text })))->{text}
+}
+
+## Text stopwords remove.
+fn Polars::Text::stopwords_remove ($text, $stopwords) {
+    Polars::_decode("text_stopwords_remove", polars__text_stopwords_remove(to_json({ text => $text, stopwords => $stopwords })))->{text}
+}
+
+## Text strip.
+fn Polars::Text::strip ($text) {
+    Polars::_decode("text_strip", polars__text_strip(to_json({ text => $text })))->{text}
+}
+
+## Text titlecase.
+fn Polars::Text::titlecase ($text) {
+    Polars::_decode("text_titlecase", polars__text_titlecase(to_json({ text => $text })))->{text}
+}
+
+## Text tokenize.
+fn Polars::Text::tokenize ($text) {
+    Polars::_decode("text_tokenize", polars__text_tokenize(to_json({ text => $text })))->{tokens}
+}
+
+## Text truncate.
+fn Polars::Text::truncate ($text, $width) {
+    my %req = (text => $text)
+    $req{width} = $width if defined $width
+    Polars::_decode("text_truncate", polars__text_truncate(to_json(\%req)))->{text}
+}
+
+## Text unique words.
+fn Polars::Text::unique_words ($text) {
+    Polars::_decode("text_unique_words", polars__text_unique_words(to_json({ text => $text })))->{unique_words}
+}
+
+## Text upper.
+fn Polars::Text::upper ($text) {
+    Polars::_decode("text_upper", polars__text_upper(to_json({ text => $text })))->{text}
+}
+
+## Text word count.
+fn Polars::Text::word_count ($text) {
+    Polars::_decode("text_word_count", polars__text_word_count(to_json({ text => $text })))->{word_count}
+}
+
+## Text word frequency.
+fn Polars::Text::word_frequency ($text) {
+    Polars::_decode("text_word_frequency", polars__text_word_frequency(to_json({ text => $text })))->{frequency}
+}
+

@@ -192,61 +192,73 @@ where
     return_frame(result)
 }
 
+/// Groupby sum.
 #[no_mangle]
 pub extern "C" fn polars__gb_sum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.sum()))
 }
 
+/// Groupby mean.
 #[no_mangle]
 pub extern "C" fn polars__gb_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.mean()))
 }
 
+/// Groupby median.
 #[no_mangle]
 pub extern "C" fn polars__gb_median(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.median()))
 }
 
+/// Groupby min.
 #[no_mangle]
 pub extern "C" fn polars__gb_min(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.min()))
 }
 
+/// Groupby max.
 #[no_mangle]
 pub extern "C" fn polars__gb_max(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.max()))
 }
 
+/// Groupby count.
 #[no_mangle]
 pub extern "C" fn polars__gb_count(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.count()))
 }
 
+/// Groupby first.
 #[no_mangle]
 pub extern "C" fn polars__gb_first(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.first()))
 }
 
+/// Groupby last.
 #[no_mangle]
 pub extern "C" fn polars__gb_last(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.last()))
 }
 
+/// Groupby std.
 #[no_mangle]
 pub extern "C" fn polars__gb_std(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.std(1)))
 }
 
+/// Groupby var.
 #[no_mangle]
 pub extern "C" fn polars__gb_var(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.var(1)))
 }
 
+/// Groupby n unique.
 #[no_mangle]
 pub extern "C" fn polars__gb_n_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.n_unique()))
 }
 
+/// Groupby quantile.
 #[no_mangle]
 pub extern "C" fn polars__gb_quantile(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -258,6 +270,7 @@ pub extern "C" fn polars__gb_quantile(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Groupby groups.
 #[no_mangle]
 pub extern "C" fn polars__gb_groups(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -275,6 +288,7 @@ pub extern "C" fn polars__gb_groups(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Groupby size.
 #[no_mangle]
 pub extern "C" fn polars__gb_size(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -292,6 +306,7 @@ pub extern "C" fn polars__gb_size(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Groupby head.
 #[no_mangle]
 pub extern "C" fn polars__gb_head(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -309,6 +324,7 @@ pub extern "C" fn polars__gb_head(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Groupby tail.
 #[no_mangle]
 pub extern "C" fn polars__gb_tail(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -326,26 +342,31 @@ pub extern "C" fn polars__gb_tail(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Groupby product.
 #[no_mangle]
 pub extern "C" fn polars__gb_product(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.product()))
 }
 
+/// Groupby all.
 #[no_mangle]
 pub extern "C" fn polars__gb_all(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.all(false)))
 }
 
+/// Groupby any.
 #[no_mangle]
 pub extern "C" fn polars__gb_any(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.any(false)))
 }
 
+/// Groupby skew.
 #[no_mangle]
 pub extern "C" fn polars__gb_skew(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.skew(false)))
 }
 
+/// Groupby kurt.
 #[no_mangle]
 pub extern "C" fn polars__gb_kurt(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| gb_agg(args, |e| e.kurtosis(true, true)))
@@ -444,6 +465,7 @@ fn scalar(x: f64) -> Value {
         .unwrap_or(Value::Null)
 }
 
+/// Statistics mean.
 #[no_mangle]
 pub extern "C" fn polars__stat_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -457,6 +479,7 @@ pub extern "C" fn polars__stat_mean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics median.
 #[no_mangle]
 pub extern "C" fn polars__stat_median(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -473,6 +496,7 @@ pub extern "C" fn polars__stat_median(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics mode.
 #[no_mangle]
 pub extern "C" fn polars__stat_mode(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -489,6 +513,7 @@ pub extern "C" fn polars__stat_mode(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics variance.
 #[no_mangle]
 pub extern "C" fn polars__stat_variance(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -501,6 +526,7 @@ pub extern "C" fn polars__stat_variance(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics stdev.
 #[no_mangle]
 pub extern "C" fn polars__stat_stdev(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -513,6 +539,7 @@ pub extern "C" fn polars__stat_stdev(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics zscore.
 #[no_mangle]
 pub extern "C" fn polars__stat_zscore(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -530,6 +557,7 @@ pub extern "C" fn polars__stat_zscore(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics iqr.
 #[no_mangle]
 pub extern "C" fn polars__stat_iqr(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -545,6 +573,7 @@ pub extern "C" fn polars__stat_iqr(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics skewness.
 #[no_mangle]
 pub extern "C" fn polars__stat_skewness(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -562,6 +591,7 @@ pub extern "C" fn polars__stat_skewness(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics kurtosis.
 #[no_mangle]
 pub extern "C" fn polars__stat_kurtosis(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -579,6 +609,7 @@ pub extern "C" fn polars__stat_kurtosis(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics pearson.
 #[no_mangle]
 pub extern "C" fn polars__stat_pearson(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -612,6 +643,7 @@ pub extern "C" fn polars__stat_pearson(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics spearman.
 #[no_mangle]
 pub extern "C" fn polars__stat_spearman(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -660,6 +692,7 @@ pub extern "C" fn polars__stat_spearman(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics covariance.
 #[no_mangle]
 pub extern "C" fn polars__stat_covariance(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -686,6 +719,7 @@ pub extern "C" fn polars__stat_covariance(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics percentile.
 #[no_mangle]
 pub extern "C" fn polars__stat_percentile(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -703,6 +737,7 @@ pub extern "C" fn polars__stat_percentile(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics harmonic mean.
 #[no_mangle]
 pub extern "C" fn polars__stat_harmonic_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -715,6 +750,7 @@ pub extern "C" fn polars__stat_harmonic_mean(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Statistics geometric mean.
 #[no_mangle]
 pub extern "C" fn polars__stat_geometric_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -727,6 +763,7 @@ pub extern "C" fn polars__stat_geometric_mean(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Statistics trimmed mean.
 #[no_mangle]
 pub extern "C" fn polars__stat_trimmed_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -744,6 +781,7 @@ pub extern "C" fn polars__stat_trimmed_mean(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Statistics mad.
 #[no_mangle]
 pub extern "C" fn polars__stat_mad(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -769,6 +807,7 @@ pub extern "C" fn polars__stat_mad(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics rmse.
 #[no_mangle]
 pub extern "C" fn polars__stat_rmse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -788,6 +827,7 @@ pub extern "C" fn polars__stat_rmse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics mae.
 #[no_mangle]
 pub extern "C" fn polars__stat_mae(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -807,6 +847,7 @@ pub extern "C" fn polars__stat_mae(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics mse.
 #[no_mangle]
 pub extern "C" fn polars__stat_mse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -826,6 +867,7 @@ pub extern "C" fn polars__stat_mse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics r2.
 #[no_mangle]
 pub extern "C" fn polars__stat_r2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -850,6 +892,7 @@ pub extern "C" fn polars__stat_r2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics entropy.
 #[no_mangle]
 pub extern "C" fn polars__stat_entropy(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -859,6 +902,7 @@ pub extern "C" fn polars__stat_entropy(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics kl.
 #[no_mangle]
 pub extern "C" fn polars__stat_kl(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -882,6 +926,7 @@ pub extern "C" fn polars__stat_kl(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Statistics jsd.
 #[no_mangle]
 pub extern "C" fn polars__stat_jsd(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -918,6 +963,7 @@ fn get_bool_arr(args: &Value) -> Result<Vec<bool>> {
     Ok(a.iter().map(|x| x.as_bool().unwrap_or(false)).collect())
 }
 
+/// Boolean any.
 #[no_mangle]
 pub extern "C" fn polars__bool_any(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -926,6 +972,7 @@ pub extern "C" fn polars__bool_any(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean all.
 #[no_mangle]
 pub extern "C" fn polars__bool_all(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -934,6 +981,7 @@ pub extern "C" fn polars__bool_all(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean count true.
 #[no_mangle]
 pub extern "C" fn polars__bool_count_true(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -942,6 +990,7 @@ pub extern "C" fn polars__bool_count_true(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean count false.
 #[no_mangle]
 pub extern "C" fn polars__bool_count_false(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -950,6 +999,7 @@ pub extern "C" fn polars__bool_count_false(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean negate.
 #[no_mangle]
 pub extern "C" fn polars__bool_negate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -959,6 +1009,7 @@ pub extern "C" fn polars__bool_negate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean and.
 #[no_mangle]
 pub extern "C" fn polars__bool_and(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -979,6 +1030,7 @@ pub extern "C" fn polars__bool_and(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean or.
 #[no_mangle]
 pub extern "C" fn polars__bool_or(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -999,6 +1051,7 @@ pub extern "C" fn polars__bool_or(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean xor.
 #[no_mangle]
 pub extern "C" fn polars__bool_xor(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1019,6 +1072,7 @@ pub extern "C" fn polars__bool_xor(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean to int.
 #[no_mangle]
 pub extern "C" fn polars__bool_to_int(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1028,6 +1082,7 @@ pub extern "C" fn polars__bool_to_int(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Boolean indices true.
 #[no_mangle]
 pub extern "C" fn polars__bool_indices_true(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1041,6 +1096,7 @@ pub extern "C" fn polars__bool_indices_true(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Boolean indices false.
 #[no_mangle]
 pub extern "C" fn polars__bool_indices_false(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1064,6 +1120,7 @@ fn get_set(args: &Value, key: &str) -> Result<Vec<f64>> {
     Ok(a.iter().map(|x| x.as_f64().unwrap_or(f64::NAN)).collect())
 }
 
+/// Set union.
 #[no_mangle]
 pub extern "C" fn polars__set_union(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1080,6 +1137,7 @@ pub extern "C" fn polars__set_union(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set intersection.
 #[no_mangle]
 pub extern "C" fn polars__set_intersection(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1095,6 +1153,7 @@ pub extern "C" fn polars__set_intersection(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set difference.
 #[no_mangle]
 pub extern "C" fn polars__set_difference(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1110,6 +1169,7 @@ pub extern "C" fn polars__set_difference(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set symmetric difference.
 #[no_mangle]
 pub extern "C" fn polars__set_symmetric_difference(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1133,6 +1193,7 @@ pub extern "C" fn polars__set_symmetric_difference(args: *const c_char) -> *mut 
     })
 }
 
+/// Set is subset.
 #[no_mangle]
 pub extern "C" fn polars__set_is_subset(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1144,6 +1205,7 @@ pub extern "C" fn polars__set_is_subset(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set is superset.
 #[no_mangle]
 pub extern "C" fn polars__set_is_superset(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1155,6 +1217,7 @@ pub extern "C" fn polars__set_is_superset(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set is disjoint.
 #[no_mangle]
 pub extern "C" fn polars__set_is_disjoint(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1166,6 +1229,7 @@ pub extern "C" fn polars__set_is_disjoint(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set contains.
 #[no_mangle]
 pub extern "C" fn polars__set_contains(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1179,6 +1243,7 @@ pub extern "C" fn polars__set_contains(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set size.
 #[no_mangle]
 pub extern "C" fn polars__set_size(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1190,6 +1255,7 @@ pub extern "C" fn polars__set_size(args: *const c_char) -> *mut c_char {
 
 // ── DataFrame extras (df_*) ────────────────────────────────────────────────
 
+/// DataFrame pivot.
 #[no_mangle]
 pub extern "C" fn polars__df_pivot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1198,6 +1264,7 @@ pub extern "C" fn polars__df_pivot(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame melt.
 #[no_mangle]
 pub extern "C" fn polars__df_melt(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1230,6 +1297,7 @@ pub extern "C" fn polars__df_melt(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame explode v2.
 #[no_mangle]
 pub extern "C" fn polars__df_explode_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1249,6 +1317,7 @@ pub extern "C" fn polars__df_explode_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame transpose v2.
 #[no_mangle]
 pub extern "C" fn polars__df_transpose_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1258,6 +1327,7 @@ pub extern "C" fn polars__df_transpose_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame set index.
 #[no_mangle]
 pub extern "C" fn polars__df_set_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1266,6 +1336,7 @@ pub extern "C" fn polars__df_set_index(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame reset index.
 #[no_mangle]
 pub extern "C" fn polars__df_reset_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1278,6 +1349,7 @@ pub extern "C" fn polars__df_reset_index(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame set column.
 #[no_mangle]
 pub extern "C" fn polars__df_set_column(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1297,6 +1369,7 @@ pub extern "C" fn polars__df_set_column(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame drop duplicates.
 #[no_mangle]
 pub extern "C" fn polars__df_drop_duplicates(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1310,6 +1383,7 @@ pub extern "C" fn polars__df_drop_duplicates(args: *const c_char) -> *mut c_char
     })
 }
 
+/// DataFrame sample n.
 #[no_mangle]
 pub extern "C" fn polars__df_sample_n(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1330,6 +1404,7 @@ pub extern "C" fn polars__df_sample_n(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame sample frac.
 #[no_mangle]
 pub extern "C" fn polars__df_sample_frac(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1346,6 +1421,7 @@ pub extern "C" fn polars__df_sample_frac(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame concat horizontal.
 #[no_mangle]
 pub extern "C" fn polars__df_concat_horizontal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1367,6 +1443,7 @@ pub extern "C" fn polars__df_concat_horizontal(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// DataFrame count nulls.
 #[no_mangle]
 pub extern "C" fn polars__df_count_nulls(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1379,6 +1456,7 @@ pub extern "C" fn polars__df_count_nulls(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame any nulls.
 #[no_mangle]
 pub extern "C" fn polars__df_any_nulls(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1388,6 +1466,7 @@ pub extern "C" fn polars__df_any_nulls(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame height.
 #[no_mangle]
 pub extern "C" fn polars__df_height(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1396,6 +1475,7 @@ pub extern "C" fn polars__df_height(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame width.
 #[no_mangle]
 pub extern "C" fn polars__df_width(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1404,6 +1484,7 @@ pub extern "C" fn polars__df_width(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame empty.
 #[no_mangle]
 pub extern "C" fn polars__df_empty(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1412,6 +1493,7 @@ pub extern "C" fn polars__df_empty(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame corr.
 #[no_mangle]
 pub extern "C" fn polars__df_corr(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1471,6 +1553,7 @@ pub extern "C" fn polars__df_corr(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame cov.
 #[no_mangle]
 pub extern "C" fn polars__df_cov(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1511,6 +1594,7 @@ pub extern "C" fn polars__df_cov(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame describe.
 #[no_mangle]
 pub extern "C" fn polars__df_describe(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1543,6 +1627,7 @@ pub extern "C" fn polars__df_describe(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame clip v2.
 #[no_mangle]
 pub extern "C" fn polars__df_clip_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1565,6 +1650,7 @@ pub extern "C" fn polars__df_clip_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame shift v2.
 #[no_mangle]
 pub extern "C" fn polars__df_shift_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1585,6 +1671,7 @@ pub extern "C" fn polars__df_shift_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame diff v2.
 #[no_mangle]
 pub extern "C" fn polars__df_diff_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1605,6 +1692,7 @@ pub extern "C" fn polars__df_diff_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame pct change v2.
 #[no_mangle]
 pub extern "C" fn polars__df_pct_change_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1625,6 +1713,7 @@ pub extern "C" fn polars__df_pct_change_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame rank v2.
 #[no_mangle]
 pub extern "C" fn polars__df_rank_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1654,6 +1743,7 @@ pub extern "C" fn polars__df_rank_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame any axis columns.
 #[no_mangle]
 pub extern "C" fn polars__df_any_axis_columns(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1672,6 +1762,7 @@ pub extern "C" fn polars__df_any_axis_columns(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// DataFrame all axis columns.
 #[no_mangle]
 pub extern "C" fn polars__df_all_axis_columns(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1690,6 +1781,7 @@ pub extern "C" fn polars__df_all_axis_columns(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// DataFrame mode per column.
 #[no_mangle]
 pub extern "C" fn polars__df_mode_per_column(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

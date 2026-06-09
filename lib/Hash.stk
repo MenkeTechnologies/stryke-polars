@@ -1,0 +1,37 @@
+## lib/Hash.stk — `use Polars::Hash`
+##
+## Wrappers around the cdylib `polars__*` exports for the `hash_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Hash
+
+use Polars
+
+## Hash crc32.
+fn Polars::Hash::crc32 ($value) {
+    Polars::_decode("hash_crc32", polars__hash_crc32(to_json({ value => $value })))->{hash}
+}
+
+## Hash djb2.
+fn Polars::Hash::djb2 ($value) {
+    Polars::_decode("hash_djb2", polars__hash_djb2(to_json({ value => $value })))->{hash}
+}
+
+## Hash fnv1a.
+fn Polars::Hash::fnv1a ($value) {
+    Polars::_decode("hash_fnv1a", polars__hash_fnv1a(to_json({ value => $value })))->{hash}
+}
+
+## Hash jenkins.
+fn Polars::Hash::jenkins ($value) {
+    Polars::_decode("hash_jenkins", polars__hash_jenkins(to_json({ value => $value })))->{hash}
+}
+
+## Hash murmur32.
+fn Polars::Hash::murmur32 ($value, $seed) {
+    my %req = (value => $value)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("hash_murmur32", polars__hash_murmur32(to_json(\%req)))->{hash}
+}
+

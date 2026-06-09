@@ -520,66 +520,79 @@ pub extern "C" fn polars__np_logical_xor(args: *const c_char) -> *mut c_char {
 
 // ── P4f: more unary ufuncs ─────────────────────────────────────────────────
 
+/// numpy ufunc trunc.
 #[no_mangle]
 pub extern "C" fn polars__np_trunc(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::trunc))
 }
 
+/// numpy ufunc radians.
 #[no_mangle]
 pub extern "C" fn polars__np_radians(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::to_radians))
 }
 
+/// numpy ufunc degrees.
 #[no_mangle]
 pub extern "C" fn polars__np_degrees(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::to_degrees))
 }
 
+/// numpy ufunc negative.
 #[no_mangle]
 pub extern "C" fn polars__np_negative(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, |x| -x))
 }
 
+/// numpy ufunc reciprocal.
 #[no_mangle]
 pub extern "C" fn polars__np_reciprocal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, |x| 1.0 / x))
 }
 
+/// numpy ufunc square.
 #[no_mangle]
 pub extern "C" fn polars__np_square(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, |x| x * x))
 }
 
+/// numpy ufunc cbrt.
 #[no_mangle]
 pub extern "C" fn polars__np_cbrt(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::cbrt))
 }
 
+/// numpy ufunc expm1.
 #[no_mangle]
 pub extern "C" fn polars__np_expm1(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::exp_m1))
 }
 
+/// numpy ufunc log1p.
 #[no_mangle]
 pub extern "C" fn polars__np_log1p(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::ln_1p))
 }
 
+/// numpy ufunc arctan2.
 #[no_mangle]
 pub extern "C" fn polars__np_arctan2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, f64::atan2))
 }
 
+/// numpy ufunc hypot.
 #[no_mangle]
 pub extern "C" fn polars__np_hypot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, f64::hypot))
 }
 
+/// numpy ufunc floor divide.
 #[no_mangle]
 pub extern "C" fn polars__np_floor_divide(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| (x / y).floor()))
 }
 
+/// numpy ufunc copysign.
 #[no_mangle]
 pub extern "C" fn polars__np_copysign(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, f64::copysign))
@@ -659,6 +672,7 @@ pub extern "C" fn polars__linalg_kron(args: *const c_char) -> *mut c_char {
 
 // ── P4g: cumulative axis ops ───────────────────────────────────────────────
 
+/// ndarray cumprod.
 #[no_mangle]
 pub extern "C" fn polars__arr_cumprod(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -677,6 +691,7 @@ pub extern "C" fn polars__arr_cumprod(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray cummin.
 #[no_mangle]
 pub extern "C" fn polars__arr_cummin(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -695,6 +710,7 @@ pub extern "C" fn polars__arr_cummin(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray cummax.
 #[no_mangle]
 pub extern "C" fn polars__arr_cummax(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -715,6 +731,7 @@ pub extern "C" fn polars__arr_cummax(args: *const c_char) -> *mut c_char {
 
 // ── P5h: fft + random + poly + linalg ──────────────────────────────────────
 
+/// FFT rfft.
 #[no_mangle]
 pub extern "C" fn polars__fft_rfft(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -734,6 +751,7 @@ pub extern "C" fn polars__fft_rfft(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// FFT fftshift.
 #[no_mangle]
 pub extern "C" fn polars__fft_fftshift(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

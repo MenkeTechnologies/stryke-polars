@@ -1,0 +1,53 @@
+## lib/Opt.stk — `use Polars::Opt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `opt_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Opt
+
+use Polars
+
+## Optimization gradient descent.
+fn Polars::Opt::gradient_descent ($coefficients, $x0, $lr, $max_iter, $tol) {
+    my %req = (coefficients => $coefficients)
+    $req{x0} = $x0 if defined $x0
+    $req{lr} = $lr if defined $lr
+    $req{max_iter} = $max_iter if defined $max_iter
+    $req{tol} = $tol if defined $tol
+    Polars::_decode("opt_gradient_descent", polars__opt_gradient_descent(to_json(\%req)))->{x}
+}
+
+## Optimization minimize bisection.
+fn Polars::Opt::minimize_bisection ($coefficients, $lo, $hi, $tol, $max_iter) {
+    my %req = (coefficients => $coefficients, lo => $lo, hi => $hi)
+    $req{tol} = $tol if defined $tol
+    $req{max_iter} = $max_iter if defined $max_iter
+    Polars::_decode("opt_minimize_bisection", polars__opt_minimize_bisection(to_json(\%req)))->{x}
+}
+
+## Optimization minimize golden.
+fn Polars::Opt::minimize_golden ($coefficients, $lo, $hi, $tol) {
+    my %req = (coefficients => $coefficients, lo => $lo, hi => $hi)
+    $req{tol} = $tol if defined $tol
+    Polars::_decode("opt_minimize_golden", polars__opt_minimize_golden(to_json(\%req)))->{x}
+}
+
+## Optimization newton raphson.
+fn Polars::Opt::newton_raphson ($coefficients, $x0, $tol, $max_iter) {
+    my %req = (coefficients => $coefficients)
+    $req{x0} = $x0 if defined $x0
+    $req{tol} = $tol if defined $tol
+    $req{max_iter} = $max_iter if defined $max_iter
+    Polars::_decode("opt_newton_raphson", polars__opt_newton_raphson(to_json(\%req)))->{x}
+}
+
+## Optimization secant.
+fn Polars::Opt::secant ($coefficients, $x0, $x1, $tol) {
+    my %req = (coefficients => $coefficients)
+    $req{x0} = $x0 if defined $x0
+    $req{x1} = $x1 if defined $x1
+    $req{tol} = $tol if defined $tol
+    Polars::_decode("opt_secant", polars__opt_secant(to_json(\%req)))->{x}
+}
+

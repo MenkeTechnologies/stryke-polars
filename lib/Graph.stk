@@ -1,0 +1,84 @@
+## lib/Graph.stk — `use Polars::Graph`
+##
+## Wrappers around the cdylib `polars__*` exports for the `graph_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Graph
+
+use Polars
+
+## Graph adjacency matrix.
+fn Polars::Graph::adjacency_matrix () {
+    Polars::_decode("graph_adjacency_matrix", polars__graph_adjacency_matrix(to_json({})))->{array}
+}
+
+## Graph average degree.
+fn Polars::Graph::average_degree () {
+    Polars::_decode("graph_average_degree", polars__graph_average_degree(to_json({})))->{average_degree}
+}
+
+## Graph bfs.
+fn Polars::Graph::bfs ($start) {
+    my %req = ()
+    $req{start} = $start if defined $start
+    Polars::_decode("graph_bfs", polars__graph_bfs(to_json(\%req)))->{order}
+}
+
+## Graph clustering coef.
+fn Polars::Graph::clustering_coef () {
+    Polars::_decode("graph_clustering_coef", polars__graph_clustering_coef(to_json({})))->{clustering}
+}
+
+## Graph connected components.
+fn Polars::Graph::connected_components () {
+    Polars::_decode("graph_connected_components", polars__graph_connected_components(to_json({})))->{components}
+}
+
+## Graph degree.
+fn Polars::Graph::degree () {
+    Polars::_decode("graph_degree", polars__graph_degree(to_json({})))->{degree}
+}
+
+## Graph density.
+fn Polars::Graph::density () {
+    Polars::_decode("graph_density", polars__graph_density(to_json({})))->{density}
+}
+
+## Graph dfs.
+fn Polars::Graph::dfs ($start) {
+    my %req = ()
+    $req{start} = $start if defined $start
+    Polars::_decode("graph_dfs", polars__graph_dfs(to_json(\%req)))->{order}
+}
+
+## Graph floyd warshall.
+fn Polars::Graph::floyd_warshall () {
+    Polars::_decode("graph_floyd_warshall", polars__graph_floyd_warshall(to_json({})))->{array}
+}
+
+## Graph in degree.
+fn Polars::Graph::in_degree () {
+    Polars::_decode("graph_in_degree", polars__graph_in_degree(to_json({})))->{in_degree}
+}
+
+## Graph out degree.
+fn Polars::Graph::out_degree () {
+    Polars::_decode("graph_out_degree", polars__graph_out_degree(to_json({})))->{out_degree}
+}
+
+## Graph pagerank.
+fn Polars::Graph::pagerank ($damping, $iters) {
+    my %req = ()
+    $req{damping} = $damping if defined $damping
+    $req{iters} = $iters if defined $iters
+    Polars::_decode("graph_pagerank", polars__graph_pagerank(to_json(\%req)))->{pagerank}
+}
+
+## Graph shortest path.
+fn Polars::Graph::shortest_path ($start) {
+    my %req = ()
+    $req{start} = $start if defined $start
+    Polars::_decode("graph_shortest_path", polars__graph_shortest_path(to_json(\%req)))->{distances}
+}
+

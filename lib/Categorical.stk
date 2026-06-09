@@ -1,0 +1,197 @@
+## lib/Categorical.stk — `use Polars::Categorical`
+##
+## Wrappers around the cdylib `polars__*` exports for the `cat_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Categorical
+
+use Polars
+
+## Categorical add categories.
+fn Polars::Categorical::add_categories ($categorical, $new_categories) {
+    Polars::_decode("cat_add_categories", polars__cat_add_categories(to_json({ categorical => $categorical, new_categories => $new_categories })))->{categorical}
+}
+
+## Categorical argsort.
+fn Polars::Categorical::argsort ($categorical) {
+    Polars::_decode("cat_argsort", polars__cat_argsort(to_json({ categorical => $categorical })))->{argsort}
+}
+
+## Categorical as ordered.
+fn Polars::Categorical::as_ordered ($categorical) {
+    Polars::_decode("cat_as_ordered", polars__cat_as_ordered(to_json({ categorical => $categorical })))->{categorical}
+}
+
+## Categorical as unordered.
+fn Polars::Categorical::as_unordered ($categorical) {
+    Polars::_decode("cat_as_unordered", polars__cat_as_unordered(to_json({ categorical => $categorical })))->{categorical}
+}
+
+## Categorical categories.
+fn Polars::Categorical::categories ($categorical) {
+    Polars::_decode("cat_categories", polars__cat_categories(to_json({ categorical => $categorical })))->{categories}
+}
+
+## Categorical codes.
+fn Polars::Categorical::codes ($categorical) {
+    Polars::_decode("cat_codes", polars__cat_codes(to_json({ categorical => $categorical })))->{codes}
+}
+
+## Categorical codes to strings.
+fn Polars::Categorical::codes_to_strings ($categorical) {
+    Polars::_decode("cat_codes_to_strings", polars__cat_codes_to_strings(to_json({ categorical => $categorical })))->{strings}
+}
+
+## Categorical concat.
+fn Polars::Categorical::concat ($a, $b) {
+    Polars::_decode("cat_concat", polars__cat_concat(to_json({ a => $a, b => $b })))->{categorical}
+}
+
+## Categorical describe.
+fn Polars::Categorical::describe ($categorical) {
+    Polars::_decode("cat_describe", polars__cat_describe(to_json({ categorical => $categorical })))->{describe}
+}
+
+## Categorical drop null.
+fn Polars::Categorical::drop_null ($categorical) {
+    Polars::_decode("cat_drop_null", polars__cat_drop_null(to_json({ categorical => $categorical })))->{categorical}
+}
+
+## Categorical first.
+fn Polars::Categorical::first ($categorical) {
+    Polars::_decode("cat_first", polars__cat_first(to_json({ categorical => $categorical })))->{first}
+}
+
+## Categorical from codes.
+fn Polars::Categorical::from_codes ($codes, $categories, $ordered) {
+    my %req = (codes => $codes, categories => $categories)
+    $req{ordered} = $ordered if defined $ordered
+    Polars::_decode("cat_from_codes", polars__cat_from_codes(to_json(\%req)))->{categorical}
+}
+
+## Categorical head.
+fn Polars::Categorical::head ($categorical, $n) {
+    my %req = (categorical => $categorical)
+    $req{n} = $n if defined $n
+    Polars::_decode("cat_head", polars__cat_head(to_json(\%req)))->{categorical}
+}
+
+## Categorical is null.
+fn Polars::Categorical::is_null ($categorical) {
+    Polars::_decode("cat_is_null", polars__cat_is_null(to_json({ categorical => $categorical })))->{is_null}
+}
+
+## Categorical isin.
+fn Polars::Categorical::isin ($categorical, $values) {
+    Polars::_decode("cat_isin", polars__cat_isin(to_json({ categorical => $categorical, values => $values })))->{isin}
+}
+
+## Categorical last.
+fn Polars::Categorical::last ($categorical) {
+    Polars::_decode("cat_last", polars__cat_last(to_json({ categorical => $categorical })))->{last}
+}
+
+## Categorical len.
+fn Polars::Categorical::len ($categorical) {
+    Polars::_decode("cat_len", polars__cat_len(to_json({ categorical => $categorical })))->{len}
+}
+
+## Categorical map.
+fn Polars::Categorical::map ($categorical, $mapping) {
+    Polars::_decode("cat_map", polars__cat_map(to_json({ categorical => $categorical, mapping => $mapping })))->{categorical}
+}
+
+## Categorical max.
+fn Polars::Categorical::max ($categorical) {
+    Polars::_decode("cat_max", polars__cat_max(to_json({ categorical => $categorical })))->{max}
+}
+
+## Categorical min.
+fn Polars::Categorical::min ($categorical) {
+    Polars::_decode("cat_min", polars__cat_min(to_json({ categorical => $categorical })))->{min}
+}
+
+## Categorical mode.
+fn Polars::Categorical::mode ($categorical) {
+    Polars::_decode("cat_mode", polars__cat_mode(to_json({ categorical => $categorical })))->{mode}
+}
+
+## Categorical new.
+fn Polars::Categorical::new ($values, $categories, $ordered) {
+    my %req = (values => $values)
+    $req{categories} = $categories if defined $categories
+    $req{ordered} = $ordered if defined $ordered
+    Polars::_decode("cat_new", polars__cat_new(to_json(\%req)))->{categorical}
+}
+
+## Categorical nunique.
+fn Polars::Categorical::nunique ($categorical) {
+    Polars::_decode("cat_nunique", polars__cat_nunique(to_json({ categorical => $categorical })))->{nunique}
+}
+
+## Categorical ordered.
+fn Polars::Categorical::ordered ($categorical) {
+    Polars::_decode("cat_ordered", polars__cat_ordered(to_json({ categorical => $categorical })))->{ordered}
+}
+
+## Categorical remove categories.
+fn Polars::Categorical::remove_categories ($categorical, $remove) {
+    Polars::_decode("cat_remove_categories", polars__cat_remove_categories(to_json({ categorical => $categorical, remove => $remove })))->{categorical}
+}
+
+## Categorical remove unused.
+fn Polars::Categorical::remove_unused ($categorical) {
+    Polars::_decode("cat_remove_unused", polars__cat_remove_unused(to_json({ categorical => $categorical })))->{categorical}
+}
+
+## Categorical rename categories.
+fn Polars::Categorical::rename_categories ($categorical, $new_categories) {
+    my %req = (categorical => $categorical, new_categories => $new_categories)
+    Polars::_decode("cat_rename_categories", polars__cat_rename_categories(to_json(\%req)))
+}
+
+## Categorical reorder categories.
+fn Polars::Categorical::reorder_categories ($categorical, $new_categories) {
+    Polars::_decode("cat_reorder_categories", polars__cat_reorder_categories(to_json({ categorical => $categorical, new_categories => $new_categories })))->{categorical}
+}
+
+## Categorical reverse.
+fn Polars::Categorical::reverse ($categorical) {
+    Polars::_decode("cat_reverse", polars__cat_reverse(to_json({ categorical => $categorical })))->{categorical}
+}
+
+## Categorical set categories.
+fn Polars::Categorical::set_categories () {
+    Polars::_decode("cat_set_categories", polars__cat_set_categories(to_json({})))->{result}
+}
+
+## Categorical sort.
+fn Polars::Categorical::sort ($categorical, $desc) {
+    my %req = (categorical => $categorical)
+    $req{desc} = $desc if defined $desc
+    Polars::_decode("cat_sort", polars__cat_sort(to_json(\%req)))->{categorical}
+}
+
+## Categorical tail.
+fn Polars::Categorical::tail ($categorical, $n) {
+    my %req = (categorical => $categorical)
+    $req{n} = $n if defined $n
+    Polars::_decode("cat_tail", polars__cat_tail(to_json(\%req)))->{categorical}
+}
+
+## Categorical to strings.
+fn Polars::Categorical::to_strings ($categorical) {
+    Polars::_decode("cat_to_strings", polars__cat_to_strings(to_json({ categorical => $categorical })))->{strings}
+}
+
+## Categorical unique.
+fn Polars::Categorical::unique ($categorical) {
+    Polars::_decode("cat_unique", polars__cat_unique(to_json({ categorical => $categorical })))->{unique}
+}
+
+## Categorical value counts.
+fn Polars::Categorical::value_counts ($categorical) {
+    Polars::_decode("cat_value_counts", polars__cat_value_counts(to_json({ categorical => $categorical })))->{value_counts}
+}
+

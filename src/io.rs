@@ -145,6 +145,7 @@ fn get_frame(args: &Value) -> Result<DataFrame> {
 
 // ── read_csv / write_csv ────────────────────────────────────────────────────
 
+/// pandas IO read csv.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_csv(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -165,6 +166,7 @@ pub extern "C" fn polars__pd_read_csv(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to csv.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_csv(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -178,6 +180,7 @@ pub extern "C" fn polars__pd_to_csv(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read csv string.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_csv_string(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -192,6 +195,7 @@ pub extern "C" fn polars__pd_read_csv_string(args: *const c_char) -> *mut c_char
     })
 }
 
+/// pandas IO to csv string.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_csv_string(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -207,6 +211,7 @@ pub extern "C" fn polars__pd_to_csv_string(args: *const c_char) -> *mut c_char {
 
 // ── read_json / to_json ────────────────────────────────────────────────────
 
+/// pandas IO read json.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_json(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -218,6 +223,7 @@ pub extern "C" fn polars__pd_read_json(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to json.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_json(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -229,6 +235,7 @@ pub extern "C" fn polars__pd_to_json(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read jsonl.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_jsonl(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -252,6 +259,7 @@ pub extern "C" fn polars__pd_read_jsonl(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to jsonl.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_jsonl(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -284,6 +292,7 @@ pub extern "C" fn polars__pd_to_jsonl(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to json string.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_json_string(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -295,6 +304,7 @@ pub extern "C" fn polars__pd_to_json_string(args: *const c_char) -> *mut c_char 
 
 // ── read_parquet / to_parquet — stubs, route via stryke-arrow ──────────────
 
+/// pandas IO read parquet.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_parquet(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -302,6 +312,7 @@ pub extern "C" fn polars__pd_read_parquet(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to parquet.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_parquet(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -311,6 +322,7 @@ pub extern "C" fn polars__pd_to_parquet(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read feather.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_feather(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -318,6 +330,7 @@ pub extern "C" fn polars__pd_read_feather(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to feather.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_feather(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -325,6 +338,7 @@ pub extern "C" fn polars__pd_to_feather(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read arrow.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_arrow(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -332,6 +346,7 @@ pub extern "C" fn polars__pd_read_arrow(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to arrow.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_arrow(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -341,6 +356,7 @@ pub extern "C" fn polars__pd_to_arrow(args: *const c_char) -> *mut c_char {
 
 // ── misc ────────────────────────────────────────────────────────────────────
 
+/// pandas IO read tsv.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_tsv(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -356,6 +372,7 @@ pub extern "C" fn polars__pd_read_tsv(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to tsv.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_tsv(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -370,6 +387,7 @@ pub extern "C" fn polars__pd_to_tsv(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read excel.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_excel(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -377,11 +395,13 @@ pub extern "C" fn polars__pd_read_excel(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to excel.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_excel(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| bail!("pd_to_excel: not supported in this cdylib"))
 }
 
+/// pandas IO read sql.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_sql(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -389,6 +409,7 @@ pub extern "C" fn polars__pd_read_sql(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to sql.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_sql(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -396,6 +417,7 @@ pub extern "C" fn polars__pd_to_sql(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO read html.
 #[no_mangle]
 pub extern "C" fn polars__pd_read_html(args: *const c_char) -> *mut c_char {
     ffi_call(args, |_| {
@@ -403,6 +425,7 @@ pub extern "C" fn polars__pd_read_html(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to html.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_html(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -429,6 +452,7 @@ pub extern "C" fn polars__pd_to_html(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to markdown.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_markdown(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -458,6 +482,7 @@ pub extern "C" fn polars__pd_to_markdown(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to string.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_string(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -466,6 +491,7 @@ pub extern "C" fn polars__pd_to_string(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO to records.
 #[no_mangle]
 pub extern "C" fn polars__pd_to_records(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -496,6 +522,7 @@ pub extern "C" fn polars__pd_to_records(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO from records.
 #[no_mangle]
 pub extern "C" fn polars__pd_from_records(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -521,6 +548,7 @@ pub extern "C" fn polars__pd_from_records(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO concat.
 #[no_mangle]
 pub extern "C" fn polars__pd_concat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -544,6 +572,7 @@ pub extern "C" fn polars__pd_concat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// pandas IO merge.
 #[no_mangle]
 pub extern "C" fn polars__pd_merge(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

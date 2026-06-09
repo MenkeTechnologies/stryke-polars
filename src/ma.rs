@@ -73,6 +73,7 @@ fn scalar(x: f64) -> Value {
 
 // ── construction ────────────────────────────────────────────────────────────
 
+/// Masked array array.
 #[no_mangle]
 pub extern "C" fn polars__ma_array(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -81,6 +82,7 @@ pub extern "C" fn polars__ma_array(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array masked equal.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -98,6 +100,7 @@ pub extern "C" fn polars__ma_masked_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array masked not equal.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_not_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -115,6 +118,7 @@ pub extern "C" fn polars__ma_masked_not_equal(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Masked array masked greater.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_greater(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -132,6 +136,7 @@ pub extern "C" fn polars__ma_masked_greater(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Masked array masked greater equal.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_greater_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -149,6 +154,7 @@ pub extern "C" fn polars__ma_masked_greater_equal(args: *const c_char) -> *mut c
     })
 }
 
+/// Masked array masked less.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_less(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -166,6 +172,7 @@ pub extern "C" fn polars__ma_masked_less(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array masked less equal.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_less_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -183,6 +190,7 @@ pub extern "C" fn polars__ma_masked_less_equal(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Masked array masked inside.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_inside(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -204,6 +212,7 @@ pub extern "C" fn polars__ma_masked_inside(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array masked outside.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_outside(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -225,6 +234,7 @@ pub extern "C" fn polars__ma_masked_outside(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Masked array masked invalid.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_invalid(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -238,6 +248,7 @@ pub extern "C" fn polars__ma_masked_invalid(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Masked array masked where.
 #[no_mangle]
 pub extern "C" fn polars__ma_masked_where(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -257,6 +268,7 @@ pub extern "C" fn polars__ma_masked_where(args: *const c_char) -> *mut c_char {
 
 // ── modify ──────────────────────────────────────────────────────────────────
 
+/// Masked array filled.
 #[no_mangle]
 pub extern "C" fn polars__ma_filled(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -272,6 +284,7 @@ pub extern "C" fn polars__ma_filled(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array compressed.
 #[no_mangle]
 pub extern "C" fn polars__ma_compressed(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -282,6 +295,7 @@ pub extern "C" fn polars__ma_compressed(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array count.
 #[no_mangle]
 pub extern "C" fn polars__ma_count(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -290,6 +304,7 @@ pub extern "C" fn polars__ma_count(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array count masked.
 #[no_mangle]
 pub extern "C" fn polars__ma_count_masked(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -298,6 +313,7 @@ pub extern "C" fn polars__ma_count_masked(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array getmask.
 #[no_mangle]
 pub extern "C" fn polars__ma_getmask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -307,6 +323,7 @@ pub extern "C" fn polars__ma_getmask(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array getdata.
 #[no_mangle]
 pub extern "C" fn polars__ma_getdata(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -316,6 +333,7 @@ pub extern "C" fn polars__ma_getdata(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array size.
 #[no_mangle]
 pub extern "C" fn polars__ma_size(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -324,6 +342,7 @@ pub extern "C" fn polars__ma_size(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array set fill value.
 #[no_mangle]
 pub extern "C" fn polars__ma_set_fill_value(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -390,6 +409,7 @@ ma_agg!(
     f64::NAN
 );
 
+/// Masked array std.
 #[no_mangle]
 pub extern "C" fn polars__ma_std(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -402,6 +422,7 @@ pub extern "C" fn polars__ma_std(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array var.
 #[no_mangle]
 pub extern "C" fn polars__ma_var(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -414,6 +435,7 @@ pub extern "C" fn polars__ma_var(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array median.
 #[no_mangle]
 pub extern "C" fn polars__ma_median(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -431,6 +453,7 @@ pub extern "C" fn polars__ma_median(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array argmin.
 #[no_mangle]
 pub extern "C" fn polars__ma_argmin(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -445,6 +468,7 @@ pub extern "C" fn polars__ma_argmin(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array argmax.
 #[no_mangle]
 pub extern "C" fn polars__ma_argmax(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -459,6 +483,7 @@ pub extern "C" fn polars__ma_argmax(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array any.
 #[no_mangle]
 pub extern "C" fn polars__ma_any(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -468,6 +493,7 @@ pub extern "C" fn polars__ma_any(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array all.
 #[no_mangle]
 pub extern "C" fn polars__ma_all(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -479,6 +505,7 @@ pub extern "C" fn polars__ma_all(args: *const c_char) -> *mut c_char {
 
 // ── cumulative (ignoring mask) ──────────────────────────────────────────────
 
+/// Masked array cumsum.
 #[no_mangle]
 pub extern "C" fn polars__ma_cumsum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -498,6 +525,7 @@ pub extern "C" fn polars__ma_cumsum(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array cumprod.
 #[no_mangle]
 pub extern "C" fn polars__ma_cumprod(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -614,6 +642,7 @@ ma_binary!(polars__ma_sub, -);
 ma_binary!(polars__ma_mul, *);
 ma_binary!(polars__ma_div, /);
 
+/// Masked array power.
 #[no_mangle]
 pub extern "C" fn polars__ma_power(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -624,6 +653,7 @@ pub extern "C" fn polars__ma_power(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array maximum.
 #[no_mangle]
 pub extern "C" fn polars__ma_maximum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -634,6 +664,7 @@ pub extern "C" fn polars__ma_maximum(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array minimum.
 #[no_mangle]
 pub extern "C" fn polars__ma_minimum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -646,6 +677,7 @@ pub extern "C" fn polars__ma_minimum(args: *const c_char) -> *mut c_char {
 
 // ── mask manipulation ───────────────────────────────────────────────────────
 
+/// Masked array mask or.
 #[no_mangle]
 pub extern "C" fn polars__ma_mask_or(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -655,6 +687,7 @@ pub extern "C" fn polars__ma_mask_or(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array mask and.
 #[no_mangle]
 pub extern "C" fn polars__ma_mask_and(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -664,6 +697,7 @@ pub extern "C" fn polars__ma_mask_and(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array nomask.
 #[no_mangle]
 pub extern "C" fn polars__ma_nomask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -673,6 +707,7 @@ pub extern "C" fn polars__ma_nomask(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array mask all.
 #[no_mangle]
 pub extern "C" fn polars__ma_mask_all(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -682,6 +717,7 @@ pub extern "C" fn polars__ma_mask_all(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array invert mask.
 #[no_mangle]
 pub extern "C" fn polars__ma_invert_mask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -691,6 +727,7 @@ pub extern "C" fn polars__ma_invert_mask(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array anymasked.
 #[no_mangle]
 pub extern "C" fn polars__ma_anymasked(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -699,6 +736,7 @@ pub extern "C" fn polars__ma_anymasked(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array allmasked.
 #[no_mangle]
 pub extern "C" fn polars__ma_allmasked(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -709,6 +747,7 @@ pub extern "C" fn polars__ma_allmasked(args: *const c_char) -> *mut c_char {
 
 // ── sort / unique ───────────────────────────────────────────────────────────
 
+/// Masked array sort.
 #[no_mangle]
 pub extern "C" fn polars__ma_sort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -730,6 +769,7 @@ pub extern "C" fn polars__ma_sort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array reverse.
 #[no_mangle]
 pub extern "C" fn polars__ma_reverse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -740,6 +780,7 @@ pub extern "C" fn polars__ma_reverse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array unique.
 #[no_mangle]
 pub extern "C" fn polars__ma_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -753,6 +794,7 @@ pub extern "C" fn polars__ma_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array diff.
 #[no_mangle]
 pub extern "C" fn polars__ma_diff(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -770,6 +812,7 @@ pub extern "C" fn polars__ma_diff(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array clip.
 #[no_mangle]
 pub extern "C" fn polars__ma_clip(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -787,6 +830,7 @@ pub extern "C" fn polars__ma_clip(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array concat.
 #[no_mangle]
 pub extern "C" fn polars__ma_concat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -800,6 +844,7 @@ pub extern "C" fn polars__ma_concat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array repeat.
 #[no_mangle]
 pub extern "C" fn polars__ma_repeat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -815,6 +860,7 @@ pub extern "C" fn polars__ma_repeat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array take.
 #[no_mangle]
 pub extern "C" fn polars__ma_take(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -837,6 +883,7 @@ pub extern "C" fn polars__ma_take(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array zeros.
 #[no_mangle]
 pub extern "C" fn polars__ma_zeros(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -845,6 +892,7 @@ pub extern "C" fn polars__ma_zeros(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array ones.
 #[no_mangle]
 pub extern "C" fn polars__ma_ones(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -853,6 +901,7 @@ pub extern "C" fn polars__ma_ones(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array empty.
 #[no_mangle]
 pub extern "C" fn polars__ma_empty(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -861,6 +910,7 @@ pub extern "C" fn polars__ma_empty(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array dot.
 #[no_mangle]
 pub extern "C" fn polars__ma_dot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -875,6 +925,7 @@ pub extern "C" fn polars__ma_dot(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array corrcoef.
 #[no_mangle]
 pub extern "C" fn polars__ma_corrcoef(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -901,6 +952,7 @@ pub extern "C" fn polars__ma_corrcoef(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array cov.
 #[no_mangle]
 pub extern "C" fn polars__ma_cov(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -920,6 +972,7 @@ pub extern "C" fn polars__ma_cov(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array average.
 #[no_mangle]
 pub extern "C" fn polars__ma_average(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -954,6 +1007,7 @@ pub extern "C" fn polars__ma_average(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array array equal.
 #[no_mangle]
 pub extern "C" fn polars__ma_array_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -973,6 +1027,7 @@ pub extern "C" fn polars__ma_array_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array ravel.
 #[no_mangle]
 pub extern "C" fn polars__ma_ravel(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -981,6 +1036,7 @@ pub extern "C" fn polars__ma_ravel(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array anomalies.
 #[no_mangle]
 pub extern "C" fn polars__ma_anomalies(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -996,6 +1052,7 @@ pub extern "C" fn polars__ma_anomalies(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array count unique.
 #[no_mangle]
 pub extern "C" fn polars__ma_count_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1009,6 +1066,7 @@ pub extern "C" fn polars__ma_count_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array isMasked.
 #[no_mangle]
 pub extern "C" fn polars__ma_isMasked(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1017,6 +1075,7 @@ pub extern "C" fn polars__ma_isMasked(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array flatten mask.
 #[no_mangle]
 pub extern "C" fn polars__ma_flatten_mask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1026,6 +1085,7 @@ pub extern "C" fn polars__ma_flatten_mask(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array harden mask.
 #[no_mangle]
 pub extern "C" fn polars__ma_harden_mask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1034,6 +1094,7 @@ pub extern "C" fn polars__ma_harden_mask(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Masked array soften mask.
 #[no_mangle]
 pub extern "C" fn polars__ma_soften_mask(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

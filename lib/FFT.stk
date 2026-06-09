@@ -55,4 +55,3 @@ fn Polars::FFT::rfftfreq ($n, $d) {
     Polars::_decode("fft_rfftfreq", polars__fft_rfftfreq(to_json(\%req)))->{array}
 }
 
-1

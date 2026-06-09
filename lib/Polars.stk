@@ -43,4 +43,3 @@ fn Polars::version {
     Polars::_decode("version", polars__version("{}"))
 }
 
-1

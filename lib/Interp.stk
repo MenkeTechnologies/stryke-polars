@@ -1,0 +1,43 @@
+## lib/Interp.stk — `use Polars::Interp`
+##
+## Wrappers around the cdylib `polars__*` exports for the `interp_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Interp
+
+use Polars
+
+## Interpolation cubic natural.
+fn Polars::Interp::cubic_natural ($x, $y, $xnew) {
+    Polars::_decode("interp_cubic_natural", polars__interp_cubic_natural(to_json({ x => $x, y => $y, xnew => $xnew })))->{y}
+}
+
+## Interpolation grid 2d.
+fn Polars::Interp::grid_2d ($grid, $x, $y) {
+    my %req = (grid => $grid)
+    $req{x} = $x if defined $x
+    $req{y} = $y if defined $y
+    Polars::_decode("interp_grid_2d", polars__interp_grid_2d(to_json(\%req)))->{value}
+}
+
+## Interpolation linear.
+fn Polars::Interp::linear ($x, $y, $xnew) {
+    Polars::_decode("interp_linear", polars__interp_linear(to_json({ x => $x, y => $y, xnew => $xnew })))->{y}
+}
+
+## Interpolation logp.
+fn Polars::Interp::logp ($x, $y, $xnew) {
+    Polars::_decode("interp_logp", polars__interp_logp(to_json({ x => $x, y => $y, xnew => $xnew })))->{y}
+}
+
+## Interpolation nearest.
+fn Polars::Interp::nearest ($x, $y, $xnew) {
+    Polars::_decode("interp_nearest", polars__interp_nearest(to_json({ x => $x, y => $y, xnew => $xnew })))->{y}
+}
+
+## Interpolation zero order.
+fn Polars::Interp::zero_order ($x, $y, $xnew) {
+    Polars::_decode("interp_zero_order", polars__interp_zero_order(to_json({ x => $x, y => $y, xnew => $xnew })))->{y}
+}
+

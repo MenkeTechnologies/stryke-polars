@@ -1,17 +1,171 @@
 ## lib/IO.stk — `use Polars::IO`
 ##
-## pandas IO surface: `pd_read_csv`, `pd_read_parquet`, `pd_read_json`,
-## `pd_read_sql`, `pd_read_feather`, `pd_to_csv`, `pd_to_parquet`,
-## `pd_to_json`, … (~30 fns target).
-##
-## Parquet / Arrow IO routes through `stryke-arrow` to share a single
-## arrow-rs link in-process; stryke-polars does not link arrow-rs directly
-## to avoid dlsym conflicts.
-##
-## Phase status: scaffold only.
+## Wrappers around the cdylib `polars__*` exports for the `pd_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
 
 package Polars::IO
 
 use Polars
 
-1
+## pandas IO concat.
+fn Polars::IO::concat ($frames) {
+    Polars::_decode("pd_concat", polars__pd_concat(to_json({ frames => $frames })))->{frame}
+}
+
+## pandas IO from records.
+fn Polars::IO::from_records ($records) {
+    Polars::_decode("pd_from_records", polars__pd_from_records(to_json({ records => $records })))->{frame}
+}
+
+## pandas IO merge.
+fn Polars::IO::merge ($left, $right, $on) {
+    Polars::_decode("pd_merge", polars__pd_merge(to_json({ left => $left, right => $right, on => $on })))->{frame}
+}
+
+## pandas IO read arrow.
+fn Polars::IO::read_arrow () {
+    my %req = ()
+    Polars::_decode("pd_read_arrow", polars__pd_read_arrow(to_json(\%req)))
+}
+
+## pandas IO read csv.
+fn Polars::IO::read_csv ($path, $header, $sep) {
+    my %req = (path => $path)
+    $req{header} = $header if defined $header
+    $req{sep} = $sep if defined $sep
+    Polars::_decode("pd_read_csv", polars__pd_read_csv(to_json(\%req)))->{frame}
+}
+
+## pandas IO read csv string.
+fn Polars::IO::read_csv_string ($data) {
+    Polars::_decode("pd_read_csv_string", polars__pd_read_csv_string(to_json({ data => $data })))->{frame}
+}
+
+## pandas IO read excel.
+fn Polars::IO::read_excel () {
+    my %req = ()
+    Polars::_decode("pd_read_excel", polars__pd_read_excel(to_json(\%req)))
+}
+
+## pandas IO read feather.
+fn Polars::IO::read_feather () {
+    my %req = ()
+    Polars::_decode("pd_read_feather", polars__pd_read_feather(to_json(\%req)))
+}
+
+## pandas IO read html.
+fn Polars::IO::read_html () {
+    my %req = ()
+    Polars::_decode("pd_read_html", polars__pd_read_html(to_json(\%req)))
+}
+
+## pandas IO read json.
+fn Polars::IO::read_json ($path) {
+    Polars::_decode("pd_read_json", polars__pd_read_json(to_json({ path => $path })))->{frame}
+}
+
+## pandas IO read jsonl.
+fn Polars::IO::read_jsonl ($path) {
+    Polars::_decode("pd_read_jsonl", polars__pd_read_jsonl(to_json({ path => $path })))->{frame}
+}
+
+## pandas IO read parquet.
+fn Polars::IO::read_parquet () {
+    my %req = ()
+    Polars::_decode("pd_read_parquet", polars__pd_read_parquet(to_json(\%req)))
+}
+
+## pandas IO read sql.
+fn Polars::IO::read_sql () {
+    my %req = ()
+    Polars::_decode("pd_read_sql", polars__pd_read_sql(to_json(\%req)))
+}
+
+## pandas IO read tsv.
+fn Polars::IO::read_tsv ($path, $header) {
+    my %req = (path => $path)
+    $req{header} = $header if defined $header
+    Polars::_decode("pd_read_tsv", polars__pd_read_tsv(to_json(\%req)))->{frame}
+}
+
+## pandas IO to arrow.
+fn Polars::IO::to_arrow () {
+    my %req = ()
+    Polars::_decode("pd_to_arrow", polars__pd_to_arrow(to_json(\%req)))
+}
+
+## pandas IO to csv.
+fn Polars::IO::to_csv ($frame, $path) {
+    Polars::_decode("pd_to_csv", polars__pd_to_csv(to_json({ frame => $frame, path => $path })))->{path}
+}
+
+## pandas IO to csv string.
+fn Polars::IO::to_csv_string ($frame) {
+    Polars::_decode("pd_to_csv_string", polars__pd_to_csv_string(to_json({ frame => $frame })))->{data}
+}
+
+## pandas IO to excel.
+fn Polars::IO::to_excel () {
+    my %req = ()
+    Polars::_decode("pd_to_excel", polars__pd_to_excel(to_json(\%req)))
+}
+
+## pandas IO to feather.
+fn Polars::IO::to_feather () {
+    my %req = ()
+    Polars::_decode("pd_to_feather", polars__pd_to_feather(to_json(\%req)))
+}
+
+## pandas IO to html.
+fn Polars::IO::to_html ($frame) {
+    Polars::_decode("pd_to_html", polars__pd_to_html(to_json({ frame => $frame })))->{html}
+}
+
+## pandas IO to json.
+fn Polars::IO::to_json ($frame, $path) {
+    Polars::_decode("pd_to_json", polars__pd_to_json(to_json({ frame => $frame, path => $path })))->{path}
+}
+
+## pandas IO to json string.
+fn Polars::IO::to_json_string ($frame) {
+    Polars::_decode("pd_to_json_string", polars__pd_to_json_string(to_json({ frame => $frame })))->{json}
+}
+
+## pandas IO to jsonl.
+fn Polars::IO::to_jsonl ($frame, $path) {
+    Polars::_decode("pd_to_jsonl", polars__pd_to_jsonl(to_json({ frame => $frame, path => $path })))->{path}
+}
+
+## pandas IO to markdown.
+fn Polars::IO::to_markdown ($frame) {
+    Polars::_decode("pd_to_markdown", polars__pd_to_markdown(to_json({ frame => $frame })))->{markdown}
+}
+
+## pandas IO to parquet.
+fn Polars::IO::to_parquet () {
+    my %req = ()
+    Polars::_decode("pd_to_parquet", polars__pd_to_parquet(to_json(\%req)))
+}
+
+## pandas IO to records.
+fn Polars::IO::to_records ($frame) {
+    Polars::_decode("pd_to_records", polars__pd_to_records(to_json({ frame => $frame })))->{records}
+}
+
+## pandas IO to sql.
+fn Polars::IO::to_sql () {
+    my %req = ()
+    Polars::_decode("pd_to_sql", polars__pd_to_sql(to_json(\%req)))
+}
+
+## pandas IO to string.
+fn Polars::IO::to_string ($frame) {
+    Polars::_decode("pd_to_string", polars__pd_to_string(to_json({ frame => $frame })))->{string}
+}
+
+## pandas IO to tsv.
+fn Polars::IO::to_tsv ($frame, $path) {
+    Polars::_decode("pd_to_tsv", polars__pd_to_tsv(to_json({ frame => $frame, path => $path })))->{path}
+}
+

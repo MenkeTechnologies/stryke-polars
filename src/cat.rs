@@ -46,6 +46,7 @@ fn return_cat(codes: Vec<i64>, cats: Vec<String>, ordered: bool) -> Result<Value
 
 // ── construction ────────────────────────────────────────────────────────────
 
+/// Categorical new.
 #[no_mangle]
 pub extern "C" fn polars__cat_new(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -91,6 +92,7 @@ pub extern "C" fn polars__cat_new(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical from codes.
 #[no_mangle]
 pub extern "C" fn polars__cat_from_codes(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -117,6 +119,7 @@ pub extern "C" fn polars__cat_from_codes(args: *const c_char) -> *mut c_char {
 
 // ── accessors ───────────────────────────────────────────────────────────────
 
+/// Categorical codes.
 #[no_mangle]
 pub extern "C" fn polars__cat_codes(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -125,6 +128,7 @@ pub extern "C" fn polars__cat_codes(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -133,6 +137,7 @@ pub extern "C" fn polars__cat_categories(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical ordered.
 #[no_mangle]
 pub extern "C" fn polars__cat_ordered(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -141,6 +146,7 @@ pub extern "C" fn polars__cat_ordered(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical len.
 #[no_mangle]
 pub extern "C" fn polars__cat_len(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -149,6 +155,7 @@ pub extern "C" fn polars__cat_len(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical nunique.
 #[no_mangle]
 pub extern "C" fn polars__cat_nunique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -158,6 +165,7 @@ pub extern "C" fn polars__cat_nunique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical to strings.
 #[no_mangle]
 pub extern "C" fn polars__cat_to_strings(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -178,6 +186,7 @@ pub extern "C" fn polars__cat_to_strings(args: *const c_char) -> *mut c_char {
 
 // ── modify categories ───────────────────────────────────────────────────────
 
+/// Categorical add categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_add_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -197,6 +206,7 @@ pub extern "C" fn polars__cat_add_categories(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Categorical remove categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_remove_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -232,6 +242,7 @@ pub extern "C" fn polars__cat_remove_categories(args: *const c_char) -> *mut c_c
     })
 }
 
+/// Categorical rename categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_rename_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -251,6 +262,7 @@ pub extern "C" fn polars__cat_rename_categories(args: *const c_char) -> *mut c_c
     })
 }
 
+/// Categorical reorder categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_reorder_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -283,6 +295,7 @@ pub extern "C" fn polars__cat_reorder_categories(args: *const c_char) -> *mut c_
     })
 }
 
+/// Categorical set categories.
 #[no_mangle]
 pub extern "C" fn polars__cat_set_categories(args: *const c_char) -> *mut c_char {
     ffi_call(args, reorder_categories_impl)
@@ -320,6 +333,7 @@ fn reorder_categories_impl(args: Value) -> Result<Value> {
     return_cat(new_codes, n, true)
 }
 
+/// Categorical as ordered.
 #[no_mangle]
 pub extern "C" fn polars__cat_as_ordered(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -328,6 +342,7 @@ pub extern "C" fn polars__cat_as_ordered(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical as unordered.
 #[no_mangle]
 pub extern "C" fn polars__cat_as_unordered(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -336,6 +351,7 @@ pub extern "C" fn polars__cat_as_unordered(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical remove unused.
 #[no_mangle]
 pub extern "C" fn polars__cat_remove_unused(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -365,6 +381,7 @@ pub extern "C" fn polars__cat_remove_unused(args: *const c_char) -> *mut c_char 
 
 // ── value_counts / mode / first / last ─────────────────────────────────────
 
+/// Categorical value counts.
 #[no_mangle]
 pub extern "C" fn polars__cat_value_counts(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -384,6 +401,7 @@ pub extern "C" fn polars__cat_value_counts(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical mode.
 #[no_mangle]
 pub extern "C" fn polars__cat_mode(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -403,6 +421,7 @@ pub extern "C" fn polars__cat_mode(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical first.
 #[no_mangle]
 pub extern "C" fn polars__cat_first(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -418,6 +437,7 @@ pub extern "C" fn polars__cat_first(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical last.
 #[no_mangle]
 pub extern "C" fn polars__cat_last(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -435,6 +455,7 @@ pub extern "C" fn polars__cat_last(args: *const c_char) -> *mut c_char {
 
 // ── filter / mask / drop_null ──────────────────────────────────────────────
 
+/// Categorical drop null.
 #[no_mangle]
 pub extern "C" fn polars__cat_drop_null(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -444,6 +465,7 @@ pub extern "C" fn polars__cat_drop_null(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical is null.
 #[no_mangle]
 pub extern "C" fn polars__cat_is_null(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -453,6 +475,7 @@ pub extern "C" fn polars__cat_is_null(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical isin.
 #[no_mangle]
 pub extern "C" fn polars__cat_isin(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -479,6 +502,7 @@ pub extern "C" fn polars__cat_isin(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical sort.
 #[no_mangle]
 pub extern "C" fn polars__cat_sort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -490,6 +514,7 @@ pub extern "C" fn polars__cat_sort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical argsort.
 #[no_mangle]
 pub extern "C" fn polars__cat_argsort(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -501,6 +526,7 @@ pub extern "C" fn polars__cat_argsort(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical unique.
 #[no_mangle]
 pub extern "C" fn polars__cat_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -516,6 +542,7 @@ pub extern "C" fn polars__cat_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical concat.
 #[no_mangle]
 pub extern "C" fn polars__cat_concat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -549,6 +576,7 @@ pub extern "C" fn polars__cat_concat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical head.
 #[no_mangle]
 pub extern "C" fn polars__cat_head(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -558,6 +586,7 @@ pub extern "C" fn polars__cat_head(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical tail.
 #[no_mangle]
 pub extern "C" fn polars__cat_tail(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -568,6 +597,7 @@ pub extern "C" fn polars__cat_tail(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical reverse.
 #[no_mangle]
 pub extern "C" fn polars__cat_reverse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -577,6 +607,7 @@ pub extern "C" fn polars__cat_reverse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical min.
 #[no_mangle]
 pub extern "C" fn polars__cat_min(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -587,6 +618,7 @@ pub extern "C" fn polars__cat_min(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical max.
 #[no_mangle]
 pub extern "C" fn polars__cat_max(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -597,6 +629,7 @@ pub extern "C" fn polars__cat_max(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical describe.
 #[no_mangle]
 pub extern "C" fn polars__cat_describe(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -625,6 +658,7 @@ pub extern "C" fn polars__cat_describe(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Categorical codes to strings.
 #[no_mangle]
 pub extern "C" fn polars__cat_codes_to_strings(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -643,6 +677,7 @@ pub extern "C" fn polars__cat_codes_to_strings(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Categorical map.
 #[no_mangle]
 pub extern "C" fn polars__cat_map(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

@@ -102,4 +102,3 @@ fn Polars::Linalg::lstsq ($A, $b) {
     Polars::_decode("linalg_lstsq", polars__linalg_lstsq(to_json({ matrix => $A, b => $b })))->{array}
 }
 
-1

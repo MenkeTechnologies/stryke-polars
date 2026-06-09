@@ -1,0 +1,140 @@
+## lib/Stattest.stk — `use Polars::Stattest`
+##
+## Wrappers around the cdylib `polars__*` exports for the `stattest_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Stattest
+
+use Polars
+
+## Statistical test acf.
+fn Polars::Stattest::acf ($a, $max_lag) {
+    my %req = (a => $a)
+    $req{max_lag} = $max_lag if defined $max_lag
+    Polars::_decode("stattest_acf", polars__stattest_acf(to_json(\%req)))->{acf}
+}
+
+## Statistical test anova.
+fn Polars::Stattest::anova ($groups) {
+    Polars::_decode("stattest_anova", polars__stattest_anova(to_json({ groups => $groups })))->{statistic}
+}
+
+## Statistical test chi2.
+fn Polars::Stattest::chi2 ($observed, $expected) {
+    Polars::_decode("stattest_chi2", polars__stattest_chi2(to_json({ observed => $observed, expected => $expected })))->{statistic}
+}
+
+## Statistical test confidence interval mean.
+fn Polars::Stattest::confidence_interval_mean ($a, $alpha) {
+    my %req = (a => $a)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("stattest_confidence_interval_mean", polars__stattest_confidence_interval_mean(to_json(\%req)))->{mean}
+}
+
+## Statistical test confidence interval prop.
+fn Polars::Stattest::confidence_interval_prop ($successes, $n) {
+    Polars::_decode("stattest_confidence_interval_prop", polars__stattest_confidence_interval_prop(to_json({ successes => $successes, n => $n })))->{proportion}
+}
+
+## Statistical test dw.
+fn Polars::Stattest::dw ($residuals) {
+    Polars::_decode("stattest_dw", polars__stattest_dw(to_json({ residuals => $residuals })))->{durbin_watson}
+}
+
+## Statistical test jb.
+fn Polars::Stattest::jb ($a) {
+    Polars::_decode("stattest_jb", polars__stattest_jb(to_json({ a => $a })))->{statistic}
+}
+
+## Statistical test kruskal.
+fn Polars::Stattest::kruskal ($groups) {
+    Polars::_decode("stattest_kruskal", polars__stattest_kruskal(to_json({ groups => $groups })))->{statistic}
+}
+
+## Statistical test ks 2samp.
+fn Polars::Stattest::ks_2samp ($a, $b) {
+    Polars::_decode("stattest_ks_2samp", polars__stattest_ks_2samp(to_json({ a => $a, b => $b })))->{statistic}
+}
+
+## Statistical test levene.
+fn Polars::Stattest::levene ($groups) {
+    Polars::_decode("stattest_levene", polars__stattest_levene(to_json({ groups => $groups })))->{statistic}
+}
+
+## Statistical test linregress.
+fn Polars::Stattest::linregress ($x, $y) {
+    Polars::_decode("stattest_linregress", polars__stattest_linregress(to_json({ x => $x, y => $y })))->{slope}
+}
+
+## Statistical test mannwhitney.
+fn Polars::Stattest::mannwhitney ($a, $b) {
+    Polars::_decode("stattest_mannwhitney", polars__stattest_mannwhitney(to_json({ a => $a, b => $b })))->{statistic}
+}
+
+## Statistical test normality test.
+fn Polars::Stattest::normality_test ($a) {
+    Polars::_decode("stattest_normality_test", polars__stattest_normality_test(to_json({ a => $a })))->{statistic}
+}
+
+## Statistical test pacf.
+fn Polars::Stattest::pacf ($a, $max_lag) {
+    my %req = (a => $a)
+    $req{max_lag} = $max_lag if defined $max_lag
+    Polars::_decode("stattest_pacf", polars__stattest_pacf(to_json(\%req)))->{pacf}
+}
+
+## Statistical test proportion 2samp ztest.
+fn Polars::Stattest::proportion_2samp_ztest ($s1, $n1, $s2, $n2) {
+    Polars::_decode("stattest_proportion_2samp_ztest", polars__stattest_proportion_2samp_ztest(to_json({ s1 => $s1, n1 => $n1, s2 => $s2, n2 => $n2 })))->{statistic}
+}
+
+## Statistical test proportion ztest.
+fn Polars::Stattest::proportion_ztest ($successes, $n, $p0) {
+    Polars::_decode("stattest_proportion_ztest", polars__stattest_proportion_ztest(to_json({ successes => $successes, n => $n, p0 => $p0 })))->{statistic}
+}
+
+## Statistical test runs.
+fn Polars::Stattest::runs ($a) {
+    Polars::_decode("stattest_runs", polars__stattest_runs(to_json({ a => $a })))->{runs}
+}
+
+## Statistical test shapiro.
+fn Polars::Stattest::shapiro ($a) {
+    Polars::_decode("stattest_shapiro", polars__stattest_shapiro(to_json({ a => $a })))->{statistic}
+}
+
+## Statistical test ttest 1samp.
+fn Polars::Stattest::ttest_1samp ($a, $popmean) {
+    my %req = (a => $a)
+    $req{popmean} = $popmean if defined $popmean
+    Polars::_decode("stattest_ttest_1samp", polars__stattest_ttest_1samp(to_json(\%req)))->{statistic}
+}
+
+## Statistical test ttest ind.
+fn Polars::Stattest::ttest_ind ($a, $b) {
+    Polars::_decode("stattest_ttest_ind", polars__stattest_ttest_ind(to_json({ a => $a, b => $b })))->{statistic}
+}
+
+## Statistical test ttest paired.
+fn Polars::Stattest::ttest_paired ($a, $b) {
+    Polars::_decode("stattest_ttest_paired", polars__stattest_ttest_paired(to_json({ a => $a, b => $b })))->{statistic}
+}
+
+## Statistical test wilcoxon.
+fn Polars::Stattest::wilcoxon ($a, $b) {
+    Polars::_decode("stattest_wilcoxon", polars__stattest_wilcoxon(to_json({ a => $a, b => $b })))->{statistic}
+}
+
+## Statistical test zscore.
+fn Polars::Stattest::zscore ($a) {
+    Polars::_decode("stattest_zscore", polars__stattest_zscore(to_json({ a => $a })))->{zscore}
+}
+
+## Statistical test ztest.
+fn Polars::Stattest::ztest ($a, $sigma, $popmean) {
+    my %req = (a => $a, sigma => $sigma)
+    $req{popmean} = $popmean if defined $popmean
+    Polars::_decode("stattest_ztest", polars__stattest_ztest(to_json(\%req)))->{statistic}
+}
+

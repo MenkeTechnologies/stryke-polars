@@ -1,0 +1,91 @@
+## lib/TS.stk — `use Polars::TS`
+##
+## Wrappers around the cdylib `polars__*` exports for the `ts_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::TS
+
+use Polars
+
+## Time series cumulative returns.
+fn Polars::TS::cumulative_returns ($data) {
+    Polars::_decode("ts_cumulative_returns", polars__ts_cumulative_returns(to_json({ data => $data })))->{array}
+}
+
+## Time series cvar.
+fn Polars::TS::cvar ($data, $alpha) {
+    my %req = (data => $data)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("ts_cvar", polars__ts_cvar(to_json(\%req)))->{cvar}
+}
+
+## Time series diff.
+fn Polars::TS::diff ($data, $n) {
+    my %req = (data => $data)
+    $req{n} = $n if defined $n
+    Polars::_decode("ts_diff", polars__ts_diff(to_json(\%req)))->{array}
+}
+
+## Time series drawdown.
+fn Polars::TS::drawdown ($data) {
+    Polars::_decode("ts_drawdown", polars__ts_drawdown(to_json({ data => $data })))->{array}
+}
+
+## Time series lag.
+fn Polars::TS::lag ($data, $lag) {
+    my %req = (data => $data)
+    $req{lag} = $lag if defined $lag
+    Polars::_decode("ts_lag", polars__ts_lag(to_json(\%req)))->{array}
+}
+
+## Time series lead.
+fn Polars::TS::lead ($data, $lead) {
+    my %req = (data => $data)
+    $req{lead} = $lead if defined $lead
+    Polars::_decode("ts_lead", polars__ts_lead(to_json(\%req)))->{array}
+}
+
+## Time series log returns.
+fn Polars::TS::log_returns ($data) {
+    Polars::_decode("ts_log_returns", polars__ts_log_returns(to_json({ data => $data })))->{array}
+}
+
+## Time series max drawdown.
+fn Polars::TS::max_drawdown ($data) {
+    Polars::_decode("ts_max_drawdown", polars__ts_max_drawdown(to_json({ data => $data })))->{max_drawdown}
+}
+
+## Time series sharpe.
+fn Polars::TS::sharpe ($data, $risk_free) {
+    my %req = (data => $data)
+    $req{risk_free} = $risk_free if defined $risk_free
+    Polars::_decode("ts_sharpe", polars__ts_sharpe(to_json(\%req)))->{sharpe}
+}
+
+## Time series simple returns.
+fn Polars::TS::simple_returns ($data) {
+    Polars::_decode("ts_simple_returns", polars__ts_simple_returns(to_json({ data => $data })))->{array}
+}
+
+## Time series sortino.
+fn Polars::TS::sortino ($data, $risk_free) {
+    my %req = (data => $data)
+    $req{risk_free} = $risk_free if defined $risk_free
+    Polars::_decode("ts_sortino", polars__ts_sortino(to_json(\%req)))->{sortino}
+}
+
+## Time series var.
+fn Polars::TS::var ($data, $alpha) {
+    my %req = (data => $data)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("ts_var", polars__ts_var(to_json(\%req)))->{var}
+}
+
+## Time series volatility.
+fn Polars::TS::volatility ($data, $annualize) {
+    my %req = (data => $data)
+    $req{annualize} = $annualize if defined $annualize
+    Polars::_decode("ts_volatility", polars__ts_volatility(to_json(\%req)))->{volatility}
+}
+

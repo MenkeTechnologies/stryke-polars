@@ -63,6 +63,7 @@ fn scalar(x: f64) -> Value {
 
 // ── distance metrics (dist_*) ─────────────────────────────────────────────
 
+/// Distance euclidean.
 #[no_mangle]
 pub extern "C" fn polars__dist_euclidean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -81,6 +82,7 @@ pub extern "C" fn polars__dist_euclidean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance manhattan.
 #[no_mangle]
 pub extern "C" fn polars__dist_manhattan(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -98,6 +100,7 @@ pub extern "C" fn polars__dist_manhattan(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance chebyshev.
 #[no_mangle]
 pub extern "C" fn polars__dist_chebyshev(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -115,6 +118,7 @@ pub extern "C" fn polars__dist_chebyshev(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance minkowski.
 #[no_mangle]
 pub extern "C" fn polars__dist_minkowski(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -134,6 +138,7 @@ pub extern "C" fn polars__dist_minkowski(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance cosine.
 #[no_mangle]
 pub extern "C" fn polars__dist_cosine(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -151,6 +156,7 @@ pub extern "C" fn polars__dist_cosine(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance cosine_similarity.
 #[no_mangle]
 pub extern "C" fn polars__dist_cosine_similarity(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -168,6 +174,7 @@ pub extern "C" fn polars__dist_cosine_similarity(args: *const c_char) -> *mut c_
     })
 }
 
+/// Distance canberra.
 #[no_mangle]
 pub extern "C" fn polars__dist_canberra(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -192,6 +199,7 @@ pub extern "C" fn polars__dist_canberra(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance braycurtis.
 #[no_mangle]
 pub extern "C" fn polars__dist_braycurtis(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -204,6 +212,7 @@ pub extern "C" fn polars__dist_braycurtis(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance jaccard.
 #[no_mangle]
 pub extern "C" fn polars__dist_jaccard(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -223,6 +232,7 @@ pub extern "C" fn polars__dist_jaccard(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance hamming.
 #[no_mangle]
 pub extern "C" fn polars__dist_hamming(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -236,6 +246,7 @@ pub extern "C" fn polars__dist_hamming(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance mahalanobis.
 #[no_mangle]
 pub extern "C" fn polars__dist_mahalanobis(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -260,6 +271,7 @@ pub extern "C" fn polars__dist_mahalanobis(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance pdist.
 #[no_mangle]
 pub extern "C" fn polars__dist_pdist(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -284,6 +296,7 @@ pub extern "C" fn polars__dist_pdist(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Distance cdist.
 #[no_mangle]
 pub extern "C" fn polars__dist_cdist(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -314,6 +327,7 @@ pub extern "C" fn polars__dist_cdist(args: *const c_char) -> *mut c_char {
 
 // ── clustering (cluster_*) ─────────────────────────────────────────────────
 
+/// Clustering kmeans.
 #[no_mangle]
 pub extern "C" fn polars__cluster_kmeans(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -373,6 +387,7 @@ pub extern "C" fn polars__cluster_kmeans(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Clustering assign.
 #[no_mangle]
 pub extern "C" fn polars__cluster_assign(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -400,6 +415,7 @@ pub extern "C" fn polars__cluster_assign(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Clustering inertia.
 #[no_mangle]
 pub extern "C" fn polars__cluster_inertia(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -424,6 +440,7 @@ pub extern "C" fn polars__cluster_inertia(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Clustering silhouette.
 #[no_mangle]
 pub extern "C" fn polars__cluster_silhouette(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -485,6 +502,7 @@ pub extern "C" fn polars__cluster_silhouette(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Clustering dbscan neighbors.
 #[no_mangle]
 pub extern "C" fn polars__cluster_dbscan_neighbors(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -516,6 +534,7 @@ pub extern "C" fn polars__cluster_dbscan_neighbors(args: *const c_char) -> *mut 
 
 // ── encoding / hashing ─────────────────────────────────────────────────────
 
+/// Encoding one hot.
 #[no_mangle]
 pub extern "C" fn polars__enc_one_hot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -546,6 +565,7 @@ pub extern "C" fn polars__enc_one_hot(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding label.
 #[no_mangle]
 pub extern "C" fn polars__enc_label(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -573,6 +593,7 @@ pub extern "C" fn polars__enc_label(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding binary.
 #[no_mangle]
 pub extern "C" fn polars__enc_binary(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -591,6 +612,7 @@ pub extern "C" fn polars__enc_binary(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding target.
 #[no_mangle]
 pub extern "C" fn polars__enc_target(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -623,6 +645,7 @@ pub extern "C" fn polars__enc_target(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash djb2.
 #[no_mangle]
 pub extern "C" fn polars__hash_djb2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -638,6 +661,7 @@ pub extern "C" fn polars__hash_djb2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash fnv1a.
 #[no_mangle]
 pub extern "C" fn polars__hash_fnv1a(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -654,6 +678,7 @@ pub extern "C" fn polars__hash_fnv1a(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash jenkins.
 #[no_mangle]
 pub extern "C" fn polars__hash_jenkins(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -674,6 +699,7 @@ pub extern "C" fn polars__hash_jenkins(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash crc32.
 #[no_mangle]
 pub extern "C" fn polars__hash_crc32(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -693,6 +719,7 @@ pub extern "C" fn polars__hash_crc32(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash murmur32.
 #[no_mangle]
 pub extern "C" fn polars__hash_murmur32(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -748,6 +775,7 @@ pub extern "C" fn polars__hash_murmur32(args: *const c_char) -> *mut c_char {
 
 // ── encoding: base64 / hex ─────────────────────────────────────────────────
 
+/// Encoding base64.
 #[no_mangle]
 pub extern "C" fn polars__enc_base64(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -781,6 +809,7 @@ pub extern "C" fn polars__enc_base64(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding hex.
 #[no_mangle]
 pub extern "C" fn polars__enc_hex(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -793,6 +822,7 @@ pub extern "C" fn polars__enc_hex(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding url.
 #[no_mangle]
 pub extern "C" fn polars__enc_url(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -816,6 +846,7 @@ pub extern "C" fn polars__enc_url(args: *const c_char) -> *mut c_char {
 
 // ── geometric (geo_*) ──────────────────────────────────────────────────────
 
+/// Geometric distance 2d.
 #[no_mangle]
 pub extern "C" fn polars__geo_distance_2d(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -840,6 +871,7 @@ pub extern "C" fn polars__geo_distance_2d(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric distance 3d.
 #[no_mangle]
 pub extern "C" fn polars__geo_distance_3d(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -872,6 +904,7 @@ pub extern "C" fn polars__geo_distance_3d(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric haversine.
 #[no_mangle]
 pub extern "C" fn polars__geo_haversine(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -905,6 +938,7 @@ pub extern "C" fn polars__geo_haversine(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric bearing.
 #[no_mangle]
 pub extern "C" fn polars__geo_bearing(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -936,6 +970,7 @@ pub extern "C" fn polars__geo_bearing(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric polygon area.
 #[no_mangle]
 pub extern "C" fn polars__geo_polygon_area(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -955,6 +990,7 @@ pub extern "C" fn polars__geo_polygon_area(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric polygon perimeter.
 #[no_mangle]
 pub extern "C" fn polars__geo_polygon_perimeter(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -973,6 +1009,7 @@ pub extern "C" fn polars__geo_polygon_perimeter(args: *const c_char) -> *mut c_c
     })
 }
 
+/// Geometric centroid.
 #[no_mangle]
 pub extern "C" fn polars__geo_centroid(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -985,6 +1022,7 @@ pub extern "C" fn polars__geo_centroid(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric bbox.
 #[no_mangle]
 pub extern "C" fn polars__geo_bbox(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1001,6 +1039,7 @@ pub extern "C" fn polars__geo_bbox(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric point in polygon.
 #[no_mangle]
 pub extern "C" fn polars__geo_point_in_polygon(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1029,6 +1068,7 @@ pub extern "C" fn polars__geo_point_in_polygon(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Geometric rotate.
 #[no_mangle]
 pub extern "C" fn polars__geo_rotate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1057,6 +1097,7 @@ pub extern "C" fn polars__geo_rotate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric scale.
 #[no_mangle]
 pub extern "C" fn polars__geo_scale(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1070,6 +1111,7 @@ pub extern "C" fn polars__geo_scale(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Geometric translate.
 #[no_mangle]
 pub extern "C" fn polars__geo_translate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1085,6 +1127,7 @@ pub extern "C" fn polars__geo_translate(args: *const c_char) -> *mut c_char {
 
 // ── optimization (opt_*) ───────────────────────────────────────────────────
 
+/// Optimization minimize bisection.
 #[no_mangle]
 pub extern "C" fn polars__opt_minimize_bisection(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1132,6 +1175,7 @@ pub extern "C" fn polars__opt_minimize_bisection(args: *const c_char) -> *mut c_
     })
 }
 
+/// Optimization minimize golden.
 #[no_mangle]
 pub extern "C" fn polars__opt_minimize_golden(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1178,6 +1222,7 @@ pub extern "C" fn polars__opt_minimize_golden(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Optimization newton raphson.
 #[no_mangle]
 pub extern "C" fn polars__opt_newton_raphson(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1229,6 +1274,7 @@ pub extern "C" fn polars__opt_newton_raphson(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Optimization secant.
 #[no_mangle]
 pub extern "C" fn polars__opt_secant(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1264,6 +1310,7 @@ pub extern "C" fn polars__opt_secant(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Optimization gradient descent.
 #[no_mangle]
 pub extern "C" fn polars__opt_gradient_descent(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1310,6 +1357,7 @@ pub extern "C" fn polars__opt_gradient_descent(args: *const c_char) -> *mut c_ch
 
 // ── time series helpers (ts_*) ─────────────────────────────────────────────
 
+/// Time series lag.
 #[no_mangle]
 pub extern "C" fn polars__ts_lag(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1325,6 +1373,7 @@ pub extern "C" fn polars__ts_lag(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series lead.
 #[no_mangle]
 pub extern "C" fn polars__ts_lead(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1340,6 +1389,7 @@ pub extern "C" fn polars__ts_lead(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series diff.
 #[no_mangle]
 pub extern "C" fn polars__ts_diff(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1355,6 +1405,7 @@ pub extern "C" fn polars__ts_diff(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series log returns.
 #[no_mangle]
 pub extern "C" fn polars__ts_log_returns(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1369,6 +1420,7 @@ pub extern "C" fn polars__ts_log_returns(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series simple returns.
 #[no_mangle]
 pub extern "C" fn polars__ts_simple_returns(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1383,6 +1435,7 @@ pub extern "C" fn polars__ts_simple_returns(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Time series cumulative returns.
 #[no_mangle]
 pub extern "C" fn polars__ts_cumulative_returns(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1401,6 +1454,7 @@ pub extern "C" fn polars__ts_cumulative_returns(args: *const c_char) -> *mut c_c
     })
 }
 
+/// Time series drawdown.
 #[no_mangle]
 pub extern "C" fn polars__ts_drawdown(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1423,6 +1477,7 @@ pub extern "C" fn polars__ts_drawdown(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series max drawdown.
 #[no_mangle]
 pub extern "C" fn polars__ts_max_drawdown(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1439,6 +1494,7 @@ pub extern "C" fn polars__ts_max_drawdown(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series volatility.
 #[no_mangle]
 pub extern "C" fn polars__ts_volatility(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1454,6 +1510,7 @@ pub extern "C" fn polars__ts_volatility(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series sharpe.
 #[no_mangle]
 pub extern "C" fn polars__ts_sharpe(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1471,6 +1528,7 @@ pub extern "C" fn polars__ts_sharpe(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series sortino.
 #[no_mangle]
 pub extern "C" fn polars__ts_sortino(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1493,6 +1551,7 @@ pub extern "C" fn polars__ts_sortino(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series var.
 #[no_mangle]
 pub extern "C" fn polars__ts_var(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1505,6 +1564,7 @@ pub extern "C" fn polars__ts_var(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Time series cvar.
 #[no_mangle]
 pub extern "C" fn polars__ts_cvar(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1554,6 +1614,7 @@ fn parse_sparse(v: &Value) -> Result<SparseCoo> {
     Ok((data, rows, cols, n_rows, n_cols))
 }
 
+/// Sparse matrix from dense.
 #[no_mangle]
 pub extern "C" fn polars__sparse_from_dense(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1585,6 +1646,7 @@ pub extern "C" fn polars__sparse_from_dense(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Sparse matrix to dense.
 #[no_mangle]
 pub extern "C" fn polars__sparse_to_dense(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1601,6 +1663,7 @@ pub extern "C" fn polars__sparse_to_dense(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix nnz.
 #[no_mangle]
 pub extern "C" fn polars__sparse_nnz(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1612,6 +1675,7 @@ pub extern "C" fn polars__sparse_nnz(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix density.
 #[no_mangle]
 pub extern "C" fn polars__sparse_density(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1629,6 +1693,7 @@ pub extern "C" fn polars__sparse_density(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix transpose.
 #[no_mangle]
 pub extern "C" fn polars__sparse_transpose(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1646,6 +1711,7 @@ pub extern "C" fn polars__sparse_transpose(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix add.
 #[no_mangle]
 pub extern "C" fn polars__sparse_add(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1681,6 +1747,7 @@ pub extern "C" fn polars__sparse_add(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix mul vec.
 #[no_mangle]
 pub extern "C" fn polars__sparse_mul_vec(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1699,6 +1766,7 @@ pub extern "C" fn polars__sparse_mul_vec(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix scale.
 #[no_mangle]
 pub extern "C" fn polars__sparse_scale(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1715,6 +1783,7 @@ pub extern "C" fn polars__sparse_scale(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix diagonal.
 #[no_mangle]
 pub extern "C" fn polars__sparse_diagonal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1734,6 +1803,7 @@ pub extern "C" fn polars__sparse_diagonal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix trace.
 #[no_mangle]
 pub extern "C" fn polars__sparse_trace(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1751,6 +1821,7 @@ pub extern "C" fn polars__sparse_trace(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix eye.
 #[no_mangle]
 pub extern "C" fn polars__sparse_eye(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

@@ -1,0 +1,391 @@
+## lib/NdArrayExt.stk — `use Polars::NdArrayExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `arr_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::NdArrayExt
+
+use Polars
+
+## ndarray allclose v2.
+fn Polars::NdArrayExt::allclose_v2 ($a, $b, $rtol, $atol) {
+    my %req = (a => $a, b => $b)
+    $req{rtol} = $rtol if defined $rtol
+    $req{atol} = $atol if defined $atol
+    Polars::_decode("arr_allclose_v2", polars__arr_allclose_v2(to_json(\%req)))->{allclose}
+}
+
+## ndarray argmax axis v2.
+fn Polars::NdArrayExt::argmax_axis_v2 ($array, $axis) {
+    my %req = (array => $array)
+    $req{axis} = $axis if defined $axis
+    Polars::_decode("arr_argmax_axis_v2", polars__arr_argmax_axis_v2(to_json(\%req)))->{argmax}
+}
+
+## ndarray argmax flat.
+fn Polars::NdArrayExt::argmax_flat ($array) {
+    Polars::_decode("arr_argmax_flat", polars__arr_argmax_flat(to_json({ array => $array })))->{argmax}
+}
+
+## ndarray argmin axis v2.
+fn Polars::NdArrayExt::argmin_axis_v2 ($array, $axis) {
+    my %req = (array => $array)
+    $req{axis} = $axis if defined $axis
+    Polars::_decode("arr_argmin_axis_v2", polars__arr_argmin_axis_v2(to_json(\%req)))->{argmin}
+}
+
+## ndarray argmin flat.
+fn Polars::NdArrayExt::argmin_flat ($array) {
+    Polars::_decode("arr_argmin_flat", polars__arr_argmin_flat(to_json({ array => $array })))->{argmin}
+}
+
+## ndarray argwhere.
+fn Polars::NdArrayExt::argwhere ($array) {
+    Polars::_decode("arr_argwhere", polars__arr_argwhere(to_json({ array => $array })))->{indices}
+}
+
+## ndarray array equal v2.
+fn Polars::NdArrayExt::array_equal_v2 ($a, $b) {
+    Polars::_decode("arr_array_equal_v2", polars__arr_array_equal_v2(to_json({ a => $a, b => $b })))->{array_equal}
+}
+
+## ndarray atleast 1d v2.
+fn Polars::NdArrayExt::atleast_1d_v2 ($array) {
+    Polars::_decode("arr_atleast_1d_v2", polars__arr_atleast_1d_v2(to_json({ array => $array })))->{array}
+}
+
+## ndarray atleast 2d v2.
+fn Polars::NdArrayExt::atleast_2d_v2 ($array) {
+    Polars::_decode("arr_atleast_2d_v2", polars__arr_atleast_2d_v2(to_json({ array => $array })))->{array}
+}
+
+## ndarray bincount v2.
+fn Polars::NdArrayExt::bincount_v2 ($array) {
+    Polars::_decode("arr_bincount_v2", polars__arr_bincount_v2(to_json({ array => $array })))->{counts}
+}
+
+## ndarray choose.
+fn Polars::NdArrayExt::choose ($index, $choices) {
+    Polars::_decode("arr_choose", polars__arr_choose(to_json({ index => $index, choices => $choices })))->{array}
+}
+
+## ndarray clip axis.
+fn Polars::NdArrayExt::clip_axis ($array, $min, $max) {
+    my %req = (array => $array)
+    $req{min} = $min if defined $min
+    $req{max} = $max if defined $max
+    Polars::_decode("arr_clip_axis", polars__arr_clip_axis(to_json(\%req)))->{array}
+}
+
+## ndarray concatenate v2.
+fn Polars::NdArrayExt::concatenate_v2 ($arrays) {
+    Polars::_decode("arr_concatenate_v2", polars__arr_concatenate_v2(to_json({ arrays => $arrays })))->{array}
+}
+
+## ndarray cummax.
+fn Polars::NdArrayExt::cummax ($array) {
+    Polars::_decode("arr_cummax", polars__arr_cummax(to_json({ array => $array })))->{array}
+}
+
+## ndarray cummin.
+fn Polars::NdArrayExt::cummin ($array) {
+    Polars::_decode("arr_cummin", polars__arr_cummin(to_json({ array => $array })))->{array}
+}
+
+## ndarray diagflat.
+fn Polars::NdArrayExt::diagflat ($array) {
+    Polars::_decode("arr_diagflat", polars__arr_diagflat(to_json({ array => $array })))->{array}
+}
+
+## ndarray diagonal offset.
+fn Polars::NdArrayExt::diagonal_offset ($array, $offset) {
+    my %req = (array => $array)
+    $req{offset} = $offset if defined $offset
+    Polars::_decode("arr_diagonal_offset", polars__arr_diagonal_offset(to_json(\%req)))->{array}
+}
+
+## ndarray digitize.
+fn Polars::NdArrayExt::digitize ($array, $bins) {
+    Polars::_decode("arr_digitize", polars__arr_digitize(to_json({ array => $array, bins => $bins })))->{digitize}
+}
+
+## ndarray dstack.
+fn Polars::NdArrayExt::dstack ($arrays) {
+    Polars::_decode("arr_dstack", polars__arr_dstack(to_json({ arrays => $arrays })))->{array}
+}
+
+## ndarray empty.
+fn Polars::NdArrayExt::empty ($shape) {
+    Polars::_decode("arr_empty", polars__arr_empty(to_json({ shape => $shape })))->{array}
+}
+
+## Shannon entropy `-Σ p log p` (natural log). p_i must sum to 1; zeros allowed.
+fn Polars::NdArrayExt::entropy ($array) {
+    Polars::_decode("arr_entropy", polars__arr_entropy(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray expand dims.
+fn Polars::NdArrayExt::expand_dims ($array, $axis) {
+    my %req = (array => $array)
+    $req{axis} = $axis if defined $axis
+    Polars::_decode("arr_expand_dims", polars__arr_expand_dims(to_json(\%req)))->{array}
+}
+
+## ndarray eye v2.
+fn Polars::NdArrayExt::eye_v2 ($n, $m) {
+    my %req = (n => $n)
+    $req{m} = $m if defined $m
+    Polars::_decode("arr_eye_v2", polars__arr_eye_v2(to_json(\%req)))->{array}
+}
+
+## ndarray flatten v2.
+fn Polars::NdArrayExt::flatten_v2 ($array) {
+    Polars::_decode("arr_flatten_v2", polars__arr_flatten_v2(to_json({ array => $array })))->{array}
+}
+
+## ndarray full like v2.
+fn Polars::NdArrayExt::full_like_v2 ($array, $value) {
+    my %req = (array => $array)
+    $req{value} = $value if defined $value
+    Polars::_decode("arr_full_like_v2", polars__arr_full_like_v2(to_json(\%req)))->{array}
+}
+
+## ndarray full v2.
+fn Polars::NdArrayExt::full_v2 ($shape, $value) {
+    my %req = (shape => $shape)
+    $req{value} = $value if defined $value
+    Polars::_decode("arr_full_v2", polars__arr_full_v2(to_json(\%req)))->{array}
+}
+
+## ndarray hstack v2.
+fn Polars::NdArrayExt::hstack_v2 ($arrays) {
+    Polars::_decode("arr_hstack_v2", polars__arr_hstack_v2(to_json({ arrays => $arrays })))->{array}
+}
+
+## ndarray identity.
+fn Polars::NdArrayExt::identity ($n) {
+    Polars::_decode("arr_identity", polars__arr_identity(to_json({ n => $n })))->{array}
+}
+
+## ndarray isclose v2.
+fn Polars::NdArrayExt::isclose_v2 ($a, $b, $rtol, $atol) {
+    my %req = (a => $a, b => $b)
+    $req{rtol} = $rtol if defined $rtol
+    $req{atol} = $atol if defined $atol
+    Polars::_decode("arr_isclose_v2", polars__arr_isclose_v2(to_json(\%req)))->{array}
+}
+
+## Sample kurtosis (g₂, excess).
+fn Polars::NdArrayExt::kurtosis ($array) {
+    Polars::_decode("arr_kurtosis", polars__arr_kurtosis(to_json({ array => $array })))->{scalar}
+}
+
+## Numerically stable `log(Σ exp(x))`.
+fn Polars::NdArrayExt::logsumexp ($array) {
+    Polars::_decode("arr_logsumexp", polars__arr_logsumexp(to_json({ array => $array })))->{scalar}
+}
+
+## Max of all elements.
+fn Polars::NdArrayExt::max ($array) {
+    Polars::_decode("arr_max", polars__arr_max(to_json({ array => $array })))->{scalar}
+}
+
+## Median (1-D only).
+fn Polars::NdArrayExt::median ($array) {
+    Polars::_decode("arr_median", polars__arr_median(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray meshgrid x.
+fn Polars::NdArrayExt::meshgrid_x ($x, $y) {
+    Polars::_decode("arr_meshgrid_x", polars__arr_meshgrid_x(to_json({ x => $x, y => $y })))->{array}
+}
+
+## ndarray meshgrid y.
+fn Polars::NdArrayExt::meshgrid_y ($x, $y) {
+    Polars::_decode("arr_meshgrid_y", polars__arr_meshgrid_y(to_json({ x => $x, y => $y })))->{array}
+}
+
+## Min of all elements.
+fn Polars::NdArrayExt::min ($array) {
+    Polars::_decode("arr_min", polars__arr_min(to_json({ array => $array })))->{scalar}
+}
+
+## Min-max scale to `[0, 1]`.
+fn Polars::NdArrayExt::minmax_scale ($array) {
+    Polars::_decode("arr_minmax_scale", polars__arr_minmax_scale(to_json({ array => $array })))->{array}
+}
+
+## ndarray moveaxis.
+fn Polars::NdArrayExt::moveaxis ($array) {
+    Polars::_decode("arr_moveaxis", polars__arr_moveaxis(to_json({ array => $array })))->{array}
+}
+
+## ndarray nonzero.
+fn Polars::NdArrayExt::nonzero ($array) {
+    Polars::_decode("arr_nonzero", polars__arr_nonzero(to_json({ array => $array })))->{nonzero}
+}
+
+## ndarray ones like v2.
+fn Polars::NdArrayExt::ones_like_v2 ($array) {
+    Polars::_decode("arr_ones_like_v2", polars__arr_ones_like_v2(to_json({ array => $array })))->{array}
+}
+
+## ndarray pad v2.
+fn Polars::NdArrayExt::pad_v2 ($array, $before, $after, $value) {
+    my %req = (array => $array)
+    $req{before} = $before if defined $before
+    $req{after} = $after if defined $after
+    $req{value} = $value if defined $value
+    Polars::_decode("arr_pad_v2", polars__arr_pad_v2(to_json(\%req)))->{array}
+}
+
+## Product of all elements.
+fn Polars::NdArrayExt::prod ($array) {
+    Polars::_decode("arr_prod", polars__arr_prod(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray put flat.
+fn Polars::NdArrayExt::put_flat ($array, $indices, $values) {
+    Polars::_decode("arr_put_flat", polars__arr_put_flat(to_json({ array => $array, indices => $indices, values => $values })))->{array}
+}
+
+## ndarray ravel.
+fn Polars::NdArrayExt::ravel ($array) {
+    Polars::_decode("arr_ravel", polars__arr_ravel(to_json({ array => $array })))->{array}
+}
+
+## ndarray repeat along.
+fn Polars::NdArrayExt::repeat_along ($array, $repeats) {
+    my %req = (array => $array)
+    $req{repeats} = $repeats if defined $repeats
+    Polars::_decode("arr_repeat_along", polars__arr_repeat_along(to_json(\%req)))->{array}
+}
+
+## ndarray resize.
+fn Polars::NdArrayExt::resize ($array, $shape) {
+    Polars::_decode("arr_resize", polars__arr_resize(to_json({ array => $array, shape => $shape })))->{array}
+}
+
+## ndarray roll v2.
+fn Polars::NdArrayExt::roll_v2 ($array, $shift) {
+    my %req = (array => $array)
+    $req{shift} = $shift if defined $shift
+    Polars::_decode("arr_roll_v2", polars__arr_roll_v2(to_json(\%req)))->{array}
+}
+
+## ndarray searchsorted v2.
+fn Polars::NdArrayExt::searchsorted_v2 ($array, $value) {
+    Polars::_decode("arr_searchsorted_v2", polars__arr_searchsorted_v2(to_json({ array => $array, value => $value })))->{position}
+}
+
+## ndarray select.
+fn Polars::NdArrayExt::select ($conditions, $choices, $default) {
+    my %req = (conditions => $conditions, choices => $choices)
+    $req{default} = $default if defined $default
+    Polars::_decode("arr_select", polars__arr_select(to_json(\%req)))->{array}
+}
+
+## Sample skewness (g₁).
+fn Polars::NdArrayExt::skewness ($array) {
+    Polars::_decode("arr_skewness", polars__arr_skewness(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray split n.
+fn Polars::NdArrayExt::split_n ($array, $n) {
+    Polars::_decode("arr_split_n", polars__arr_split_n(to_json({ array => $array, n => $n })))->{parts}
+}
+
+## ndarray squeeze v2.
+fn Polars::NdArrayExt::squeeze_v2 ($array) {
+    Polars::_decode("arr_squeeze_v2", polars__arr_squeeze_v2(to_json({ array => $array })))->{array}
+}
+
+## ndarray stack.
+fn Polars::NdArrayExt::stack ($arrays) {
+    Polars::_decode("arr_stack", polars__arr_stack(to_json({ arrays => $arrays })))->{array}
+}
+
+## Standard deviation (population, ddof=0).
+fn Polars::NdArrayExt::std ($array) {
+    Polars::_decode("arr_std", polars__arr_std(to_json({ array => $array })))->{scalar}
+}
+
+## Sum of all elements (axis-collapsed scalar).
+fn Polars::NdArrayExt::sum ($array) {
+    Polars::_decode("arr_sum", polars__arr_sum(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray swap axes.
+fn Polars::NdArrayExt::swap_axes ($array) {
+    Polars::_decode("arr_swap_axes", polars__arr_swap_axes(to_json({ array => $array })))->{array}
+}
+
+## ndarray take flat.
+fn Polars::NdArrayExt::take_flat ($array, $indices) {
+    Polars::_decode("arr_take_flat", polars__arr_take_flat(to_json({ array => $array, indices => $indices })))->{array}
+}
+
+## ndarray tile v2.
+fn Polars::NdArrayExt::tile_v2 ($array, $reps) {
+    my %req = (array => $array)
+    $req{reps} = $reps if defined $reps
+    Polars::_decode("arr_tile_v2", polars__arr_tile_v2(to_json(\%req)))->{array}
+}
+
+## ndarray tri.
+fn Polars::NdArrayExt::tri ($n) {
+    Polars::_decode("arr_tri", polars__arr_tri(to_json({ n => $n })))->{array}
+}
+
+## ndarray tril.
+fn Polars::NdArrayExt::tril ($array, $k) {
+    my %req = (array => $array)
+    $req{k} = $k if defined $k
+    Polars::_decode("arr_tril", polars__arr_tril(to_json(\%req)))->{array}
+}
+
+## ndarray triu.
+fn Polars::NdArrayExt::triu ($array, $k) {
+    my %req = (array => $array)
+    $req{k} = $k if defined $k
+    Polars::_decode("arr_triu", polars__arr_triu(to_json(\%req)))->{array}
+}
+
+## ndarray unique flat.
+fn Polars::NdArrayExt::unique_flat ($array) {
+    Polars::_decode("arr_unique_flat", polars__arr_unique_flat(to_json({ array => $array })))->{array}
+}
+
+## ndarray vander.
+fn Polars::NdArrayExt::vander ($array, $n) {
+    my %req = (array => $array)
+    $req{n} = $n if defined $n
+    Polars::_decode("arr_vander", polars__arr_vander(to_json(\%req)))->{array}
+}
+
+## Variance (population, ddof=0).
+fn Polars::NdArrayExt::var ($array) {
+    Polars::_decode("arr_var", polars__arr_var(to_json({ array => $array })))->{scalar}
+}
+
+## ndarray vstack v2.
+fn Polars::NdArrayExt::vstack_v2 ($arrays) {
+    Polars::_decode("arr_vstack_v2", polars__arr_vstack_v2(to_json({ arrays => $arrays })))->{array}
+}
+
+## ndarray where.
+fn Polars::NdArrayExt::where ($a, $b, $condition) {
+    Polars::_decode("arr_where", polars__arr_where(to_json({ a => $a, b => $b, condition => $condition })))->{array}
+}
+
+## ndarray zeros like v2.
+fn Polars::NdArrayExt::zeros_like_v2 ($array) {
+    Polars::_decode("arr_zeros_like_v2", polars__arr_zeros_like_v2(to_json({ array => $array })))->{array}
+}
+
+## z-score standardization: `(x − mean) / std` (population std, ddof=0).
+fn Polars::NdArrayExt::zscore ($array) {
+    Polars::_decode("arr_zscore", polars__arr_zscore(to_json({ array => $array })))->{array}
+}
+

@@ -1,13 +1,386 @@
 ## lib/Index.stk — `use Polars::Index`
 ##
-## pandas Index family: Index / MultiIndex / DatetimeIndex / PeriodIndex /
-## TimedeltaIndex. `idx_get_loc`, `idx_union`, `idx_intersection`,
-## `idx_difference`, `idx_symmetric_difference`, … (~80 fns target).
-##
-## Phase status: scaffold only.
+## Wrappers around the cdylib `polars__*` exports for the `idx_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
 
 package Polars::Index
 
 use Polars
 
-1
+## Index append.
+fn Polars::Index::append ($a, $b) {
+    Polars::_decode("idx_append", polars__idx_append(to_json({ a => $a, b => $b })))->{index}
+}
+
+## Index argmax.
+fn Polars::Index::argmax ($index) {
+    Polars::_decode("idx_argmax", polars__idx_argmax(to_json({ index => $index })))->{argmax}
+}
+
+## Index argmin.
+fn Polars::Index::argmin ($index) {
+    Polars::_decode("idx_argmin", polars__idx_argmin(to_json({ index => $index })))->{argmin}
+}
+
+## Index argsort.
+fn Polars::Index::argsort ($index, $desc) {
+    my %req = (index => $index)
+    $req{desc} = $desc if defined $desc
+    Polars::_decode("idx_argsort", polars__idx_argsort(to_json(\%req)))->{argsort}
+}
+
+## Index astype float.
+fn Polars::Index::astype_float ($index) {
+    Polars::_decode("idx_astype_float", polars__idx_astype_float(to_json({ index => $index })))->{index}
+}
+
+## Index astype int.
+fn Polars::Index::astype_int ($index) {
+    Polars::_decode("idx_astype_int", polars__idx_astype_int(to_json({ index => $index })))->{index}
+}
+
+## Index astype str.
+fn Polars::Index::astype_str ($index) {
+    Polars::_decode("idx_astype_str", polars__idx_astype_str(to_json({ index => $index })))->{index}
+}
+
+## Index contains.
+fn Polars::Index::contains ($index, $value) {
+    my %req = (index => $index)
+    $req{value} = $value if defined $value
+    Polars::_decode("idx_contains", polars__idx_contains(to_json(\%req)))->{contains}
+}
+
+## Index delete.
+fn Polars::Index::delete ($index, $indices) {
+    Polars::_decode("idx_delete", polars__idx_delete(to_json({ index => $index, indices => $indices })))->{index}
+}
+
+## Index difference.
+fn Polars::Index::difference ($a, $b) {
+    Polars::_decode("idx_difference", polars__idx_difference(to_json({ a => $a, b => $b })))->{index}
+}
+
+## Index drop.
+fn Polars::Index::drop ($index, $values) {
+    Polars::_decode("idx_drop", polars__idx_drop(to_json({ index => $index, values => $values })))->{index}
+}
+
+## Index drop duplicates.
+fn Polars::Index::drop_duplicates ($index) {
+    Polars::_decode("idx_drop_duplicates", polars__idx_drop_duplicates(to_json({ index => $index })))->{index}
+}
+
+## Index dropna.
+fn Polars::Index::dropna ($index) {
+    Polars::_decode("idx_dropna", polars__idx_dropna(to_json({ index => $index })))->{index}
+}
+
+## Index duplicated.
+fn Polars::Index::duplicated ($index) {
+    Polars::_decode("idx_duplicated", polars__idx_duplicated(to_json({ index => $index })))->{duplicated}
+}
+
+## Index empty.
+fn Polars::Index::empty () {
+    Polars::_decode("idx_empty", polars__idx_empty(to_json({})))->{index}
+}
+
+## Index equals.
+fn Polars::Index::equals ($a, $b) {
+    Polars::_decode("idx_equals", polars__idx_equals(to_json({ a => $a, b => $b })))->{equals}
+}
+
+## Index factorize.
+fn Polars::Index::factorize ($index) {
+    Polars::_decode("idx_factorize", polars__idx_factorize(to_json({ index => $index })))->{codes}
+}
+
+## Index fillna.
+fn Polars::Index::fillna ($index, $value) {
+    my %req = (index => $index)
+    $req{value} = $value if defined $value
+    Polars::_decode("idx_fillna", polars__idx_fillna(to_json(\%req)))->{index}
+}
+
+## Index first.
+fn Polars::Index::first ($index) {
+    Polars::_decode("idx_first", polars__idx_first(to_json({ index => $index })))->{first}
+}
+
+## Index from list.
+fn Polars::Index::from_list ($index) {
+    Polars::_decode("idx_from_list", polars__idx_from_list(to_json({ index => $index })))->{index}
+}
+
+## Index from product.
+fn Polars::Index::from_product ($levels) {
+    Polars::_decode("idx_from_product", polars__idx_from_product(to_json({ levels => $levels })))->{index}
+}
+
+## Index from tuples.
+fn Polars::Index::from_tuples ($tuples) {
+    Polars::_decode("idx_from_tuples", polars__idx_from_tuples(to_json({ tuples => $tuples })))->{index}
+}
+
+## Index get.
+fn Polars::Index::get ($index, $i) {
+    Polars::_decode("idx_get", polars__idx_get(to_json({ index => $index, i => $i })))->{value}
+}
+
+## Index get indexer.
+fn Polars::Index::get_indexer ($index, $values) {
+    Polars::_decode("idx_get_indexer", polars__idx_get_indexer(to_json({ index => $index, values => $values })))->{indexer}
+}
+
+## Index get level values.
+fn Polars::Index::get_level_values ($index, $level) {
+    my %req = (index => $index)
+    $req{level} = $level if defined $level
+    Polars::_decode("idx_get_level_values", polars__idx_get_level_values(to_json(\%req)))->{index}
+}
+
+## Index get loc.
+fn Polars::Index::get_loc ($index, $value) {
+    my %req = (index => $index)
+    $req{value} = $value if defined $value
+    Polars::_decode("idx_get_loc", polars__idx_get_loc(to_json(\%req)))->{loc}
+}
+
+## Index has duplicates.
+fn Polars::Index::has_duplicates ($index) {
+    Polars::_decode("idx_has_duplicates", polars__idx_has_duplicates(to_json({ index => $index })))->{has_duplicates}
+}
+
+## Index head.
+fn Polars::Index::head ($index, $n) {
+    my %req = (index => $index)
+    $req{n} = $n if defined $n
+    Polars::_decode("idx_head", polars__idx_head(to_json(\%req)))->{index}
+}
+
+## Index identical.
+fn Polars::Index::identical ($a, $b) {
+    Polars::_decode("idx_identical", polars__idx_identical(to_json({ a => $a, b => $b })))->{identical}
+}
+
+## Index insert.
+fn Polars::Index::insert ($index, $position, $value) {
+    my %req = (index => $index, position => $position)
+    $req{value} = $value if defined $value
+    Polars::_decode("idx_insert", polars__idx_insert(to_json(\%req)))->{index}
+}
+
+## Index intersection.
+fn Polars::Index::intersection ($a, $b) {
+    Polars::_decode("idx_intersection", polars__idx_intersection(to_json({ a => $a, b => $b })))->{index}
+}
+
+## Index is empty.
+fn Polars::Index::is_empty ($index) {
+    Polars::_decode("idx_is_empty", polars__idx_is_empty(to_json({ index => $index })))->{is_empty}
+}
+
+## Index is monotonic decreasing.
+fn Polars::Index::is_monotonic_decreasing ($index) {
+    Polars::_decode("idx_is_monotonic_decreasing", polars__idx_is_monotonic_decreasing(to_json({ index => $index })))->{is_monotonic_decreasing}
+}
+
+## Index is monotonic increasing.
+fn Polars::Index::is_monotonic_increasing ($index) {
+    Polars::_decode("idx_is_monotonic_increasing", polars__idx_is_monotonic_increasing(to_json({ index => $index })))->{is_monotonic_increasing}
+}
+
+## Index is unique.
+fn Polars::Index::is_unique ($index) {
+    Polars::_decode("idx_is_unique", polars__idx_is_unique(to_json({ index => $index })))->{is_unique}
+}
+
+## Index isin.
+fn Polars::Index::isin ($index, $values) {
+    Polars::_decode("idx_isin", polars__idx_isin(to_json({ index => $index, values => $values })))->{isin}
+}
+
+## Index isnull.
+fn Polars::Index::isnull ($index) {
+    Polars::_decode("idx_isnull", polars__idx_isnull(to_json({ index => $index })))->{isnull}
+}
+
+## Index last.
+fn Polars::Index::last ($index) {
+    Polars::_decode("idx_last", polars__idx_last(to_json({ index => $index })))->{last}
+}
+
+## Index len.
+fn Polars::Index::len ($index) {
+    Polars::_decode("idx_len", polars__idx_len(to_json({ index => $index })))->{len}
+}
+
+## Index max.
+fn Polars::Index::max ($index) {
+    Polars::_decode("idx_max", polars__idx_max(to_json({ index => $index })))->{max}
+}
+
+## Index mean.
+fn Polars::Index::mean ($index) {
+    Polars::_decode("idx_mean", polars__idx_mean(to_json({ index => $index })))->{mean}
+}
+
+## Index min.
+fn Polars::Index::min ($index) {
+    Polars::_decode("idx_min", polars__idx_min(to_json({ index => $index })))->{min}
+}
+
+## Index new.
+fn Polars::Index::new ($index) {
+    Polars::_decode("idx_new", polars__idx_new(to_json({ index => $index })))->{index}
+}
+
+## Index nlevels.
+fn Polars::Index::nlevels ($index) {
+    Polars::_decode("idx_nlevels", polars__idx_nlevels(to_json({ index => $index })))->{nlevels}
+}
+
+## Index notnull.
+fn Polars::Index::notnull ($index) {
+    Polars::_decode("idx_notnull", polars__idx_notnull(to_json({ index => $index })))->{notnull}
+}
+
+## Index nunique.
+fn Polars::Index::nunique ($index) {
+    Polars::_decode("idx_nunique", polars__idx_nunique(to_json({ index => $index })))->{nunique}
+}
+
+## Index range.
+fn Polars::Index::range ($stop, $start, $step) {
+    my %req = (stop => $stop)
+    $req{start} = $start if defined $start
+    $req{step} = $step if defined $step
+    Polars::_decode("idx_range", polars__idx_range(to_json(\%req)))
+}
+
+## Index repeat.
+fn Polars::Index::repeat ($index, $times) {
+    Polars::_decode("idx_repeat", polars__idx_repeat(to_json({ index => $index, times => $times })))->{index}
+}
+
+## Index reverse.
+fn Polars::Index::reverse ($index) {
+    Polars::_decode("idx_reverse", polars__idx_reverse(to_json({ index => $index })))->{index}
+}
+
+## Index searchsorted.
+fn Polars::Index::searchsorted ($index, $value) {
+    Polars::_decode("idx_searchsorted", polars__idx_searchsorted(to_json({ index => $index, value => $value })))->{position}
+}
+
+## Index shift.
+fn Polars::Index::shift ($index, $n) {
+    my %req = (index => $index)
+    $req{n} = $n if defined $n
+    Polars::_decode("idx_shift", polars__idx_shift(to_json(\%req)))->{index}
+}
+
+## Index size.
+fn Polars::Index::size ($index) {
+    Polars::_decode("idx_size", polars__idx_size(to_json({ index => $index })))->{size}
+}
+
+## Index slice.
+fn Polars::Index::slice ($index, $start, $stop) {
+    my %req = (index => $index)
+    $req{start} = $start if defined $start
+    $req{stop} = $stop if defined $stop
+    Polars::_decode("idx_slice", polars__idx_slice(to_json(\%req)))->{index}
+}
+
+## Index sort.
+fn Polars::Index::sort ($index, $desc) {
+    my %req = (index => $index)
+    $req{desc} = $desc if defined $desc
+    Polars::_decode("idx_sort", polars__idx_sort(to_json(\%req)))->{index}
+}
+
+## Index str len.
+fn Polars::Index::str_len ($index) {
+    Polars::_decode("idx_str_len", polars__idx_str_len(to_json({ index => $index })))->{len}
+}
+
+## Index str lower.
+fn Polars::Index::str_lower ($index) {
+    Polars::_decode("idx_str_lower", polars__idx_str_lower(to_json({ index => $index })))->{index}
+}
+
+## Index str strip.
+fn Polars::Index::str_strip ($index) {
+    Polars::_decode("idx_str_strip", polars__idx_str_strip(to_json({ index => $index })))->{index}
+}
+
+## Index str upper.
+fn Polars::Index::str_upper ($index) {
+    Polars::_decode("idx_str_upper", polars__idx_str_upper(to_json({ index => $index })))->{index}
+}
+
+## Index sum.
+fn Polars::Index::sum ($index) {
+    Polars::_decode("idx_sum", polars__idx_sum(to_json({ index => $index })))->{sum}
+}
+
+## Index swap levels.
+fn Polars::Index::swap_levels ($index, $i, $j) {
+    my %req = (index => $index)
+    $req{i} = $i if defined $i
+    $req{j} = $j if defined $j
+    Polars::_decode("idx_swap_levels", polars__idx_swap_levels(to_json(\%req)))->{index}
+}
+
+## Index symmetric difference.
+fn Polars::Index::symmetric_difference ($a, $b) {
+    Polars::_decode("idx_symmetric_difference", polars__idx_symmetric_difference(to_json({ a => $a, b => $b })))->{index}
+}
+
+## Index tail.
+fn Polars::Index::tail ($index, $n) {
+    my %req = (index => $index)
+    $req{n} = $n if defined $n
+    Polars::_decode("idx_tail", polars__idx_tail(to_json(\%req)))->{index}
+}
+
+## Index take.
+fn Polars::Index::take ($index, $indices) {
+    Polars::_decode("idx_take", polars__idx_take(to_json({ index => $index, indices => $indices })))->{index}
+}
+
+## Index to array.
+fn Polars::Index::to_array ($index) {
+    Polars::_decode("idx_to_array", polars__idx_to_array(to_json({ index => $index })))->{array}
+}
+
+## Index to frame.
+fn Polars::Index::to_frame ($index, $name) {
+    my %req = (index => $index)
+    $req{name} = $name if defined $name
+    Polars::_decode("idx_to_frame", polars__idx_to_frame(to_json(\%req)))->{frame}
+}
+
+## Index to list.
+fn Polars::Index::to_list ($index) {
+    Polars::_decode("idx_to_list", polars__idx_to_list(to_json({ index => $index })))->{list}
+}
+
+## Index union.
+fn Polars::Index::union ($a, $b) {
+    Polars::_decode("idx_union", polars__idx_union(to_json({ a => $a, b => $b })))->{index}
+}
+
+## Index unique.
+fn Polars::Index::unique ($index) {
+    Polars::_decode("idx_unique", polars__idx_unique(to_json({ index => $index })))->{index}
+}
+
+## Index value counts.
+fn Polars::Index::value_counts ($index) {
+    Polars::_decode("idx_value_counts", polars__idx_value_counts(to_json({ index => $index })))->{value_counts}
+}
+

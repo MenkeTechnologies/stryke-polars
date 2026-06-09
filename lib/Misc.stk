@@ -1,0 +1,139 @@
+## lib/Misc.stk — `use Polars::Misc`
+##
+## Wrappers around the cdylib `polars__*` exports for the `misc_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Misc
+
+use Polars
+
+## Math char frequency.
+fn Polars::Misc::char_frequency ($value) {
+    Polars::_decode("misc_char_frequency", polars__misc_char_frequency(to_json({ value => $value })))->{frequency}
+}
+
+## Math choose.
+fn Polars::Misc::choose ($n, $k) {
+    Polars::_decode("misc_choose", polars__misc_choose(to_json({ n => $n, k => $k })))->{choose}
+}
+
+## Math clamp.
+fn Polars::Misc::clamp ($x, $min, $max) {
+    my %req = (x => $x)
+    $req{min} = $min if defined $min
+    $req{max} = $max if defined $max
+    Polars::_decode("misc_clamp", polars__misc_clamp(to_json(\%req)))->{clamped}
+}
+
+## Math digit sum.
+fn Polars::Misc::digit_sum ($n) {
+    Polars::_decode("misc_digit_sum", polars__misc_digit_sum(to_json({ n => $n })))->{sum}
+}
+
+## Math digits.
+fn Polars::Misc::digits ($n, $base) {
+    my %req = (n => $n)
+    $req{base} = $base if defined $base
+    Polars::_decode("misc_digits", polars__misc_digits(to_json(\%req)))->{digits}
+}
+
+## Math factorial.
+fn Polars::Misc::factorial ($n) {
+    Polars::_decode("misc_factorial", polars__misc_factorial(to_json({ n => $n })))->{factorial}
+}
+
+## Math fibonacci.
+fn Polars::Misc::fibonacci ($n) {
+    Polars::_decode("misc_fibonacci", polars__misc_fibonacci(to_json({ n => $n })))->{value}
+}
+
+## Math gcd.
+fn Polars::Misc::gcd ($a, $b) {
+    Polars::_decode("misc_gcd", polars__misc_gcd(to_json({ a => $a, b => $b })))->{gcd}
+}
+
+## Math is palindrome.
+fn Polars::Misc::is_palindrome ($value) {
+    Polars::_decode("misc_is_palindrome", polars__misc_is_palindrome(to_json({ value => $value })))->{is_palindrome}
+}
+
+## Math is prime.
+fn Polars::Misc::is_prime ($n) {
+    Polars::_decode("misc_is_prime", polars__misc_is_prime(to_json({ n => $n })))->{is_prime}
+}
+
+## Math lcm.
+fn Polars::Misc::lcm ($a, $b) {
+    Polars::_decode("misc_lcm", polars__misc_lcm(to_json({ a => $a, b => $b })))->{lcm}
+}
+
+## Math lerp.
+fn Polars::Misc::lerp ($a, $b, $t) {
+    Polars::_decode("misc_lerp", polars__misc_lerp(to_json({ a => $a, b => $b, t => $t })))->{value}
+}
+
+## Math map.
+fn Polars::Misc::map ($x, $in_min, $in_max, $out_min, $out_max) {
+    Polars::_decode("misc_map", polars__misc_map(to_json({ x => $x, in_min => $in_min, in_max => $in_max, out_min => $out_min, out_max => $out_max })))->{value}
+}
+
+## Math modpow.
+fn Polars::Misc::modpow ($base, $exp, $m) {
+    Polars::_decode("misc_modpow", polars__misc_modpow(to_json({ base => $base, exp => $exp, m => $m })))->{value}
+}
+
+## Math permute.
+fn Polars::Misc::permute ($n, $k) {
+    Polars::_decode("misc_permute", polars__misc_permute(to_json({ n => $n, k => $k })))->{permute}
+}
+
+## Math reverse number.
+fn Polars::Misc::reverse_number ($n) {
+    Polars::_decode("misc_reverse_number", polars__misc_reverse_number(to_json({ n => $n })))->{value}
+}
+
+## Math safe div.
+fn Polars::Misc::safe_div ($a, $b, $default) {
+    my %req = (a => $a, b => $b)
+    $req{default} = $default if defined $default
+    Polars::_decode("misc_safe_div", polars__misc_safe_div(to_json(\%req)))->{value}
+}
+
+## Math safe log.
+fn Polars::Misc::safe_log ($x, $eps) {
+    my %req = (x => $x)
+    $req{eps} = $eps if defined $eps
+    Polars::_decode("misc_safe_log", polars__misc_safe_log(to_json(\%req)))->{value}
+}
+
+## Math safe sqrt.
+fn Polars::Misc::safe_sqrt ($x) {
+    Polars::_decode("misc_safe_sqrt", polars__misc_safe_sqrt(to_json({ x => $x })))->{value}
+}
+
+## Math sign.
+fn Polars::Misc::sign ($x) {
+    Polars::_decode("misc_sign", polars__misc_sign(to_json({ x => $x })))->{sign}
+}
+
+## Math smoothstep.
+fn Polars::Misc::smoothstep ($x, $edge0, $edge1) {
+    my %req = (x => $x)
+    $req{edge0} = $edge0 if defined $edge0
+    $req{edge1} = $edge1 if defined $edge1
+    Polars::_decode("misc_smoothstep", polars__misc_smoothstep(to_json(\%req)))->{value}
+}
+
+## Math step.
+fn Polars::Misc::step ($x, $edge) {
+    my %req = (x => $x)
+    $req{edge} = $edge if defined $edge
+    Polars::_decode("misc_step", polars__misc_step(to_json(\%req)))->{value}
+}
+
+## Math unique chars.
+fn Polars::Misc::unique_chars ($value) {
+    Polars::_decode("misc_unique_chars", polars__misc_unique_chars(to_json({ value => $value })))->{count}
+}
+

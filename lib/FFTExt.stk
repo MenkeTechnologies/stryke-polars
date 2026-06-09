@@ -1,0 +1,37 @@
+## lib/FFTExt.stk — `use Polars::FFTExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `fft_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::FFTExt
+
+use Polars
+
+## FFT fft2.
+fn Polars::FFTExt::fft2 ($array) {
+    Polars::_decode("fft_fft2", polars__fft_fft2(to_json({ array => $array })))->{complex}
+}
+
+## FFT fftshift v2.
+fn Polars::FFTExt::fftshift_v2 ($array) {
+    Polars::_decode("fft_fftshift_v2", polars__fft_fftshift_v2(to_json({ array => $array })))->{array}
+}
+
+## FFT ifftshift v2.
+fn Polars::FFTExt::ifftshift_v2 ($array) {
+    Polars::_decode("fft_ifftshift_v2", polars__fft_ifftshift_v2(to_json({ array => $array })))->{array}
+}
+
+## FFT rfft pow.
+fn Polars::FFTExt::rfft_pow ($array) {
+    Polars::_decode("fft_rfft_pow", polars__fft_rfft_pow(to_json({ array => $array })))->{array}
+}
+
+## FFT rfftfreq v2.
+fn Polars::FFTExt::rfftfreq_v2 ($n, $d) {
+    my %req = (n => $n)
+    $req{d} = $d if defined $d
+    Polars::_decode("fft_rfftfreq_v2", polars__fft_rfftfreq_v2(to_json(\%req)))->{array}
+}
+

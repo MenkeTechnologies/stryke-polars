@@ -1,0 +1,160 @@
+## lib/Bit.stk — `use Polars::Bit`
+##
+## Wrappers around the cdylib `polars__*` exports for the `bit_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Bit
+
+use Polars
+
+## Bit and.
+fn Polars::Bit::and ($a, $b) {
+    Polars::_decode("bit_and", polars__bit_and(to_json({ a => $a, b => $b })))->{and}
+}
+
+## Bit clear.
+fn Polars::Bit::clear ($x, $n) {
+    Polars::_decode("bit_clear", polars__bit_clear(to_json({ x => $x, n => $n })))->{clear}
+}
+
+## Bit count zeros.
+fn Polars::Bit::count_zeros ($x) {
+    Polars::_decode("bit_count_zeros", polars__bit_count_zeros(to_json({ x => $x })))->{count_zeros}
+}
+
+## Bit from bin.
+fn Polars::Bit::from_bin ($value) {
+    Polars::_decode("bit_from_bin", polars__bit_from_bin(to_json({ value => $value })))->{value}
+}
+
+## Bit from hex.
+fn Polars::Bit::from_hex ($value) {
+    Polars::_decode("bit_from_hex", polars__bit_from_hex(to_json({ value => $value })))->{value}
+}
+
+## Bit from oct.
+fn Polars::Bit::from_oct ($value) {
+    Polars::_decode("bit_from_oct", polars__bit_from_oct(to_json({ value => $value })))->{value}
+}
+
+## Bit is power of two.
+fn Polars::Bit::is_power_of_two ($x) {
+    Polars::_decode("bit_is_power_of_two", polars__bit_is_power_of_two(to_json({ x => $x })))->{is_power_of_two}
+}
+
+## Bit leading ones.
+fn Polars::Bit::leading_ones ($x) {
+    Polars::_decode("bit_leading_ones", polars__bit_leading_ones(to_json({ x => $x })))->{leading_ones}
+}
+
+## Bit leading zeros.
+fn Polars::Bit::leading_zeros ($x) {
+    Polars::_decode("bit_leading_zeros", polars__bit_leading_zeros(to_json({ x => $x })))->{leading_zeros}
+}
+
+## Bit lsb.
+fn Polars::Bit::lsb ($x) {
+    Polars::_decode("bit_lsb", polars__bit_lsb(to_json({ x => $x })))->{lsb}
+}
+
+## Bit msb.
+fn Polars::Bit::msb ($x) {
+    Polars::_decode("bit_msb", polars__bit_msb(to_json({ x => $x })))->{msb}
+}
+
+## Bit next power of two.
+fn Polars::Bit::next_power_of_two ($x) {
+    Polars::_decode("bit_next_power_of_two", polars__bit_next_power_of_two(to_json({ x => $x })))->{next_power_of_two}
+}
+
+## Bit not.
+fn Polars::Bit::not ($x) {
+    Polars::_decode("bit_not", polars__bit_not(to_json({ x => $x })))->{not}
+}
+
+## Bit or.
+fn Polars::Bit::or ($a, $b) {
+    Polars::_decode("bit_or", polars__bit_or(to_json({ a => $a, b => $b })))->{or}
+}
+
+## Bit popcount.
+fn Polars::Bit::popcount ($x) {
+    Polars::_decode("bit_popcount", polars__bit_popcount(to_json({ x => $x })))->{popcount}
+}
+
+## Bit reverse.
+fn Polars::Bit::reverse ($x) {
+    Polars::_decode("bit_reverse", polars__bit_reverse(to_json({ x => $x })))->{reverse}
+}
+
+## Bit rotate left.
+fn Polars::Bit::rotate_left ($x, $n) {
+    Polars::_decode("bit_rotate_left", polars__bit_rotate_left(to_json({ x => $x, n => $n })))->{rotate_left}
+}
+
+## Bit rotate right.
+fn Polars::Bit::rotate_right ($x, $n) {
+    Polars::_decode("bit_rotate_right", polars__bit_rotate_right(to_json({ x => $x, n => $n })))->{rotate_right}
+}
+
+## Bit set.
+fn Polars::Bit::set ($x, $n) {
+    Polars::_decode("bit_set", polars__bit_set(to_json({ x => $x, n => $n })))->{set}
+}
+
+## Bit shl.
+fn Polars::Bit::shl ($x, $n) {
+    Polars::_decode("bit_shl", polars__bit_shl(to_json({ x => $x, n => $n })))->{shl}
+}
+
+## Bit shr.
+fn Polars::Bit::shr ($x, $n) {
+    Polars::_decode("bit_shr", polars__bit_shr(to_json({ x => $x, n => $n })))->{shr}
+}
+
+## Bit swap bytes.
+fn Polars::Bit::swap_bytes ($x) {
+    Polars::_decode("bit_swap_bytes", polars__bit_swap_bytes(to_json({ x => $x })))->{swap_bytes}
+}
+
+## Bit test.
+fn Polars::Bit::test ($x, $n) {
+    Polars::_decode("bit_test", polars__bit_test(to_json({ x => $x, n => $n })))->{test}
+}
+
+## Bit to bin.
+fn Polars::Bit::to_bin ($x) {
+    Polars::_decode("bit_to_bin", polars__bit_to_bin(to_json({ x => $x })))->{binary}
+}
+
+## Bit to hex.
+fn Polars::Bit::to_hex ($x) {
+    Polars::_decode("bit_to_hex", polars__bit_to_hex(to_json({ x => $x })))->{hex}
+}
+
+## Bit to oct.
+fn Polars::Bit::to_oct ($x) {
+    Polars::_decode("bit_to_oct", polars__bit_to_oct(to_json({ x => $x })))->{octal}
+}
+
+## Bit toggle.
+fn Polars::Bit::toggle ($x, $n) {
+    Polars::_decode("bit_toggle", polars__bit_toggle(to_json({ x => $x, n => $n })))->{toggle}
+}
+
+## Bit trailing ones.
+fn Polars::Bit::trailing_ones ($x) {
+    Polars::_decode("bit_trailing_ones", polars__bit_trailing_ones(to_json({ x => $x })))->{trailing_ones}
+}
+
+## Bit trailing zeros.
+fn Polars::Bit::trailing_zeros ($x) {
+    Polars::_decode("bit_trailing_zeros", polars__bit_trailing_zeros(to_json({ x => $x })))->{trailing_zeros}
+}
+
+## Bit xor.
+fn Polars::Bit::xor ($a, $b) {
+    Polars::_decode("bit_xor", polars__bit_xor(to_json({ a => $a, b => $b })))->{xor}
+}
+

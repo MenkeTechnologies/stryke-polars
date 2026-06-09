@@ -1,0 +1,37 @@
+## lib/Cluster.stk — `use Polars::Cluster`
+##
+## Wrappers around the cdylib `polars__*` exports for the `cluster_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Cluster
+
+use Polars
+
+## Clustering assign.
+fn Polars::Cluster::assign ($points, $centroids) {
+    Polars::_decode("cluster_assign", polars__cluster_assign(to_json({ points => $points, centroids => $centroids })))->{assignments}
+}
+
+## Clustering dbscan neighbors.
+fn Polars::Cluster::dbscan_neighbors ($points, $eps) {
+    Polars::_decode("cluster_dbscan_neighbors", polars__cluster_dbscan_neighbors(to_json({ points => $points, eps => $eps })))->{neighbors}
+}
+
+## Clustering inertia.
+fn Polars::Cluster::inertia ($points, $centroids, $assignments) {
+    Polars::_decode("cluster_inertia", polars__cluster_inertia(to_json({ points => $points, centroids => $centroids, assignments => $assignments })))->{inertia}
+}
+
+## Clustering kmeans.
+fn Polars::Cluster::kmeans ($points, $k, $max_iter) {
+    my %req = (points => $points, k => $k)
+    $req{max_iter} = $max_iter if defined $max_iter
+    Polars::_decode("cluster_kmeans", polars__cluster_kmeans(to_json(\%req)))->{centroids}
+}
+
+## Clustering silhouette.
+fn Polars::Cluster::silhouette ($points, $labels) {
+    Polars::_decode("cluster_silhouette", polars__cluster_silhouette(to_json({ points => $points, labels => $labels })))->{silhouette}
+}
+

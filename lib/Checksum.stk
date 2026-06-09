@@ -1,0 +1,35 @@
+## lib/Checksum.stk — `use Polars::Checksum`
+##
+## Wrappers around the cdylib `polars__*` exports for the `sum_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Checksum
+
+use Polars
+
+## Checksum adler32.
+fn Polars::Checksum::adler32 ($value) {
+    Polars::_decode("sum_adler32", polars__sum_adler32(to_json({ value => $value })))->{checksum}
+}
+
+## Checksum bsd16.
+fn Polars::Checksum::bsd16 ($value) {
+    Polars::_decode("sum_bsd16", polars__sum_bsd16(to_json({ value => $value })))->{checksum}
+}
+
+## Checksum internet.
+fn Polars::Checksum::internet ($value) {
+    Polars::_decode("sum_internet", polars__sum_internet(to_json({ value => $value })))->{checksum}
+}
+
+## Checksum simple.
+fn Polars::Checksum::simple ($value) {
+    Polars::_decode("sum_simple", polars__sum_simple(to_json({ value => $value })))->{checksum}
+}
+
+## Checksum xor.
+fn Polars::Checksum::xor ($value) {
+    Polars::_decode("sum_xor", polars__sum_xor(to_json({ value => $value })))->{checksum}
+}
+

@@ -1,0 +1,67 @@
+## lib/Sparse.stk — `use Polars::Sparse`
+##
+## Wrappers around the cdylib `polars__*` exports for the `sparse_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Sparse
+
+use Polars
+
+## Sparse matrix add.
+fn Polars::Sparse::add ($a, $b) {
+    Polars::_decode("sparse_add", polars__sparse_add(to_json({ a => $a, b => $b })))->{sparse}
+}
+
+## Sparse matrix density.
+fn Polars::Sparse::density ($sparse) {
+    Polars::_decode("sparse_density", polars__sparse_density(to_json({ sparse => $sparse })))->{density}
+}
+
+## Sparse matrix diagonal.
+fn Polars::Sparse::diagonal ($sparse) {
+    Polars::_decode("sparse_diagonal", polars__sparse_diagonal(to_json({ sparse => $sparse })))->{array}
+}
+
+## Sparse matrix eye.
+fn Polars::Sparse::eye ($n) {
+    Polars::_decode("sparse_eye", polars__sparse_eye(to_json({ n => $n })))->{sparse}
+}
+
+## Sparse matrix from dense.
+fn Polars::Sparse::from_dense ($matrix) {
+    Polars::_decode("sparse_from_dense", polars__sparse_from_dense(to_json({ matrix => $matrix })))->{sparse}
+}
+
+## Sparse matrix mul vec.
+fn Polars::Sparse::mul_vec ($vector, $sparse) {
+    Polars::_decode("sparse_mul_vec", polars__sparse_mul_vec(to_json({ vector => $vector, sparse => $sparse })))->{array}
+}
+
+## Sparse matrix nnz.
+fn Polars::Sparse::nnz ($sparse) {
+    Polars::_decode("sparse_nnz", polars__sparse_nnz(to_json({ sparse => $sparse })))->{nnz}
+}
+
+## Sparse matrix scale.
+fn Polars::Sparse::scale ($sparse, $alpha) {
+    my %req = (sparse => $sparse)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("sparse_scale", polars__sparse_scale(to_json(\%req)))->{sparse}
+}
+
+## Sparse matrix to dense.
+fn Polars::Sparse::to_dense ($sparse) {
+    Polars::_decode("sparse_to_dense", polars__sparse_to_dense(to_json({ sparse => $sparse })))->{array}
+}
+
+## Sparse matrix trace.
+fn Polars::Sparse::trace ($sparse) {
+    Polars::_decode("sparse_trace", polars__sparse_trace(to_json({ sparse => $sparse })))->{trace}
+}
+
+## Sparse matrix transpose.
+fn Polars::Sparse::transpose ($sparse) {
+    Polars::_decode("sparse_transpose", polars__sparse_transpose(to_json({ sparse => $sparse })))->{sparse}
+}
+

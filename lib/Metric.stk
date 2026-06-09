@@ -1,0 +1,126 @@
+## lib/Metric.stk — `use Polars::Metric`
+##
+## Wrappers around the cdylib `polars__*` exports for the `metric_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Metric
+
+use Polars
+
+## ML metric accuracy.
+fn Polars::Metric::accuracy ($y_true, $y_pred) {
+    Polars::_decode("metric_accuracy", polars__metric_accuracy(to_json({ y_true => $y_true, y_pred => $y_pred })))->{accuracy}
+}
+
+## ML metric balanced accuracy.
+fn Polars::Metric::balanced_accuracy ($y_true, $y_pred) {
+    Polars::_decode("metric_balanced_accuracy", polars__metric_balanced_accuracy(to_json({ y_true => $y_true, y_pred => $y_pred })))->{balanced_accuracy}
+}
+
+## ML metric brier score.
+fn Polars::Metric::brier_score ($y_true, $y_prob) {
+    Polars::_decode("metric_brier_score", polars__metric_brier_score(to_json({ y_true => $y_true, y_prob => $y_prob })))->{brier_score}
+}
+
+## ML metric cohen kappa.
+fn Polars::Metric::cohen_kappa ($y_true, $y_pred) {
+    Polars::_decode("metric_cohen_kappa", polars__metric_cohen_kappa(to_json({ y_true => $y_true, y_pred => $y_pred })))->{kappa}
+}
+
+## ML metric confusion matrix.
+fn Polars::Metric::confusion_matrix ($y_true, $y_pred, $n_classes) {
+    my %req = (y_true => $y_true, y_pred => $y_pred)
+    $req{n_classes} = $n_classes if defined $n_classes
+    Polars::_decode("metric_confusion_matrix", polars__metric_confusion_matrix(to_json(\%req)))->{confusion_matrix}
+}
+
+## ML metric explained variance.
+fn Polars::Metric::explained_variance ($y_true, $y_pred) {
+    Polars::_decode("metric_explained_variance", polars__metric_explained_variance(to_json({ y_true => $y_true, y_pred => $y_pred })))->{explained_variance}
+}
+
+## ML metric f1.
+fn Polars::Metric::f1 ($y_true, $y_pred) {
+    Polars::_decode("metric_f1", polars__metric_f1(to_json({ y_true => $y_true, y_pred => $y_pred })))->{f1}
+}
+
+## ML metric fbeta.
+fn Polars::Metric::fbeta ($y_true, $y_pred, $beta) {
+    my %req = (y_true => $y_true, y_pred => $y_pred)
+    $req{beta} = $beta if defined $beta
+    Polars::_decode("metric_fbeta", polars__metric_fbeta(to_json(\%req)))->{fbeta}
+}
+
+## ML metric hinge loss.
+fn Polars::Metric::hinge_loss ($y_true, $y_score) {
+    Polars::_decode("metric_hinge_loss", polars__metric_hinge_loss(to_json({ y_true => $y_true, y_score => $y_score })))->{hinge_loss}
+}
+
+## ML metric jaccard score.
+fn Polars::Metric::jaccard_score ($y_true, $y_pred) {
+    Polars::_decode("metric_jaccard_score", polars__metric_jaccard_score(to_json({ y_true => $y_true, y_pred => $y_pred })))->{jaccard}
+}
+
+## ML metric log loss.
+fn Polars::Metric::log_loss ($y_true, $y_prob) {
+    Polars::_decode("metric_log_loss", polars__metric_log_loss(to_json({ y_true => $y_true, y_prob => $y_prob })))->{log_loss}
+}
+
+## ML metric mae.
+fn Polars::Metric::mae ($y_true, $y_pred) {
+    Polars::_decode("metric_mae", polars__metric_mae(to_json({ y_true => $y_true, y_pred => $y_pred })))->{mae}
+}
+
+## ML metric mape.
+fn Polars::Metric::mape ($y_true, $y_pred) {
+    Polars::_decode("metric_mape", polars__metric_mape(to_json({ y_true => $y_true, y_pred => $y_pred })))->{mape}
+}
+
+## ML metric matthews corrcoef.
+fn Polars::Metric::matthews_corrcoef ($y_true, $y_pred) {
+    Polars::_decode("metric_matthews_corrcoef", polars__metric_matthews_corrcoef(to_json({ y_true => $y_true, y_pred => $y_pred })))->{mcc}
+}
+
+## ML metric mse.
+fn Polars::Metric::mse ($y_true, $y_pred) {
+    Polars::_decode("metric_mse", polars__metric_mse(to_json({ y_true => $y_true, y_pred => $y_pred })))->{mse}
+}
+
+## ML metric precision.
+fn Polars::Metric::precision ($y_true, $y_pred) {
+    Polars::_decode("metric_precision", polars__metric_precision(to_json({ y_true => $y_true, y_pred => $y_pred })))->{precision}
+}
+
+## ML metric r2.
+fn Polars::Metric::r2 ($y_true, $y_pred) {
+    Polars::_decode("metric_r2", polars__metric_r2(to_json({ y_true => $y_true, y_pred => $y_pred })))->{r2}
+}
+
+## ML metric recall.
+fn Polars::Metric::recall ($y_true, $y_pred) {
+    Polars::_decode("metric_recall", polars__metric_recall(to_json({ y_true => $y_true, y_pred => $y_pred })))->{recall}
+}
+
+## ML metric rmse.
+fn Polars::Metric::rmse ($y_true, $y_pred) {
+    Polars::_decode("metric_rmse", polars__metric_rmse(to_json({ y_true => $y_true, y_pred => $y_pred })))->{rmse}
+}
+
+## ML metric roc auc.
+fn Polars::Metric::roc_auc ($y_true, $y_score) {
+    Polars::_decode("metric_roc_auc", polars__metric_roc_auc(to_json({ y_true => $y_true, y_score => $y_score })))->{auc}
+}
+
+## ML metric smape.
+fn Polars::Metric::smape ($y_true, $y_pred) {
+    Polars::_decode("metric_smape", polars__metric_smape(to_json({ y_true => $y_true, y_pred => $y_pred })))->{smape}
+}
+
+## ML metric top k accuracy.
+fn Polars::Metric::top_k_accuracy ($y_true, $y_score, $k) {
+    my %req = (y_true => $y_true, y_score => $y_score)
+    $req{k} = $k if defined $k
+    Polars::_decode("metric_top_k_accuracy", polars__metric_top_k_accuracy(to_json(\%req)))->{top_k_accuracy}
+}
+

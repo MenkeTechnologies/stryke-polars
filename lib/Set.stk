@@ -1,0 +1,55 @@
+## lib/Set.stk — `use Polars::Set`
+##
+## Wrappers around the cdylib `polars__*` exports for the `set_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Set
+
+use Polars
+
+## Set contains.
+fn Polars::Set::contains ($a, $value) {
+    Polars::_decode("set_contains", polars__set_contains(to_json({ a => $a, value => $value })))->{contains}
+}
+
+## Set difference.
+fn Polars::Set::difference ($a, $b) {
+    Polars::_decode("set_difference", polars__set_difference(to_json({ a => $a, b => $b })))->{set}
+}
+
+## Set intersection.
+fn Polars::Set::intersection ($a, $b) {
+    Polars::_decode("set_intersection", polars__set_intersection(to_json({ a => $a, b => $b })))->{set}
+}
+
+## Set is disjoint.
+fn Polars::Set::is_disjoint ($a, $b) {
+    Polars::_decode("set_is_disjoint", polars__set_is_disjoint(to_json({ a => $a, b => $b })))->{is_disjoint}
+}
+
+## Set is subset.
+fn Polars::Set::is_subset ($a, $b) {
+    Polars::_decode("set_is_subset", polars__set_is_subset(to_json({ a => $a, b => $b })))->{is_subset}
+}
+
+## Set is superset.
+fn Polars::Set::is_superset ($a, $b) {
+    Polars::_decode("set_is_superset", polars__set_is_superset(to_json({ a => $a, b => $b })))->{is_superset}
+}
+
+## Set size.
+fn Polars::Set::size ($a) {
+    Polars::_decode("set_size", polars__set_size(to_json({ a => $a })))->{size}
+}
+
+## Set symmetric difference.
+fn Polars::Set::symmetric_difference ($a, $b) {
+    Polars::_decode("set_symmetric_difference", polars__set_symmetric_difference(to_json({ a => $a, b => $b })))->{set}
+}
+
+## Set union.
+fn Polars::Set::union ($a, $b) {
+    Polars::_decode("set_union", polars__set_union(to_json({ a => $a, b => $b })))->{set}
+}
+

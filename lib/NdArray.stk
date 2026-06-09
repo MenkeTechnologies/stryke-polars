@@ -548,4 +548,3 @@ fn Polars::NdArray::kl_divergence  ($p, $q) {
     Polars::_decode("arr_kl_divergence", polars__arr_kl_divergence(to_json({ p => $p, q => $q })))->{scalar}
 }
 
-1

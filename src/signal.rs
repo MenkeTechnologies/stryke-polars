@@ -68,6 +68,7 @@ fn window_to_arr(name: &str, n: usize, w: Vec<f64>) -> Result<Value> {
     Ok(json!({"array": array_to_value(&arr)}))
 }
 
+/// Window function hann.
 #[no_mangle]
 pub extern "C" fn polars__win_hann(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -79,6 +80,7 @@ pub extern "C" fn polars__win_hann(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function hamming.
 #[no_mangle]
 pub extern "C" fn polars__win_hamming(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -90,6 +92,7 @@ pub extern "C" fn polars__win_hamming(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function blackman.
 #[no_mangle]
 pub extern "C" fn polars__win_blackman(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -105,6 +108,7 @@ pub extern "C" fn polars__win_blackman(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function bartlett.
 #[no_mangle]
 pub extern "C" fn polars__win_bartlett(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -124,6 +128,7 @@ pub extern "C" fn polars__win_bartlett(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function triangular.
 #[no_mangle]
 pub extern "C" fn polars__win_triangular(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -136,6 +141,7 @@ pub extern "C" fn polars__win_triangular(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function nuttall.
 #[no_mangle]
 pub extern "C" fn polars__win_nuttall(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -153,6 +159,7 @@ pub extern "C" fn polars__win_nuttall(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function flattop.
 #[no_mangle]
 pub extern "C" fn polars__win_flattop(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -177,6 +184,7 @@ pub extern "C" fn polars__win_flattop(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function blackman harris.
 #[no_mangle]
 pub extern "C" fn polars__win_blackman_harris(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -194,6 +202,7 @@ pub extern "C" fn polars__win_blackman_harris(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Window function rectangular.
 #[no_mangle]
 pub extern "C" fn polars__win_rectangular(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -202,6 +211,7 @@ pub extern "C" fn polars__win_rectangular(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function kaiser.
 #[no_mangle]
 pub extern "C" fn polars__win_kaiser(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -229,6 +239,7 @@ pub extern "C" fn polars__win_kaiser(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function tukey.
 #[no_mangle]
 pub extern "C" fn polars__win_tukey(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -251,6 +262,7 @@ pub extern "C" fn polars__win_tukey(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function gaussian.
 #[no_mangle]
 pub extern "C" fn polars__win_gaussian(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -264,6 +276,7 @@ pub extern "C" fn polars__win_gaussian(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function exponential.
 #[no_mangle]
 pub extern "C" fn polars__win_exponential(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -280,6 +293,7 @@ pub extern "C" fn polars__win_exponential(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function cosine.
 #[no_mangle]
 pub extern "C" fn polars__win_cosine(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -291,6 +305,7 @@ pub extern "C" fn polars__win_cosine(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function lanczos.
 #[no_mangle]
 pub extern "C" fn polars__win_lanczos(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -310,6 +325,7 @@ pub extern "C" fn polars__win_lanczos(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function parzen.
 #[no_mangle]
 pub extern "C" fn polars__win_parzen(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -331,6 +347,7 @@ pub extern "C" fn polars__win_parzen(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Window function bohman.
 #[no_mangle]
 pub extern "C" fn polars__win_bohman(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -377,6 +394,7 @@ fn conv(a: &[f64], b: &[f64], mode: &str) -> Vec<f64> {
     }
 }
 
+/// Signal convolve.
 #[no_mangle]
 pub extern "C" fn polars__sig_convolve(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -396,6 +414,7 @@ pub extern "C" fn polars__sig_convolve(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal correlate.
 #[no_mangle]
 pub extern "C" fn polars__sig_correlate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -416,6 +435,7 @@ pub extern "C" fn polars__sig_correlate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal autocorrelate.
 #[no_mangle]
 pub extern "C" fn polars__sig_autocorrelate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -433,6 +453,7 @@ pub extern "C" fn polars__sig_autocorrelate(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Signal detrend.
 #[no_mangle]
 pub extern "C" fn polars__sig_detrend(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -465,6 +486,7 @@ pub extern "C" fn polars__sig_detrend(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal detrend mean.
 #[no_mangle]
 pub extern "C" fn polars__sig_detrend_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -478,6 +500,7 @@ pub extern "C" fn polars__sig_detrend_mean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal smooth box.
 #[no_mangle]
 pub extern "C" fn polars__sig_smooth_box(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -499,6 +522,7 @@ pub extern "C" fn polars__sig_smooth_box(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal smooth triangle.
 #[no_mangle]
 pub extern "C" fn polars__sig_smooth_triangle(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -527,6 +551,7 @@ pub extern "C" fn polars__sig_smooth_triangle(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Signal smooth gaussian.
 #[no_mangle]
 pub extern "C" fn polars__sig_smooth_gaussian(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -559,6 +584,7 @@ pub extern "C" fn polars__sig_smooth_gaussian(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Signal diff.
 #[no_mangle]
 pub extern "C" fn polars__sig_diff(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -575,6 +601,7 @@ pub extern "C" fn polars__sig_diff(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal gradient.
 #[no_mangle]
 pub extern "C" fn polars__sig_gradient(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -595,6 +622,7 @@ pub extern "C" fn polars__sig_gradient(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal integral.
 #[no_mangle]
 pub extern "C" fn polars__sig_integral(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -614,6 +642,7 @@ pub extern "C" fn polars__sig_integral(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal trapz.
 #[no_mangle]
 pub extern "C" fn polars__sig_trapz(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -628,6 +657,7 @@ pub extern "C" fn polars__sig_trapz(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal simpson.
 #[no_mangle]
 pub extern "C" fn polars__sig_simpson(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -647,6 +677,7 @@ pub extern "C" fn polars__sig_simpson(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal rms.
 #[no_mangle]
 pub extern "C" fn polars__sig_rms(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -657,6 +688,7 @@ pub extern "C" fn polars__sig_rms(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal peak to peak.
 #[no_mangle]
 pub extern "C" fn polars__sig_peak_to_peak(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -668,6 +700,7 @@ pub extern "C" fn polars__sig_peak_to_peak(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal zero crossings.
 #[no_mangle]
 pub extern "C" fn polars__sig_zero_crossings(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -681,6 +714,7 @@ pub extern "C" fn polars__sig_zero_crossings(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Signal find peaks.
 #[no_mangle]
 pub extern "C" fn polars__sig_find_peaks(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -700,6 +734,7 @@ pub extern "C" fn polars__sig_find_peaks(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal find valleys.
 #[no_mangle]
 pub extern "C" fn polars__sig_find_valleys(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -715,6 +750,7 @@ pub extern "C" fn polars__sig_find_valleys(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal envelope upper.
 #[no_mangle]
 pub extern "C" fn polars__sig_envelope_upper(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -735,6 +771,7 @@ pub extern "C" fn polars__sig_envelope_upper(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Signal envelope lower.
 #[no_mangle]
 pub extern "C" fn polars__sig_envelope_lower(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -755,6 +792,7 @@ pub extern "C" fn polars__sig_envelope_lower(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Signal median filter.
 #[no_mangle]
 pub extern "C" fn polars__sig_median_filter(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -777,6 +815,7 @@ pub extern "C" fn polars__sig_median_filter(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// Signal ema.
 #[no_mangle]
 pub extern "C" fn polars__sig_ema(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -802,6 +841,7 @@ pub extern "C" fn polars__sig_ema(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal dema.
 #[no_mangle]
 pub extern "C" fn polars__sig_dema(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -830,6 +870,7 @@ pub extern "C" fn polars__sig_dema(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal sma.
 #[no_mangle]
 pub extern "C" fn polars__sig_sma(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -850,6 +891,7 @@ pub extern "C" fn polars__sig_sma(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal wma.
 #[no_mangle]
 pub extern "C" fn polars__sig_wma(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -878,6 +920,7 @@ pub extern "C" fn polars__sig_wma(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal macd.
 #[no_mangle]
 pub extern "C" fn polars__sig_macd(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -904,6 +947,7 @@ pub extern "C" fn polars__sig_macd(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal rsi.
 #[no_mangle]
 pub extern "C" fn polars__sig_rsi(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -937,6 +981,7 @@ pub extern "C" fn polars__sig_rsi(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal bollinger upper.
 #[no_mangle]
 pub extern "C" fn polars__sig_bollinger_upper(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -961,6 +1006,7 @@ pub extern "C" fn polars__sig_bollinger_upper(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Signal bollinger lower.
 #[no_mangle]
 pub extern "C" fn polars__sig_bollinger_lower(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -985,6 +1031,7 @@ pub extern "C" fn polars__sig_bollinger_lower(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Signal chunk mean.
 #[no_mangle]
 pub extern "C" fn polars__sig_chunk_mean(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1004,6 +1051,7 @@ pub extern "C" fn polars__sig_chunk_mean(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal resample.
 #[no_mangle]
 pub extern "C" fn polars__sig_resample(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1031,6 +1079,7 @@ pub extern "C" fn polars__sig_resample(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal decimate.
 #[no_mangle]
 pub extern "C" fn polars__sig_decimate(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1047,6 +1096,7 @@ pub extern "C" fn polars__sig_decimate(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal upsample.
 #[no_mangle]
 pub extern "C" fn polars__sig_upsample(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1065,6 +1115,7 @@ pub extern "C" fn polars__sig_upsample(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal normalize.
 #[no_mangle]
 pub extern "C" fn polars__sig_normalize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1082,6 +1133,7 @@ pub extern "C" fn polars__sig_normalize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Signal unwrap.
 #[no_mangle]
 pub extern "C" fn polars__sig_unwrap(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

@@ -1,0 +1,264 @@
+## lib/DataFrameExt.stk — `use Polars::DataFrameExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `df_*`, `dt_*`, `str_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::DataFrameExt
+
+use Polars
+
+## DataFrame all axis columns.
+fn Polars::DataFrameExt::all_axis_columns ($frame) {
+    Polars::_decode("df_all_axis_columns", polars__df_all_axis_columns(to_json({ frame => $frame })))->{all}
+}
+
+## DataFrame any axis columns.
+fn Polars::DataFrameExt::any_axis_columns ($frame) {
+    Polars::_decode("df_any_axis_columns", polars__df_any_axis_columns(to_json({ frame => $frame })))->{any}
+}
+
+## DataFrame any nulls.
+fn Polars::DataFrameExt::any_nulls ($frame) {
+    Polars::_decode("df_any_nulls", polars__df_any_nulls(to_json({ frame => $frame })))->{any_nulls}
+}
+
+## DataFrame clip v2.
+fn Polars::DataFrameExt::clip_v2 ($frame, $min, $max) {
+    my %req = (frame => $frame)
+    $req{min} = $min if defined $min
+    $req{max} = $max if defined $max
+    Polars::_decode("df_clip_v2", polars__df_clip_v2(to_json(\%req)))->{frame}
+}
+
+## DataFrame concat horizontal.
+fn Polars::DataFrameExt::concat_horizontal ($frames) {
+    my %req = (frames => $frames)
+    Polars::_decode("df_concat_horizontal", polars__df_concat_horizontal(to_json(\%req)))
+}
+
+## DataFrame corr.
+fn Polars::DataFrameExt::corr ($frame) {
+    Polars::_decode("df_corr", polars__df_corr(to_json({ frame => $frame })))->{corr}
+}
+
+## DataFrame count nulls.
+fn Polars::DataFrameExt::count_nulls ($frame) {
+    Polars::_decode("df_count_nulls", polars__df_count_nulls(to_json({ frame => $frame })))->{null_counts}
+}
+
+## DataFrame cov.
+fn Polars::DataFrameExt::cov ($frame) {
+    Polars::_decode("df_cov", polars__df_cov(to_json({ frame => $frame })))->{cov}
+}
+
+## DataFrame describe.
+fn Polars::DataFrameExt::describe ($frame) {
+    Polars::_decode("df_describe", polars__df_describe(to_json({ frame => $frame })))->{describe}
+}
+
+## DataFrame diff v2.
+fn Polars::DataFrameExt::diff_v2 ($frame, $n) {
+    my %req = (frame => $frame)
+    $req{n} = $n if defined $n
+    Polars::_decode("df_diff_v2", polars__df_diff_v2(to_json(\%req)))->{frame}
+}
+
+## DataFrame drop duplicates.
+fn Polars::DataFrameExt::drop_duplicates ($frame) {
+    Polars::_decode("df_drop_duplicates", polars__df_drop_duplicates(to_json({ frame => $frame })))->{frame}
+}
+
+## DataFrame empty.
+fn Polars::DataFrameExt::empty ($frame) {
+    Polars::_decode("df_empty", polars__df_empty(to_json({ frame => $frame })))->{empty}
+}
+
+## DataFrame explode v2.
+fn Polars::DataFrameExt::explode_v2 ($frame, $columns) {
+    my %req = (frame => $frame)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_explode_v2", polars__df_explode_v2(to_json(\%req)))->{frame}
+}
+
+## Group by `by` and count each remaining column.
+fn Polars::DataFrameExt::groupby_count () {
+    Polars::_decode("df_groupby_count", polars__df_groupby_count(to_json({})))->{result}
+}
+
+## Group by `by` and max each remaining column.
+fn Polars::DataFrameExt::groupby_max () {
+    Polars::_decode("df_groupby_max", polars__df_groupby_max(to_json({})))->{result}
+}
+
+## Group by `by` and mean each remaining column.
+fn Polars::DataFrameExt::groupby_mean () {
+    Polars::_decode("df_groupby_mean", polars__df_groupby_mean(to_json({})))->{result}
+}
+
+## Group by `by` and min each remaining column.
+fn Polars::DataFrameExt::groupby_min () {
+    Polars::_decode("df_groupby_min", polars__df_groupby_min(to_json({})))->{result}
+}
+
+## Group by `by` and std (ddof=1) each remaining column.
+fn Polars::DataFrameExt::groupby_std () {
+    Polars::_decode("df_groupby_std", polars__df_groupby_std(to_json({})))->{result}
+}
+
+## Group by `by` and sum each remaining column. Args:   `{frame, by: [name, ...]}` Result: `{frame}` — one row per group, summed columns
+fn Polars::DataFrameExt::groupby_sum () {
+    Polars::_decode("df_groupby_sum", polars__df_groupby_sum(to_json({})))->{result}
+}
+
+## Group by `by` and var (ddof=1) each remaining column.
+fn Polars::DataFrameExt::groupby_var () {
+    Polars::_decode("df_groupby_var", polars__df_groupby_var(to_json({})))->{result}
+}
+
+## DataFrame height.
+fn Polars::DataFrameExt::height ($frame) {
+    Polars::_decode("df_height", polars__df_height(to_json({ frame => $frame })))->{height}
+}
+
+## DataFrame melt.
+fn Polars::DataFrameExt::melt ($frame, $id_vars, $value_vars) {
+    my %req = (frame => $frame)
+    $req{id_vars} = $id_vars if defined $id_vars
+    $req{value_vars} = $value_vars if defined $value_vars
+    Polars::_decode("df_melt", polars__df_melt(to_json(\%req)))->{frame}
+}
+
+## DataFrame mode per column.
+fn Polars::DataFrameExt::mode_per_column ($frame) {
+    Polars::_decode("df_mode_per_column", polars__df_mode_per_column(to_json({ frame => $frame })))->{mode}
+}
+
+## DataFrame pct change v2.
+fn Polars::DataFrameExt::pct_change_v2 ($frame, $n) {
+    my %req = (frame => $frame)
+    $req{n} = $n if defined $n
+    Polars::_decode("df_pct_change_v2", polars__df_pct_change_v2(to_json(\%req)))->{frame}
+}
+
+## DataFrame pivot.
+fn Polars::DataFrameExt::pivot ($frame) {
+    my %req = (frame => $frame)
+    Polars::_decode("df_pivot", polars__df_pivot(to_json(\%req)))
+}
+
+## DataFrame rank v2.
+fn Polars::DataFrameExt::rank_v2 ($frame) {
+    Polars::_decode("df_rank_v2", polars__df_rank_v2(to_json({ frame => $frame })))->{frame}
+}
+
+## DataFrame reset index.
+fn Polars::DataFrameExt::reset_index ($frame) {
+    Polars::_decode("df_reset_index", polars__df_reset_index(to_json({ frame => $frame })))->{frame}
+}
+
+## DataFrame sample frac.
+fn Polars::DataFrameExt::sample_frac ($frame, $frac) {
+    Polars::_decode("df_sample_frac", polars__df_sample_frac(to_json({ frame => $frame, frac => $frac })))->{frame}
+}
+
+## DataFrame sample n.
+fn Polars::DataFrameExt::sample_n ($frame, $n, $with_replacement, $seed) {
+    my %req = (frame => $frame, n => $n)
+    $req{with_replacement} = $with_replacement if defined $with_replacement
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("df_sample_n", polars__df_sample_n(to_json(\%req)))->{frame}
+}
+
+## DataFrame set column.
+fn Polars::DataFrameExt::set_column ($frame, $name, $data) {
+    Polars::_decode("df_set_column", polars__df_set_column(to_json({ frame => $frame, name => $name, data => $data })))->{frame}
+}
+
+## DataFrame set index.
+fn Polars::DataFrameExt::set_index ($frame) {
+    Polars::_decode("df_set_index", polars__df_set_index(to_json({ frame => $frame })))->{frame}
+}
+
+## DataFrame shift v2.
+fn Polars::DataFrameExt::shift_v2 ($frame, $n) {
+    my %req = (frame => $frame)
+    $req{n} = $n if defined $n
+    Polars::_decode("df_shift_v2", polars__df_shift_v2(to_json(\%req)))->{frame}
+}
+
+## DataFrame transpose v2.
+fn Polars::DataFrameExt::transpose_v2 ($frame) {
+    Polars::_decode("df_transpose_v2", polars__df_transpose_v2(to_json({ frame => $frame })))->{frame}
+}
+
+## DataFrame width.
+fn Polars::DataFrameExt::width ($frame) {
+    Polars::_decode("df_width", polars__df_width(to_json({ frame => $frame })))->{width}
+}
+
+## Datetime accessor day.
+fn Polars::DataFrameExt::day () {
+    Polars::_decode("dt_day", polars__dt_day(to_json({})))->{result}
+}
+
+## Datetime accessor dayofyear.
+fn Polars::DataFrameExt::dayofyear () {
+    Polars::_decode("dt_dayofyear", polars__dt_dayofyear(to_json({})))->{result}
+}
+
+## Datetime accessor hour.
+fn Polars::DataFrameExt::hour () {
+    Polars::_decode("dt_hour", polars__dt_hour(to_json({})))->{result}
+}
+
+## Datetime accessor minute.
+fn Polars::DataFrameExt::minute () {
+    Polars::_decode("dt_minute", polars__dt_minute(to_json({})))->{result}
+}
+
+## Datetime accessor month.
+fn Polars::DataFrameExt::month () {
+    Polars::_decode("dt_month", polars__dt_month(to_json({})))->{result}
+}
+
+## Datetime accessor quarter.
+fn Polars::DataFrameExt::quarter () {
+    Polars::_decode("dt_quarter", polars__dt_quarter(to_json({})))->{result}
+}
+
+## Datetime accessor second.
+fn Polars::DataFrameExt::second () {
+    Polars::_decode("dt_second", polars__dt_second(to_json({})))->{result}
+}
+
+## Datetime accessor weekday.
+fn Polars::DataFrameExt::weekday () {
+    Polars::_decode("dt_weekday", polars__dt_weekday(to_json({})))->{result}
+}
+
+## Datetime accessor year.
+fn Polars::DataFrameExt::year () {
+    Polars::_decode("dt_year", polars__dt_year(to_json({})))->{result}
+}
+
+## String len.
+fn Polars::DataFrameExt::len () {
+    Polars::_decode("str_len", polars__str_len(to_json({})))->{result}
+}
+
+## String strip.
+fn Polars::DataFrameExt::strip () {
+    Polars::_decode("str_strip", polars__str_strip(to_json({})))->{result}
+}
+
+## String to lower.
+fn Polars::DataFrameExt::to_lower () {
+    Polars::_decode("str_to_lower", polars__str_to_lower(to_json({})))->{result}
+}
+
+## String to upper.
+fn Polars::DataFrameExt::to_upper () {
+    Polars::_decode("str_to_upper", polars__str_to_upper(to_json({})))->{result}
+}
+

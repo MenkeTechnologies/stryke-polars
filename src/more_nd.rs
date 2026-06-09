@@ -186,6 +186,7 @@ fn binary_op<F: Fn(f64, f64) -> f64>(args: &Value, f: F) -> Result<Value> {
     Ok(json!({"array": array_to_value(&r)}))
 }
 
+/// numpy ufunc logaddexp pair.
 #[no_mangle]
 pub extern "C" fn polars__np_logaddexp_pair(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -193,6 +194,7 @@ pub extern "C" fn polars__np_logaddexp_pair(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// numpy ufunc logaddexp2 v2.
 #[no_mangle]
 pub extern "C" fn polars__np_logaddexp2_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -200,6 +202,7 @@ pub extern "C" fn polars__np_logaddexp2_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc nextafter.
 #[no_mangle]
 pub extern "C" fn polars__np_nextafter(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -215,16 +218,19 @@ pub extern "C" fn polars__np_nextafter(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc ldexp.
 #[no_mangle]
 pub extern "C" fn polars__np_ldexp(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x * 2f64.powf(y)))
 }
 
+/// numpy ufunc divmod quot.
 #[no_mangle]
 pub extern "C" fn polars__np_divmod_quot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| (x / y).floor()))
 }
 
+/// numpy ufunc divmod rem.
 #[no_mangle]
 pub extern "C" fn polars__np_divmod_rem(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -232,31 +238,37 @@ pub extern "C" fn polars__np_divmod_rem(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc true divide.
 #[no_mangle]
 pub extern "C" fn polars__np_true_divide(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x / y))
 }
 
+/// numpy ufunc subtract v2.
 #[no_mangle]
 pub extern "C" fn polars__np_subtract_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x - y))
 }
 
+/// numpy ufunc multiply v2.
 #[no_mangle]
 pub extern "C" fn polars__np_multiply_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x * y))
 }
 
+/// numpy ufunc divide v2.
 #[no_mangle]
 pub extern "C" fn polars__np_divide_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x / y))
 }
 
+/// numpy ufunc add pair.
 #[no_mangle]
 pub extern "C" fn polars__np_add_pair(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, |x, y| x + y))
 }
 
+/// numpy ufunc greater.
 #[no_mangle]
 pub extern "C" fn polars__np_greater(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -264,6 +276,7 @@ pub extern "C" fn polars__np_greater(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc greater equal.
 #[no_mangle]
 pub extern "C" fn polars__np_greater_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -271,6 +284,7 @@ pub extern "C" fn polars__np_greater_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc less.
 #[no_mangle]
 pub extern "C" fn polars__np_less(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -278,6 +292,7 @@ pub extern "C" fn polars__np_less(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc less equal.
 #[no_mangle]
 pub extern "C" fn polars__np_less_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -285,6 +300,7 @@ pub extern "C" fn polars__np_less_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc equal.
 #[no_mangle]
 pub extern "C" fn polars__np_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -292,6 +308,7 @@ pub extern "C" fn polars__np_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc not equal.
 #[no_mangle]
 pub extern "C" fn polars__np_not_equal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -299,6 +316,7 @@ pub extern "C" fn polars__np_not_equal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc bitwise and.
 #[no_mangle]
 pub extern "C" fn polars__np_bitwise_and(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -306,6 +324,7 @@ pub extern "C" fn polars__np_bitwise_and(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc bitwise or.
 #[no_mangle]
 pub extern "C" fn polars__np_bitwise_or(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -313,6 +332,7 @@ pub extern "C" fn polars__np_bitwise_or(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc bitwise xor.
 #[no_mangle]
 pub extern "C" fn polars__np_bitwise_xor(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -320,6 +340,7 @@ pub extern "C" fn polars__np_bitwise_xor(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc left shift.
 #[no_mangle]
 pub extern "C" fn polars__np_left_shift(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -327,6 +348,7 @@ pub extern "C" fn polars__np_left_shift(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc right shift.
 #[no_mangle]
 pub extern "C" fn polars__np_right_shift(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -334,6 +356,7 @@ pub extern "C" fn polars__np_right_shift(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc gcd.
 #[no_mangle]
 pub extern "C" fn polars__np_gcd(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -350,6 +373,7 @@ pub extern "C" fn polars__np_gcd(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// numpy ufunc lcm.
 #[no_mangle]
 pub extern "C" fn polars__np_lcm(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -370,6 +394,7 @@ pub extern "C" fn polars__np_lcm(args: *const c_char) -> *mut c_char {
 
 // ── more arr_ construction ─────────────────────────────────────────────────
 
+/// ndarray full v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_full_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -386,6 +411,7 @@ pub extern "C" fn polars__arr_full_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray empty.
 #[no_mangle]
 pub extern "C" fn polars__arr_empty(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -401,6 +427,7 @@ pub extern "C" fn polars__arr_empty(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray eye v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_eye_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -422,6 +449,7 @@ pub extern "C" fn polars__arr_eye_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray identity.
 #[no_mangle]
 pub extern "C" fn polars__arr_identity(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -438,6 +466,7 @@ pub extern "C" fn polars__arr_identity(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray zeros like v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_zeros_like_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -447,6 +476,7 @@ pub extern "C" fn polars__arr_zeros_like_v2(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// ndarray ones like v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_ones_like_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -456,6 +486,7 @@ pub extern "C" fn polars__arr_ones_like_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray full like v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_full_like_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -466,6 +497,7 @@ pub extern "C" fn polars__arr_full_like_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray diagflat.
 #[no_mangle]
 pub extern "C" fn polars__arr_diagflat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -481,6 +513,7 @@ pub extern "C" fn polars__arr_diagflat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray tri.
 #[no_mangle]
 pub extern "C" fn polars__arr_tri(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -499,6 +532,7 @@ pub extern "C" fn polars__arr_tri(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray vander.
 #[no_mangle]
 pub extern "C" fn polars__arr_vander(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -521,6 +555,7 @@ pub extern "C" fn polars__arr_vander(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray meshgrid x.
 #[no_mangle]
 pub extern "C" fn polars__arr_meshgrid_x(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -538,6 +573,7 @@ pub extern "C" fn polars__arr_meshgrid_x(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray meshgrid y.
 #[no_mangle]
 pub extern "C" fn polars__arr_meshgrid_y(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -558,6 +594,7 @@ pub extern "C" fn polars__arr_meshgrid_y(args: *const c_char) -> *mut c_char {
 
 // ── more linalg ─────────────────────────────────────────────────────────────
 
+/// Linear algebra vdot.
 #[no_mangle]
 pub extern "C" fn polars__linalg_vdot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -568,6 +605,7 @@ pub extern "C" fn polars__linalg_vdot(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Linear algebra inner.
 #[no_mangle]
 pub extern "C" fn polars__linalg_inner(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -578,6 +616,7 @@ pub extern "C" fn polars__linalg_inner(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Linear algebra trace v2.
 #[no_mangle]
 pub extern "C" fn polars__linalg_trace_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -594,6 +633,7 @@ pub extern "C" fn polars__linalg_trace_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Linear algebra matrix rank.
 #[no_mangle]
 pub extern "C" fn polars__linalg_matrix_rank(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -609,6 +649,7 @@ pub extern "C" fn polars__linalg_matrix_rank(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Linear algebra lstsq v2.
 #[no_mangle]
 pub extern "C" fn polars__linalg_lstsq_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -628,6 +669,7 @@ pub extern "C" fn polars__linalg_lstsq_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Linear algebra tensordot.
 #[no_mangle]
 pub extern "C" fn polars__linalg_tensordot(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -660,6 +702,7 @@ pub extern "C" fn polars__linalg_tensordot(args: *const c_char) -> *mut c_char {
 
 // ── more random distributions ──────────────────────────────────────────────
 
+/// Random beta v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_beta_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -683,6 +726,7 @@ pub extern "C" fn polars__rand_beta_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random cauchy v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_cauchy_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -700,6 +744,7 @@ pub extern "C" fn polars__rand_cauchy_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random chisquared.
 #[no_mangle]
 pub extern "C" fn polars__rand_chisquared(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -719,6 +764,7 @@ pub extern "C" fn polars__rand_chisquared(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random exponential v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_exponential_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -735,6 +781,7 @@ pub extern "C" fn polars__rand_exponential_v2(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Random f v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_f_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -758,6 +805,7 @@ pub extern "C" fn polars__rand_f_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random gamma v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_gamma_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -778,6 +826,7 @@ pub extern "C" fn polars__rand_gamma_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random pareto v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_pareto_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -798,6 +847,7 @@ pub extern "C" fn polars__rand_pareto_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random studentt.
 #[no_mangle]
 pub extern "C" fn polars__rand_studentt(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -817,6 +867,7 @@ pub extern "C" fn polars__rand_studentt(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random triangular.
 #[no_mangle]
 pub extern "C" fn polars__rand_triangular(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -844,6 +895,7 @@ pub extern "C" fn polars__rand_triangular(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random weibull v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_weibull_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -864,6 +916,7 @@ pub extern "C" fn polars__rand_weibull_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random zipf.
 #[no_mangle]
 pub extern "C" fn polars__rand_zipf(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -897,6 +950,7 @@ pub extern "C" fn polars__rand_zipf(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random logistic.
 #[no_mangle]
 pub extern "C" fn polars__rand_logistic(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -918,6 +972,7 @@ pub extern "C" fn polars__rand_logistic(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random laplace.
 #[no_mangle]
 pub extern "C" fn polars__rand_laplace(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -939,6 +994,7 @@ pub extern "C" fn polars__rand_laplace(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random rayleigh.
 #[no_mangle]
 pub extern "C" fn polars__rand_rayleigh(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -959,6 +1015,7 @@ pub extern "C" fn polars__rand_rayleigh(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random gumbel.
 #[no_mangle]
 pub extern "C" fn polars__rand_gumbel(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -980,6 +1037,7 @@ pub extern "C" fn polars__rand_gumbel(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random bernoulli.
 #[no_mangle]
 pub extern "C" fn polars__rand_bernoulli(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1000,6 +1058,7 @@ pub extern "C" fn polars__rand_bernoulli(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random randint v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_randint_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1022,6 +1081,7 @@ pub extern "C" fn polars__rand_randint_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random random.
 #[no_mangle]
 pub extern "C" fn polars__rand_random(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1036,6 +1096,7 @@ pub extern "C" fn polars__rand_random(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Random standard normal.
 #[no_mangle]
 pub extern "C" fn polars__rand_standard_normal(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1051,6 +1112,7 @@ pub extern "C" fn polars__rand_standard_normal(args: *const c_char) -> *mut c_ch
     })
 }
 
+/// Random dirichlet v2.
 #[no_mangle]
 pub extern "C" fn polars__rand_dirichlet_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1075,6 +1137,7 @@ pub extern "C" fn polars__rand_dirichlet_v2(args: *const c_char) -> *mut c_char 
 
 // ── more FFT ────────────────────────────────────────────────────────────────
 
+/// FFT rfft pow.
 #[no_mangle]
 pub extern "C" fn polars__fft_rfft_pow(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1094,6 +1157,7 @@ pub extern "C" fn polars__fft_rfft_pow(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// FFT fftshift v2.
 #[no_mangle]
 pub extern "C" fn polars__fft_fftshift_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1109,6 +1173,7 @@ pub extern "C" fn polars__fft_fftshift_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// FFT ifftshift v2.
 #[no_mangle]
 pub extern "C" fn polars__fft_ifftshift_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1124,6 +1189,7 @@ pub extern "C" fn polars__fft_ifftshift_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// FFT rfftfreq v2.
 #[no_mangle]
 pub extern "C" fn polars__fft_rfftfreq_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1140,6 +1206,7 @@ pub extern "C" fn polars__fft_rfftfreq_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// FFT fft2.
 #[no_mangle]
 pub extern "C" fn polars__fft_fft2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1192,6 +1259,7 @@ fn coeff_arr(args: &Value, key: &str) -> Result<Vec<f64>> {
     Ok(a.iter().filter_map(|x| x.as_f64()).collect())
 }
 
+/// Polynomial polyadd v2.
 #[no_mangle]
 pub extern "C" fn polars__poly_polyadd_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1209,6 +1277,7 @@ pub extern "C" fn polars__poly_polyadd_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial polysub v2.
 #[no_mangle]
 pub extern "C" fn polars__poly_polysub_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1226,6 +1295,7 @@ pub extern "C" fn polars__poly_polysub_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial polymul v2.
 #[no_mangle]
 pub extern "C" fn polars__poly_polymul_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1242,6 +1312,7 @@ pub extern "C" fn polars__poly_polymul_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial chebyshev t.
 #[no_mangle]
 pub extern "C" fn polars__poly_chebyshev_t(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1274,6 +1345,7 @@ pub extern "C" fn polars__poly_chebyshev_t(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial chebyshev u.
 #[no_mangle]
 pub extern "C" fn polars__poly_chebyshev_u(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1306,6 +1378,7 @@ pub extern "C" fn polars__poly_chebyshev_u(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial legendre.
 #[no_mangle]
 pub extern "C" fn polars__poly_legendre(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1339,6 +1412,7 @@ pub extern "C" fn polars__poly_legendre(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial hermite.
 #[no_mangle]
 pub extern "C" fn polars__poly_hermite(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1372,6 +1446,7 @@ pub extern "C" fn polars__poly_hermite(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial laguerre.
 #[no_mangle]
 pub extern "C" fn polars__poly_laguerre(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1405,6 +1480,7 @@ pub extern "C" fn polars__poly_laguerre(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Polynomial polyroots real.
 #[no_mangle]
 pub extern "C" fn polars__poly_polyroots_real(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1436,6 +1512,7 @@ pub extern "C" fn polars__poly_polyroots_real(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Polynomial polyfit v2.
 #[no_mangle]
 pub extern "C" fn polars__poly_polyfit_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1467,6 +1544,7 @@ pub extern "C" fn polars__poly_polyfit_v2(args: *const c_char) -> *mut c_char {
 
 // ── arr — reductions axis-naive ────────────────────────────────────────────
 
+/// ndarray argmax flat.
 #[no_mangle]
 pub extern "C" fn polars__arr_argmax_flat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1480,6 +1558,7 @@ pub extern "C" fn polars__arr_argmax_flat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray argmin flat.
 #[no_mangle]
 pub extern "C" fn polars__arr_argmin_flat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1493,6 +1572,7 @@ pub extern "C" fn polars__arr_argmin_flat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray argwhere.
 #[no_mangle]
 pub extern "C" fn polars__arr_argwhere(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1506,6 +1586,7 @@ pub extern "C" fn polars__arr_argwhere(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray nonzero.
 #[no_mangle]
 pub extern "C" fn polars__arr_nonzero(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1519,6 +1600,7 @@ pub extern "C" fn polars__arr_nonzero(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray take flat.
 #[no_mangle]
 pub extern "C" fn polars__arr_take_flat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1539,6 +1621,7 @@ pub extern "C" fn polars__arr_take_flat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray put flat.
 #[no_mangle]
 pub extern "C" fn polars__arr_put_flat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1564,6 +1647,7 @@ pub extern "C" fn polars__arr_put_flat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray diagonal offset.
 #[no_mangle]
 pub extern "C" fn polars__arr_diagonal_offset(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1595,6 +1679,7 @@ pub extern "C" fn polars__arr_diagonal_offset(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// ndarray triu.
 #[no_mangle]
 pub extern "C" fn polars__arr_triu(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1617,6 +1702,7 @@ pub extern "C" fn polars__arr_triu(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray tril.
 #[no_mangle]
 pub extern "C" fn polars__arr_tril(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1639,6 +1725,7 @@ pub extern "C" fn polars__arr_tril(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray pad v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_pad_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1656,6 +1743,7 @@ pub extern "C" fn polars__arr_pad_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray roll v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_roll_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1675,6 +1763,7 @@ pub extern "C" fn polars__arr_roll_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray clip axis.
 #[no_mangle]
 pub extern "C" fn polars__arr_clip_axis(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1692,6 +1781,7 @@ pub extern "C" fn polars__arr_clip_axis(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray resize.
 #[no_mangle]
 pub extern "C" fn polars__arr_resize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1714,6 +1804,7 @@ pub extern "C" fn polars__arr_resize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray unique flat.
 #[no_mangle]
 pub extern "C" fn polars__arr_unique_flat(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1732,6 +1823,7 @@ pub extern "C" fn polars__arr_unique_flat(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray isclose v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_isclose_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1758,6 +1850,7 @@ pub extern "C" fn polars__arr_isclose_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray allclose v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_allclose_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1776,6 +1869,7 @@ pub extern "C" fn polars__arr_allclose_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray array equal v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_array_equal_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1792,6 +1886,7 @@ pub extern "C" fn polars__arr_array_equal_v2(args: *const c_char) -> *mut c_char
     })
 }
 
+/// ndarray searchsorted v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_searchsorted_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1805,6 +1900,7 @@ pub extern "C" fn polars__arr_searchsorted_v2(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// ndarray bincount v2.
 #[no_mangle]
 pub extern "C" fn polars__arr_bincount_v2(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1821,6 +1917,7 @@ pub extern "C" fn polars__arr_bincount_v2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray digitize.
 #[no_mangle]
 pub extern "C" fn polars__arr_digitize(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1838,6 +1935,7 @@ pub extern "C" fn polars__arr_digitize(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray select.
 #[no_mangle]
 pub extern "C" fn polars__arr_select(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1884,6 +1982,7 @@ pub extern "C" fn polars__arr_select(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray where.
 #[no_mangle]
 pub extern "C" fn polars__arr_where(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1907,6 +2006,7 @@ pub extern "C" fn polars__arr_where(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ndarray choose.
 #[no_mangle]
 pub extern "C" fn polars__arr_choose(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

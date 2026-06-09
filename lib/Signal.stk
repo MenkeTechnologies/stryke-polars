@@ -1,0 +1,230 @@
+## lib/Signal.stk — `use Polars::Signal`
+##
+## Wrappers around the cdylib `polars__*` exports for the `sig_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Signal
+
+use Polars
+
+## Signal autocorrelate.
+fn Polars::Signal::autocorrelate ($array) {
+    Polars::_decode("sig_autocorrelate", polars__sig_autocorrelate(to_json({ array => $array })))->{array}
+}
+
+## Signal bollinger lower.
+fn Polars::Signal::bollinger_lower ($array, $window, $k) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    $req{k} = $k if defined $k
+    Polars::_decode("sig_bollinger_lower", polars__sig_bollinger_lower(to_json(\%req)))->{array}
+}
+
+## Signal bollinger upper.
+fn Polars::Signal::bollinger_upper ($array, $window, $k) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    $req{k} = $k if defined $k
+    Polars::_decode("sig_bollinger_upper", polars__sig_bollinger_upper(to_json(\%req)))->{array}
+}
+
+## Signal chunk mean.
+fn Polars::Signal::chunk_mean ($array, $chunk) {
+    my %req = (array => $array)
+    $req{chunk} = $chunk if defined $chunk
+    Polars::_decode("sig_chunk_mean", polars__sig_chunk_mean(to_json(\%req)))->{array}
+}
+
+## Signal convolve.
+fn Polars::Signal::convolve ($a, $b, $mode) {
+    my %req = (a => $a, b => $b)
+    $req{mode} = $mode if defined $mode
+    Polars::_decode("sig_convolve", polars__sig_convolve(to_json(\%req)))->{array}
+}
+
+## Signal correlate.
+fn Polars::Signal::correlate ($a, $b, $mode) {
+    my %req = (a => $a, b => $b)
+    $req{mode} = $mode if defined $mode
+    Polars::_decode("sig_correlate", polars__sig_correlate(to_json(\%req)))->{array}
+}
+
+## Signal decimate.
+fn Polars::Signal::decimate ($array, $q) {
+    Polars::_decode("sig_decimate", polars__sig_decimate(to_json({ array => $array, q => $q })))->{array}
+}
+
+## Signal dema.
+fn Polars::Signal::dema ($array, $alpha) {
+    my %req = (array => $array)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("sig_dema", polars__sig_dema(to_json(\%req)))->{array}
+}
+
+## Signal detrend.
+fn Polars::Signal::detrend ($array) {
+    Polars::_decode("sig_detrend", polars__sig_detrend(to_json({ array => $array })))->{array}
+}
+
+## Signal detrend mean.
+fn Polars::Signal::detrend_mean ($array) {
+    Polars::_decode("sig_detrend_mean", polars__sig_detrend_mean(to_json({ array => $array })))->{array}
+}
+
+## Signal diff.
+fn Polars::Signal::diff ($array) {
+    Polars::_decode("sig_diff", polars__sig_diff(to_json({ array => $array })))->{array}
+}
+
+## Signal ema.
+fn Polars::Signal::ema ($array, $alpha) {
+    my %req = (array => $array)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("sig_ema", polars__sig_ema(to_json(\%req)))->{array}
+}
+
+## Signal envelope lower.
+fn Polars::Signal::envelope_lower ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_envelope_lower", polars__sig_envelope_lower(to_json(\%req)))->{array}
+}
+
+## Signal envelope upper.
+fn Polars::Signal::envelope_upper ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_envelope_upper", polars__sig_envelope_upper(to_json(\%req)))->{array}
+}
+
+## Signal find peaks.
+fn Polars::Signal::find_peaks ($array, $height) {
+    my %req = (array => $array)
+    $req{height} = $height if defined $height
+    Polars::_decode("sig_find_peaks", polars__sig_find_peaks(to_json(\%req)))->{peaks}
+}
+
+## Signal find valleys.
+fn Polars::Signal::find_valleys ($array) {
+    Polars::_decode("sig_find_valleys", polars__sig_find_valleys(to_json({ array => $array })))->{valleys}
+}
+
+## Signal gradient.
+fn Polars::Signal::gradient ($array) {
+    Polars::_decode("sig_gradient", polars__sig_gradient(to_json({ array => $array })))->{array}
+}
+
+## Signal integral.
+fn Polars::Signal::integral ($array) {
+    Polars::_decode("sig_integral", polars__sig_integral(to_json({ array => $array })))->{array}
+}
+
+## Signal macd.
+fn Polars::Signal::macd ($array, $fast, $slow) {
+    my %req = (array => $array)
+    $req{fast} = $fast if defined $fast
+    $req{slow} = $slow if defined $slow
+    Polars::_decode("sig_macd", polars__sig_macd(to_json(\%req)))->{array}
+}
+
+## Signal median filter.
+fn Polars::Signal::median_filter ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_median_filter", polars__sig_median_filter(to_json(\%req)))->{array}
+}
+
+## Signal normalize.
+fn Polars::Signal::normalize ($array) {
+    Polars::_decode("sig_normalize", polars__sig_normalize(to_json({ array => $array })))->{array}
+}
+
+## Signal peak to peak.
+fn Polars::Signal::peak_to_peak ($array) {
+    Polars::_decode("sig_peak_to_peak", polars__sig_peak_to_peak(to_json({ array => $array })))->{peak_to_peak}
+}
+
+## Signal resample.
+fn Polars::Signal::resample ($array, $n) {
+    Polars::_decode("sig_resample", polars__sig_resample(to_json({ array => $array, n => $n })))->{array}
+}
+
+## Signal rms.
+fn Polars::Signal::rms ($array) {
+    Polars::_decode("sig_rms", polars__sig_rms(to_json({ array => $array })))->{rms}
+}
+
+## Signal rsi.
+fn Polars::Signal::rsi ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_rsi", polars__sig_rsi(to_json(\%req)))->{array}
+}
+
+## Signal simpson.
+fn Polars::Signal::simpson ($array, $dx) {
+    my %req = (array => $array)
+    $req{dx} = $dx if defined $dx
+    Polars::_decode("sig_simpson", polars__sig_simpson(to_json(\%req)))->{simpson}
+}
+
+## Signal sma.
+fn Polars::Signal::sma ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_sma", polars__sig_sma(to_json(\%req)))->{array}
+}
+
+## Signal smooth box.
+fn Polars::Signal::smooth_box ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_smooth_box", polars__sig_smooth_box(to_json(\%req)))->{array}
+}
+
+## Signal smooth gaussian.
+fn Polars::Signal::smooth_gaussian ($array, $sigma) {
+    my %req = (array => $array)
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("sig_smooth_gaussian", polars__sig_smooth_gaussian(to_json(\%req)))->{array}
+}
+
+## Signal smooth triangle.
+fn Polars::Signal::smooth_triangle ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_smooth_triangle", polars__sig_smooth_triangle(to_json(\%req)))->{array}
+}
+
+## Signal trapz.
+fn Polars::Signal::trapz ($array, $dx) {
+    my %req = (array => $array)
+    $req{dx} = $dx if defined $dx
+    Polars::_decode("sig_trapz", polars__sig_trapz(to_json(\%req)))->{trapz}
+}
+
+## Signal unwrap.
+fn Polars::Signal::unwrap ($array) {
+    Polars::_decode("sig_unwrap", polars__sig_unwrap(to_json({ array => $array })))->{array}
+}
+
+## Signal upsample.
+fn Polars::Signal::upsample ($array, $factor) {
+    my %req = (array => $array)
+    $req{factor} = $factor if defined $factor
+    Polars::_decode("sig_upsample", polars__sig_upsample(to_json(\%req)))->{array}
+}
+
+## Signal wma.
+fn Polars::Signal::wma ($array, $window) {
+    my %req = (array => $array)
+    $req{window} = $window if defined $window
+    Polars::_decode("sig_wma", polars__sig_wma(to_json(\%req)))->{array}
+}
+
+## Signal zero crossings.
+fn Polars::Signal::zero_crossings ($array) {
+    Polars::_decode("sig_zero_crossings", polars__sig_zero_crossings(to_json({ array => $array })))->{zero_crossings}
+}
+

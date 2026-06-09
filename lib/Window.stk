@@ -1,0 +1,103 @@
+## lib/Window.stk — `use Polars::Window`
+##
+## Wrappers around the cdylib `polars__*` exports for the `win_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::Window
+
+use Polars
+
+## Window function bartlett.
+fn Polars::Window::bartlett ($n) {
+    Polars::_decode("win_bartlett", polars__win_bartlett(to_json({ n => $n })))->{array}
+}
+
+## Window function blackman.
+fn Polars::Window::blackman ($n) {
+    Polars::_decode("win_blackman", polars__win_blackman(to_json({ n => $n })))->{array}
+}
+
+## Window function blackman harris.
+fn Polars::Window::blackman_harris ($n) {
+    Polars::_decode("win_blackman_harris", polars__win_blackman_harris(to_json({ n => $n })))->{array}
+}
+
+## Window function bohman.
+fn Polars::Window::bohman ($n) {
+    Polars::_decode("win_bohman", polars__win_bohman(to_json({ n => $n })))->{array}
+}
+
+## Window function cosine.
+fn Polars::Window::cosine ($n) {
+    Polars::_decode("win_cosine", polars__win_cosine(to_json({ n => $n })))->{array}
+}
+
+## Window function exponential.
+fn Polars::Window::exponential ($n, $tau) {
+    my %req = (n => $n)
+    $req{tau} = $tau if defined $tau
+    Polars::_decode("win_exponential", polars__win_exponential(to_json(\%req)))->{array}
+}
+
+## Window function flattop.
+fn Polars::Window::flattop ($n) {
+    Polars::_decode("win_flattop", polars__win_flattop(to_json({ n => $n })))->{array}
+}
+
+## Window function gaussian.
+fn Polars::Window::gaussian ($n, $sigma) {
+    my %req = (n => $n)
+    $req{sigma} = $sigma if defined $sigma
+    Polars::_decode("win_gaussian", polars__win_gaussian(to_json(\%req)))->{array}
+}
+
+## Window function hamming.
+fn Polars::Window::hamming ($n) {
+    Polars::_decode("win_hamming", polars__win_hamming(to_json({ n => $n })))->{array}
+}
+
+## Window function hann.
+fn Polars::Window::hann ($n) {
+    Polars::_decode("win_hann", polars__win_hann(to_json({ n => $n })))->{array}
+}
+
+## Window function kaiser.
+fn Polars::Window::kaiser ($n, $beta) {
+    my %req = (n => $n)
+    $req{beta} = $beta if defined $beta
+    Polars::_decode("win_kaiser", polars__win_kaiser(to_json(\%req)))->{array}
+}
+
+## Window function lanczos.
+fn Polars::Window::lanczos ($n) {
+    Polars::_decode("win_lanczos", polars__win_lanczos(to_json({ n => $n })))->{array}
+}
+
+## Window function nuttall.
+fn Polars::Window::nuttall ($n) {
+    Polars::_decode("win_nuttall", polars__win_nuttall(to_json({ n => $n })))->{array}
+}
+
+## Window function parzen.
+fn Polars::Window::parzen ($n) {
+    Polars::_decode("win_parzen", polars__win_parzen(to_json({ n => $n })))->{array}
+}
+
+## Window function rectangular.
+fn Polars::Window::rectangular ($n) {
+    Polars::_decode("win_rectangular", polars__win_rectangular(to_json({ n => $n })))->{array}
+}
+
+## Window function triangular.
+fn Polars::Window::triangular ($n) {
+    Polars::_decode("win_triangular", polars__win_triangular(to_json({ n => $n })))->{array}
+}
+
+## Window function tukey.
+fn Polars::Window::tukey ($n, $alpha) {
+    my %req = (n => $n)
+    $req{alpha} = $alpha if defined $alpha
+    Polars::_decode("win_tukey", polars__win_tukey(to_json(\%req)))->{array}
+}
+

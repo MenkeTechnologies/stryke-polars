@@ -1,0 +1,340 @@
+## lib/UfuncExt.stk — `use Polars::UfuncExt`
+##
+## Wrappers around the cdylib `polars__*` exports for the `np_*` family.
+## Auto-generated from src/*.rs sources — args, return keys, and docstrings
+## come straight from the Rust definitions.
+
+package Polars::UfuncExt
+
+use Polars
+
+## Elementwise abs.
+fn Polars::UfuncExt::abs () {
+    Polars::_decode("np_abs", polars__np_abs(to_json({})))->{array}
+}
+
+## Elementwise a + b. Shapes must match (no broadcasting in this slice).
+fn Polars::UfuncExt::add () {
+    Polars::_decode("np_add", polars__np_add(to_json({})))->{array}
+}
+
+## numpy ufunc add pair.
+fn Polars::UfuncExt::add_pair () {
+    Polars::_decode("np_add_pair", polars__np_add_pair(to_json({})))->{array}
+}
+
+## Add a scalar to every element of array.
+fn Polars::UfuncExt::add_scalar () {
+    Polars::_decode("np_add_scalar", polars__np_add_scalar(to_json({})))->{result}
+}
+
+## numpy ufunc arctan2.
+fn Polars::UfuncExt::arctan2 () {
+    Polars::_decode("np_arctan2", polars__np_arctan2(to_json({})))->{array}
+}
+
+## numpy ufunc bitwise and.
+fn Polars::UfuncExt::bitwise_and () {
+    Polars::_decode("np_bitwise_and", polars__np_bitwise_and(to_json({})))->{array}
+}
+
+## numpy ufunc bitwise or.
+fn Polars::UfuncExt::bitwise_or () {
+    Polars::_decode("np_bitwise_or", polars__np_bitwise_or(to_json({})))->{array}
+}
+
+## numpy ufunc bitwise xor.
+fn Polars::UfuncExt::bitwise_xor () {
+    Polars::_decode("np_bitwise_xor", polars__np_bitwise_xor(to_json({})))->{array}
+}
+
+## numpy ufunc cbrt.
+fn Polars::UfuncExt::cbrt () {
+    Polars::_decode("np_cbrt", polars__np_cbrt(to_json({})))->{array}
+}
+
+## Elementwise ceil.
+fn Polars::UfuncExt::ceil () {
+    Polars::_decode("np_ceil", polars__np_ceil(to_json({})))->{array}
+}
+
+## numpy ufunc copysign.
+fn Polars::UfuncExt::copysign () {
+    Polars::_decode("np_copysign", polars__np_copysign(to_json({})))->{array}
+}
+
+## Elementwise cos.
+fn Polars::UfuncExt::cos () {
+    Polars::_decode("np_cos", polars__np_cos(to_json({})))->{array}
+}
+
+## Elementwise cosh.
+fn Polars::UfuncExt::cosh () {
+    Polars::_decode("np_cosh", polars__np_cosh(to_json({})))->{array}
+}
+
+## numpy ufunc degrees.
+fn Polars::UfuncExt::degrees () {
+    Polars::_decode("np_degrees", polars__np_degrees(to_json({})))->{array}
+}
+
+## Elementwise a / b.
+fn Polars::UfuncExt::divide () {
+    Polars::_decode("np_divide", polars__np_divide(to_json({})))->{array}
+}
+
+## Divide every element by a scalar.
+fn Polars::UfuncExt::divide_scalar () {
+    Polars::_decode("np_divide_scalar", polars__np_divide_scalar(to_json({})))->{result}
+}
+
+## numpy ufunc divide v2.
+fn Polars::UfuncExt::divide_v2 () {
+    Polars::_decode("np_divide_v2", polars__np_divide_v2(to_json({})))->{array}
+}
+
+## numpy ufunc divmod quot.
+fn Polars::UfuncExt::divmod_quot () {
+    Polars::_decode("np_divmod_quot", polars__np_divmod_quot(to_json({})))->{array}
+}
+
+## numpy ufunc divmod rem.
+fn Polars::UfuncExt::divmod_rem () {
+    Polars::_decode("np_divmod_rem", polars__np_divmod_rem(to_json({})))->{array}
+}
+
+## numpy ufunc equal.
+fn Polars::UfuncExt::equal () {
+    Polars::_decode("np_equal", polars__np_equal(to_json({})))->{array}
+}
+
+## Elementwise exp.
+fn Polars::UfuncExt::exp () {
+    Polars::_decode("np_exp", polars__np_exp(to_json({})))->{array}
+}
+
+## Elementwise exp2 (2^x).
+fn Polars::UfuncExt::exp2 () {
+    Polars::_decode("np_exp2", polars__np_exp2(to_json({})))->{array}
+}
+
+## numpy ufunc expm1.
+fn Polars::UfuncExt::expm1 () {
+    Polars::_decode("np_expm1", polars__np_expm1(to_json({})))->{array}
+}
+
+## `np.fix(x)` — round toward zero (alias for trunc).
+fn Polars::UfuncExt::fix () {
+    Polars::_decode("np_fix", polars__np_fix(to_json({})))->{array}
+}
+
+## Elementwise floor (re-exposed at np_ prefix matching numpy convention).
+fn Polars::UfuncExt::floor () {
+    Polars::_decode("np_floor", polars__np_floor(to_json({})))->{array}
+}
+
+## Elementwise NaN-aware max (NaN treated as missing).
+fn Polars::UfuncExt::fmax () {
+    Polars::_decode("np_fmax", polars__np_fmax(to_json({})))->{array}
+}
+
+## Elementwise NaN-aware min.
+fn Polars::UfuncExt::fmin () {
+    Polars::_decode("np_fmin", polars__np_fmin(to_json({})))->{array}
+}
+
+## numpy ufunc gcd.
+fn Polars::UfuncExt::gcd () {
+    Polars::_decode("np_gcd", polars__np_gcd(to_json({})))->{array}
+}
+
+## numpy ufunc greater.
+fn Polars::UfuncExt::greater () {
+    Polars::_decode("np_greater", polars__np_greater(to_json({})))->{array}
+}
+
+## numpy ufunc greater equal.
+fn Polars::UfuncExt::greater_equal () {
+    Polars::_decode("np_greater_equal", polars__np_greater_equal(to_json({})))->{array}
+}
+
+## numpy ufunc hypot.
+fn Polars::UfuncExt::hypot () {
+    Polars::_decode("np_hypot", polars__np_hypot(to_json({})))->{array}
+}
+
+## Elementwise isfinite.
+fn Polars::UfuncExt::isfinite () {
+    Polars::_decode("np_isfinite", polars__np_isfinite(to_json({})))->{array}
+}
+
+## Elementwise isinf.
+fn Polars::UfuncExt::isinf () {
+    Polars::_decode("np_isinf", polars__np_isinf(to_json({})))->{array}
+}
+
+## Elementwise isnan (1.0/0.0 result).
+fn Polars::UfuncExt::isnan () {
+    Polars::_decode("np_isnan", polars__np_isnan(to_json({})))->{array}
+}
+
+## numpy ufunc lcm.
+fn Polars::UfuncExt::lcm () {
+    Polars::_decode("np_lcm", polars__np_lcm(to_json({})))->{array}
+}
+
+## numpy ufunc ldexp.
+fn Polars::UfuncExt::ldexp () {
+    Polars::_decode("np_ldexp", polars__np_ldexp(to_json({})))->{array}
+}
+
+## numpy ufunc left shift.
+fn Polars::UfuncExt::left_shift () {
+    Polars::_decode("np_left_shift", polars__np_left_shift(to_json({})))->{array}
+}
+
+## numpy ufunc less.
+fn Polars::UfuncExt::less () {
+    Polars::_decode("np_less", polars__np_less(to_json({})))->{array}
+}
+
+## numpy ufunc less equal.
+fn Polars::UfuncExt::less_equal () {
+    Polars::_decode("np_less_equal", polars__np_less_equal(to_json({})))->{array}
+}
+
+## Elementwise natural log.
+fn Polars::UfuncExt::log () {
+    Polars::_decode("np_log", polars__np_log(to_json({})))->{array}
+}
+
+## Elementwise log10.
+fn Polars::UfuncExt::log10 () {
+    Polars::_decode("np_log10", polars__np_log10(to_json({})))->{array}
+}
+
+## numpy ufunc log1p.
+fn Polars::UfuncExt::log1p () {
+    Polars::_decode("np_log1p", polars__np_log1p(to_json({})))->{array}
+}
+
+## Elementwise log2.
+fn Polars::UfuncExt::log2 () {
+    Polars::_decode("np_log2", polars__np_log2(to_json({})))->{array}
+}
+
+## numpy ufunc logaddexp2 v2.
+fn Polars::UfuncExt::logaddexp2_v2 () {
+    Polars::_decode("np_logaddexp2_v2", polars__np_logaddexp2_v2(to_json({})))->{array}
+}
+
+## numpy ufunc logaddexp pair.
+fn Polars::UfuncExt::logaddexp_pair () {
+    Polars::_decode("np_logaddexp_pair", polars__np_logaddexp_pair(to_json({})))->{array}
+}
+
+## Logical OR.
+fn Polars::UfuncExt::logical_or () {
+    Polars::_decode("np_logical_or", polars__np_logical_or(to_json({})))->{array}
+}
+
+## Elementwise mod (`a % b`). Shapes must match.
+fn Polars::UfuncExt::mod () {
+    Polars::_decode("np_mod", polars__np_mod(to_json({})))->{array}
+}
+
+## numpy ufunc multiply v2.
+fn Polars::UfuncExt::multiply_v2 () {
+    Polars::_decode("np_multiply_v2", polars__np_multiply_v2(to_json({})))->{array}
+}
+
+## numpy ufunc negative.
+fn Polars::UfuncExt::negative () {
+    Polars::_decode("np_negative", polars__np_negative(to_json({})))->{array}
+}
+
+## numpy ufunc nextafter.
+fn Polars::UfuncExt::nextafter () {
+    Polars::_decode("np_nextafter", polars__np_nextafter(to_json({})))->{array}
+}
+
+## numpy ufunc not equal.
+fn Polars::UfuncExt::not_equal () {
+    Polars::_decode("np_not_equal", polars__np_not_equal(to_json({})))->{array}
+}
+
+## Elementwise power: `a^b` per element. Shapes must match.
+fn Polars::UfuncExt::power () {
+    Polars::_decode("np_power", polars__np_power(to_json({})))->{array}
+}
+
+## Raise every element to a scalar power.
+fn Polars::UfuncExt::power_scalar () {
+    Polars::_decode("np_power_scalar", polars__np_power_scalar(to_json({})))->{result}
+}
+
+## numpy ufunc radians.
+fn Polars::UfuncExt::radians () {
+    Polars::_decode("np_radians", polars__np_radians(to_json({})))->{array}
+}
+
+## numpy ufunc right shift.
+fn Polars::UfuncExt::right_shift () {
+    Polars::_decode("np_right_shift", polars__np_right_shift(to_json({})))->{array}
+}
+
+## Round to nearest integer (banker's rounding via f64::round_ties_even).
+fn Polars::UfuncExt::rint () {
+    Polars::_decode("np_rint", polars__np_rint(to_json({})))->{array}
+}
+
+## Elementwise sign (-1 / 0 / +1).
+fn Polars::UfuncExt::sign () {
+    Polars::_decode("np_sign", polars__np_sign(to_json({})))->{array}
+}
+
+## Elementwise sin.
+fn Polars::UfuncExt::sin () {
+    Polars::_decode("np_sin", polars__np_sin(to_json({})))->{array}
+}
+
+## `np.sinc(x)` — normalized sinc: `sin(πx) / (πx)` (1 at x=0).
+fn Polars::UfuncExt::sinc () {
+    Polars::_decode("np_sinc", polars__np_sinc(to_json({})))->{array}
+}
+
+## Elementwise sinh.
+fn Polars::UfuncExt::sinh () {
+    Polars::_decode("np_sinh", polars__np_sinh(to_json({})))->{array}
+}
+
+## numpy ufunc square.
+fn Polars::UfuncExt::square () {
+    Polars::_decode("np_square", polars__np_square(to_json({})))->{array}
+}
+
+## numpy ufunc subtract v2.
+fn Polars::UfuncExt::subtract_v2 () {
+    Polars::_decode("np_subtract_v2", polars__np_subtract_v2(to_json({})))->{array}
+}
+
+## Elementwise tan.
+fn Polars::UfuncExt::tan () {
+    Polars::_decode("np_tan", polars__np_tan(to_json({})))->{array}
+}
+
+## Elementwise tanh.
+fn Polars::UfuncExt::tanh () {
+    Polars::_decode("np_tanh", polars__np_tanh(to_json({})))->{array}
+}
+
+## numpy ufunc true divide.
+fn Polars::UfuncExt::true_divide () {
+    Polars::_decode("np_true_divide", polars__np_true_divide(to_json({})))->{array}
+}
+
+## numpy ufunc trunc.
+fn Polars::UfuncExt::trunc () {
+    Polars::_decode("np_trunc", polars__np_trunc(to_json({})))->{array}
+}
+

@@ -553,5 +553,3 @@ fn Polars::DataFrame::sample ($cols, $n, $seed) {
 fn Polars::DataFrame::replace_value ($cols, $column, $from, $to) {
     Polars::_decode("df_replace_value", polars__df_replace_value(to_json({ frame => $cols, column => $column, from => $from, to => $to })))->{frame}
 }
-
-1

@@ -1,3 +1,4 @@
+#![deny(missing_docs)]
 //! stryke-polars — Polars-backed pandas + numpy surface cdylib loaded
 //! in-process by stryke via dlopen.
 //!

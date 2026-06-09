@@ -1554,6 +1554,7 @@ fn str_op(args: &Value, op_name: &str, build: impl Fn(Expr) -> Expr) -> Result<V
     return_frame(result)
 }
 
+/// String to upper.
 #[no_mangle]
 pub extern "C" fn polars__str_to_upper(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1561,6 +1562,7 @@ pub extern "C" fn polars__str_to_upper(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String to lower.
 #[no_mangle]
 pub extern "C" fn polars__str_to_lower(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1568,6 +1570,7 @@ pub extern "C" fn polars__str_to_lower(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String len.
 #[no_mangle]
 pub extern "C" fn polars__str_len(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "len", |e| e.str().len_chars()))
@@ -1592,6 +1595,7 @@ pub extern "C" fn polars__str_contains(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String starts with.
 #[no_mangle]
 pub extern "C" fn polars__str_starts_with(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1606,6 +1610,7 @@ pub extern "C" fn polars__str_starts_with(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String ends with.
 #[no_mangle]
 pub extern "C" fn polars__str_ends_with(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1618,6 +1623,7 @@ pub extern "C" fn polars__str_ends_with(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String strip.
 #[no_mangle]
 pub extern "C" fn polars__str_strip(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1625,6 +1631,7 @@ pub extern "C" fn polars__str_strip(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String replace all.
 #[no_mangle]
 pub extern "C" fn polars__str_replace_all(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1651,46 +1658,55 @@ pub extern "C" fn polars__str_replace_all(args: *const c_char) -> *mut c_char {
 
 // ── P3: datetime accessor (`.dt.*`) ────────────────────────────────────────
 
+/// Datetime accessor year.
 #[no_mangle]
 pub extern "C" fn polars__dt_year(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "year", |e| e.dt().year()))
 }
 
+/// Datetime accessor month.
 #[no_mangle]
 pub extern "C" fn polars__dt_month(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "month", |e| e.dt().month()))
 }
 
+/// Datetime accessor day.
 #[no_mangle]
 pub extern "C" fn polars__dt_day(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "day", |e| e.dt().day()))
 }
 
+/// Datetime accessor hour.
 #[no_mangle]
 pub extern "C" fn polars__dt_hour(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "hour", |e| e.dt().hour()))
 }
 
+/// Datetime accessor minute.
 #[no_mangle]
 pub extern "C" fn polars__dt_minute(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "minute", |e| e.dt().minute()))
 }
 
+/// Datetime accessor second.
 #[no_mangle]
 pub extern "C" fn polars__dt_second(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "second", |e| e.dt().second()))
 }
 
+/// Datetime accessor weekday.
 #[no_mangle]
 pub extern "C" fn polars__dt_weekday(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "weekday", |e| e.dt().weekday()))
 }
 
+/// Datetime accessor quarter.
 #[no_mangle]
 pub extern "C" fn polars__dt_quarter(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "quarter", |e| e.dt().quarter()))
 }
 
+/// Datetime accessor dayofyear.
 #[no_mangle]
 pub extern "C" fn polars__dt_dayofyear(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1698,11 +1714,13 @@ pub extern "C" fn polars__dt_dayofyear(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Datetime accessor weekofyear.
 #[no_mangle]
 pub extern "C" fn polars__dt_weekofyear(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "weekofyear", |e| e.dt().week()))
 }
 
+/// String pad start.
 #[no_mangle]
 pub extern "C" fn polars__str_pad_start(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1719,6 +1737,7 @@ pub extern "C" fn polars__str_pad_start(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String pad end.
 #[no_mangle]
 pub extern "C" fn polars__str_pad_end(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1735,6 +1754,7 @@ pub extern "C" fn polars__str_pad_end(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String count matches.
 #[no_mangle]
 pub extern "C" fn polars__str_count_matches(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1753,11 +1773,13 @@ pub extern "C" fn polars__str_count_matches(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// String reverse.
 #[no_mangle]
 pub extern "C" fn polars__str_reverse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "reverse", |e| e.str().reverse()))
 }
 
+/// String head.
 #[no_mangle]
 pub extern "C" fn polars__str_head(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1769,6 +1791,7 @@ pub extern "C" fn polars__str_head(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String tail.
 #[no_mangle]
 pub extern "C" fn polars__str_tail(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1780,6 +1803,7 @@ pub extern "C" fn polars__str_tail(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Datetime accessor timestamp.
 #[no_mangle]
 pub extern "C" fn polars__dt_timestamp(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1789,6 +1813,7 @@ pub extern "C" fn polars__dt_timestamp(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Datetime accessor iso year.
 #[no_mangle]
 pub extern "C" fn polars__dt_iso_year(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1796,6 +1821,7 @@ pub extern "C" fn polars__dt_iso_year(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Datetime accessor strftime.
 #[no_mangle]
 pub extern "C" fn polars__dt_strftime(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1808,6 +1834,7 @@ pub extern "C" fn polars__dt_strftime(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String zfill.
 #[no_mangle]
 pub extern "C" fn polars__str_zfill(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1819,6 +1846,7 @@ pub extern "C" fn polars__str_zfill(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame cast column.
 #[no_mangle]
 pub extern "C" fn polars__df_cast_column(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1849,6 +1877,7 @@ pub extern "C" fn polars__df_cast_column(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame extend.
 #[no_mangle]
 pub extern "C" fn polars__df_extend(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1862,6 +1891,7 @@ pub extern "C" fn polars__df_extend(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame with row index.
 #[no_mangle]
 pub extern "C" fn polars__df_with_row_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1878,6 +1908,7 @@ pub extern "C" fn polars__df_with_row_index(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// DataFrame reverse.
 #[no_mangle]
 pub extern "C" fn polars__df_reverse(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1887,6 +1918,7 @@ pub extern "C" fn polars__df_reverse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame n unique.
 #[no_mangle]
 pub extern "C" fn polars__df_n_unique(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1900,6 +1932,7 @@ pub extern "C" fn polars__df_n_unique(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// DataFrame null count.
 #[no_mangle]
 pub extern "C" fn polars__df_null_count(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
@@ -1909,6 +1942,7 @@ pub extern "C" fn polars__df_null_count(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// String slice.
 #[no_mangle]
 pub extern "C" fn polars__str_slice(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {

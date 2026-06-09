@@ -1,16 +1,210 @@
 ## lib/DateTime64.stk — `use Polars::DateTime64`
 ##
-## numpy `datetime64` / `timedelta64` ops: `dt64_now`, `dt64_parse`,
-## `dt64_strftime`, `dt64_diff`, `dt64_add`, `dt64_subtract`, `dt64_year`,
-## `dt64_month`, `dt64_day`, `dt64_hour`, `dt64_minute`, `dt64_second`,
-## `dt64_weekday`, `dt64_to_unix`, `dt64_from_unix`, … (~30 fns target).
-##
-## Backed by `chrono` + `chrono-tz` on the cdylib side.
-##
-## Phase status: scaffold only.
+## numpy `datetime64` / `timedelta64` surface. All ops take ISO-8601 strings
+## (`YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`) and return strings or integer
+## components. Backed by `chrono` on the cdylib side.
 
 package Polars::DateTime64
 
 use Polars
 
-1
+# ── construct / parse / format ──────────────────────────────────────
+
+## Parse a single datetime string and round-trip through chrono. Returns the
+## canonical `YYYY-MM-DD HH:MM:SS` form.
+fn Polars::DateTime64::datetime64 ($value) {
+    Polars::_decode("dt64_datetime64", polars__dt64_datetime64(to_json({ value => $value })))->{datetime}
+}
+
+## Parse an arrayref of ISO strings. Returns canonical-form datetimes.
+fn Polars::DateTime64::from_iso ($values) {
+    Polars::_decode("dt64_from_iso", polars__dt64_from_iso(to_json({ values => $values })))->{datetimes}
+}
+
+## Normalize an arrayref of ISO strings (drops unparseable entries).
+fn Polars::DateTime64::to_iso ($values) {
+    Polars::_decode("dt64_to_iso", polars__dt64_to_iso(to_json({ values => $values })))->{iso}
+}
+
+## Convert each datetime to a UTC unix timestamp (seconds).
+fn Polars::DateTime64::to_timestamp ($values) {
+    Polars::_decode("dt64_to_timestamp", polars__dt64_to_timestamp(to_json({ values => $values })))->{timestamp}
+}
+
+## Convert each unix timestamp (seconds) to a UTC datetime string.
+fn Polars::DateTime64::from_timestamp ($timestamps) {
+    Polars::_decode("dt64_from_timestamp", polars__dt64_from_timestamp(to_json({ timestamp => $timestamps })))->{datetimes}
+}
+
+## Current UTC datetime.
+fn Polars::DateTime64::now () {
+    Polars::_decode("dt64_now", polars__dt64_now(to_json({})))->{now}
+}
+
+## Current UTC date.
+fn Polars::DateTime64::today () {
+    Polars::_decode("dt64_today", polars__dt64_today(to_json({})))->{today}
+}
+
+## Apply a custom `chrono::format::strftime` pattern to each entry.
+fn Polars::DateTime64::format ($values, $format) {
+    Polars::_decode("dt64_format", polars__dt64_format(to_json({ values => $values, format => $format })))->{formatted}
+}
+
+# ── components ─────────────────────────────────────────────────────
+
+## Year per entry.
+fn Polars::DateTime64::year ($values) {
+    Polars::_decode("dt64_year", polars__dt64_year(to_json({ values => $values })))->{year}
+}
+## Month (1-12) per entry.
+fn Polars::DateTime64::month ($values) {
+    Polars::_decode("dt64_month", polars__dt64_month(to_json({ values => $values })))->{month}
+}
+## Day of month (1-31) per entry.
+fn Polars::DateTime64::day ($values) {
+    Polars::_decode("dt64_day", polars__dt64_day(to_json({ values => $values })))->{day}
+}
+## Hour (0-23) per entry.
+fn Polars::DateTime64::hour ($values) {
+    Polars::_decode("dt64_hour", polars__dt64_hour(to_json({ values => $values })))->{hour}
+}
+## Minute (0-59) per entry.
+fn Polars::DateTime64::minute ($values) {
+    Polars::_decode("dt64_minute", polars__dt64_minute(to_json({ values => $values })))->{minute}
+}
+## Second (0-59) per entry.
+fn Polars::DateTime64::second ($values) {
+    Polars::_decode("dt64_second", polars__dt64_second(to_json({ values => $values })))->{second}
+}
+## Weekday index (0=Monday … 6=Sunday) per entry.
+fn Polars::DateTime64::weekday ($values) {
+    Polars::_decode("dt64_weekday", polars__dt64_weekday(to_json({ values => $values })))->{weekday}
+}
+## Day of year (1-366) per entry.
+fn Polars::DateTime64::dayofyear ($values) {
+    Polars::_decode("dt64_dayofyear", polars__dt64_dayofyear(to_json({ values => $values })))->{dayofyear}
+}
+## Quarter (1-4) per entry.
+fn Polars::DateTime64::quarter ($values) {
+    Polars::_decode("dt64_quarter", polars__dt64_quarter(to_json({ values => $values })))->{quarter}
+}
+## ISO week number (1-53) per entry.
+fn Polars::DateTime64::week ($values) {
+    Polars::_decode("dt64_week", polars__dt64_week(to_json({ values => $values })))->{week}
+}
+## Boolean leap-year flag per entry.
+fn Polars::DateTime64::is_leap_year ($values) {
+    Polars::_decode("dt64_is_leap_year", polars__dt64_is_leap_year(to_json({ values => $values })))->{is_leap_year}
+}
+## Days-in-month count per entry.
+fn Polars::DateTime64::days_in_month ($values) {
+    Polars::_decode("dt64_days_in_month", polars__dt64_days_in_month(to_json({ values => $values })))->{days_in_month}
+}
+
+# ── arithmetic ──────────────────────────────────────────────────────
+
+## Add `$n` days to each entry.
+fn Polars::DateTime64::add_days ($values, $n) {
+    Polars::_decode("dt64_add_days", polars__dt64_add_days(to_json({ values => $values, n => $n })))->{datetimes}
+}
+## Add `$n` hours to each entry.
+fn Polars::DateTime64::add_hours ($values, $n) {
+    Polars::_decode("dt64_add_hours", polars__dt64_add_hours(to_json({ values => $values, n => $n })))->{datetimes}
+}
+## Add `$n` minutes to each entry.
+fn Polars::DateTime64::add_minutes ($values, $n) {
+    Polars::_decode("dt64_add_minutes", polars__dt64_add_minutes(to_json({ values => $values, n => $n })))->{datetimes}
+}
+## Add `$n` seconds to each entry.
+fn Polars::DateTime64::add_seconds ($values, $n) {
+    Polars::_decode("dt64_add_seconds", polars__dt64_add_seconds(to_json({ values => $values, n => $n })))->{datetimes}
+}
+## Add `$n` weeks to each entry.
+fn Polars::DateTime64::add_weeks ($values, $n) {
+    Polars::_decode("dt64_add_weeks", polars__dt64_add_weeks(to_json({ values => $values, n => $n })))->{datetimes}
+}
+
+## Per-element `a - b` difference in whole days.
+fn Polars::DateTime64::diff_days ($a, $b) {
+    Polars::_decode("dt64_diff_days", polars__dt64_diff_days(to_json({ a => $a, b => $b })))->{days}
+}
+## Per-element `a - b` difference in seconds.
+fn Polars::DateTime64::diff_seconds ($a, $b) {
+    Polars::_decode("dt64_diff_seconds", polars__dt64_diff_seconds(to_json({ a => $a, b => $b })))->{seconds}
+}
+## Per-element `a - b` difference in whole hours.
+fn Polars::DateTime64::diff_hours ($a, $b) {
+    Polars::_decode("dt64_diff_hours", polars__dt64_diff_hours(to_json({ a => $a, b => $b })))->{hours}
+}
+## Per-element `a - b` difference in whole minutes.
+fn Polars::DateTime64::diff_minutes ($a, $b) {
+    Polars::_decode("dt64_diff_minutes", polars__dt64_diff_minutes(to_json({ a => $a, b => $b })))->{minutes}
+}
+
+# ── ranges ─────────────────────────────────────────────────────────
+
+## Daily date range `[start, end]` inclusive.
+fn Polars::DateTime64::date_range ($start, $end) {
+    Polars::_decode("dt64_date_range", polars__dt64_date_range(to_json({ start => $start, end => $end })))->{dates}
+}
+
+## `[start, end)` half-open range with `$step_days` stride.
+fn Polars::DateTime64::arange ($start, $end, $step_days) {
+    my %req = (start => $start, end => $end)
+    $req{step_days} = $step_days if defined $step_days
+    Polars::_decode("dt64_arange", polars__dt64_arange(to_json(\%req)))->{dates}
+}
+
+## Count of business days (Mon-Fri) in `[start, end)`.
+fn Polars::DateTime64::business_day_count ($start, $end) {
+    Polars::_decode("dt64_business_day_count", polars__dt64_business_day_count(to_json({ start => $start, end => $end })))->{business_days}
+}
+
+## Boolean business-day flag per entry.
+fn Polars::DateTime64::is_busday ($values) {
+    Polars::_decode("dt64_is_busday", polars__dt64_is_busday(to_json({ values => $values })))->{is_busday}
+}
+
+## Offset each datetime by `$n` business days (negative for backwards).
+fn Polars::DateTime64::busday_offset ($values, $n) {
+    Polars::_decode("dt64_busday_offset", polars__dt64_busday_offset(to_json({ values => $values, n => $n })))->{datetimes}
+}
+
+# ── reductions ─────────────────────────────────────────────────────
+
+## Earliest datetime in `$values`.
+fn Polars::DateTime64::min ($values) {
+    Polars::_decode("dt64_min", polars__dt64_min(to_json({ values => $values })))->{min}
+}
+## Latest datetime in `$values`.
+fn Polars::DateTime64::max ($values) {
+    Polars::_decode("dt64_max", polars__dt64_max(to_json({ values => $values })))->{max}
+}
+## Sort ascending, dropping unparseable entries.
+fn Polars::DateTime64::sort ($values) {
+    Polars::_decode("dt64_sort", polars__dt64_sort(to_json({ values => $values })))->{sorted}
+}
+## Distinct datetimes, preserving first-seen order.
+fn Polars::DateTime64::unique ($values) {
+    Polars::_decode("dt64_unique", polars__dt64_unique(to_json({ values => $values })))->{unique}
+}
+
+# ── truncation ─────────────────────────────────────────────────────
+
+## Zero out HH:MM:SS — round each entry down to midnight.
+fn Polars::DateTime64::truncate_day ($values) {
+    Polars::_decode("dt64_truncate_day", polars__dt64_truncate_day(to_json({ values => $values })))->{datetimes}
+}
+## Zero out MM:SS — round each entry down to the top of the hour.
+fn Polars::DateTime64::truncate_hour ($values) {
+    Polars::_decode("dt64_truncate_hour", polars__dt64_truncate_hour(to_json({ values => $values })))->{datetimes}
+}
+## Round each entry down to the first of the month.
+fn Polars::DateTime64::truncate_month ($values) {
+    Polars::_decode("dt64_truncate_month", polars__dt64_truncate_month(to_json({ values => $values })))->{datetimes}
+}
+## Round each entry down to January 1st of its year.
+fn Polars::DateTime64::truncate_year ($values) {
+    Polars::_decode("dt64_truncate_year", polars__dt64_truncate_year(to_json({ values => $values })))->{datetimes}
+}
