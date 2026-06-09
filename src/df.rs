@@ -1797,6 +1797,72 @@ pub extern "C" fn polars__dt_iso_year(args: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
+pub extern "C" fn polars__dt_strftime(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let fmt = args
+            .get("format")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `format`"))?
+            .to_string();
+        str_op(&args, "strftime", |e| e.dt().to_string(&fmt))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_zfill(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("length")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `length`"))?;
+        str_op(&args, "zfill", |e| e.str().zfill(lit(n)))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_cast_column(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let dtype = args
+            .get("dtype")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `dtype` (i64/f64/str/bool)"))?;
+        let dt = match dtype {
+            "i64" | "Int64" | "int" => DataType::Int64,
+            "f64" | "Float64" | "float" => DataType::Float64,
+            "i32" | "Int32" => DataType::Int32,
+            "f32" | "Float32" => DataType::Float32,
+            "str" | "String" | "Utf8" => DataType::String,
+            "bool" | "Boolean" => DataType::Boolean,
+            other => return Err(anyhow!("unsupported dtype `{other}`")),
+        };
+        let result = df
+            .lazy()
+            .with_columns([col(col_name).cast(dt).alias(col_name)])
+            .collect()
+            .context("cast_column")?;
+        return_frame(result)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_extend(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut left = get_frame(&args)?;
+        let right_v = args
+            .get("right")
+            .ok_or_else(|| anyhow!("missing argument `right`"))?;
+        let right = parse_df(right_v)?;
+        left.extend(&right).context("extend")?;
+        return_frame(left)
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn polars__df_with_row_index(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
         let df = get_frame(&args)?;

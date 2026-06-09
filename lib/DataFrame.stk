@@ -446,6 +446,27 @@ fn Polars::DataFrame::dt_iso_year ($cols, $column) {
     Polars::_decode("dt_iso_year", polars__dt_iso_year(to_json({ frame => $cols, column => $column })))->{frame}
 }
 
+## `Series.dt.strftime(format)` — format datetime to string per chrono-style spec.
+fn Polars::DataFrame::dt_strftime ($cols, $column, $format) {
+    Polars::_decode("dt_strftime", polars__dt_strftime(to_json({ frame => $cols, column => $column, format => $format })))->{frame}
+}
+
+## `Series.str.zfill(length)` — pad with leading zeros to total `$length`.
+fn Polars::DataFrame::str_zfill ($cols, $column, $length) {
+    Polars::_decode("str_zfill", polars__str_zfill(to_json({ frame => $cols, column => $column, length => $length })))->{frame}
+}
+
+## Cast a single column to a new dtype. Supported: i64/f64/i32/f32/str/bool.
+fn Polars::DataFrame::cast_column ($cols, $column, $dtype) {
+    Polars::_decode("df_cast_column", polars__df_cast_column(to_json({ frame => $cols, column => $column, dtype => $dtype })))->{frame}
+}
+
+## Extend `$left` in place with `$right` (must share schema). Returns the
+## combined frame.
+fn Polars::DataFrame::extend ($left, $right) {
+    Polars::_decode("df_extend", polars__df_extend(to_json({ frame => $left, right => $right })))->{frame}
+}
+
 ## Add a 0-based (or `$offset`-based) row index as column `$name` (default "index").
 fn Polars::DataFrame::with_row_index ($cols, $name, $offset) {
     my %req = (frame => $cols)

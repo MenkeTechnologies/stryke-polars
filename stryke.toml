@@ -267,6 +267,10 @@ exports = [
     "polars__arr_normalize",
     "polars__arr_logspace",
     "polars__fft_ifftshift",
+    "polars__dt_strftime",
+    "polars__str_zfill",
+    "polars__df_cast_column",
+    "polars__df_extend",
 ]
 
 [scripts]
