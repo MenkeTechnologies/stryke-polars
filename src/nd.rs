@@ -2437,6 +2437,135 @@ pub extern "C" fn polars__arr_pad(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.fix(x)` — round toward zero (alias for trunc).
+#[no_mangle]
+pub extern "C" fn polars__np_fix(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::trunc))
+}
+
+/// `np.around(x, decimals)` — round to nearest at given precision.
+#[no_mangle]
+pub extern "C" fn polars__np_around(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let decimals = args.get("decimals").and_then(|v| v.as_i64()).unwrap_or(0);
+        let factor = 10f64.powi(decimals as i32);
+        let result = arr.mapv(|x| (x * factor).round() / factor);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.inner(a, b)` — 1-D inner product (scalar). Same length required.
+#[no_mangle]
+pub extern "C" fn polars__arr_inner(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("inner: 1-D inputs required");
+        }
+        if a.len() != b.len() {
+            bail!("inner: length mismatch");
+        }
+        let s: f64 = a.iter().zip(b.iter()).map(|(&x, &y)| x * y).sum();
+        Ok(json!({"scalar": scalar_to_value(s)}))
+    })
+}
+
+/// `np.linalg.norm(a, axis)` — axis-wise norm.
+#[no_mangle]
+pub extern "C" fn polars__arr_norm_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            row.iter().map(|x| x * x).sum::<f64>().sqrt()
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.linalg.lstsq(A, b)` — least-squares solution via SVD pseudo-inverse.
+#[no_mangle]
+pub extern "C" fn polars__linalg_lstsq(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing `matrix`"))?,
+        )?;
+        let b_arr = parse_array(args.get("b").ok_or_else(|| anyhow!("missing `b`"))?)?;
+        if b_arr.shape().len() != 1 {
+            bail!("lstsq: b must be 1-D");
+        }
+        if b_arr.len() != a.nrows() {
+            bail!("lstsq: shape mismatch");
+        }
+        let svd = a.svd(true, true);
+        let pinv = svd
+            .pseudo_inverse(1e-10)
+            .map_err(|e| anyhow!("pinv: {e}"))?;
+        let bv = nalgebra::DVector::from_iterator(b_arr.len(), b_arr.iter().copied());
+        let x = pinv * bv;
+        let n = x.len();
+        let result = ArrayD::from_shape_vec(IxDyn(&[n]), x.iter().copied().collect())
+            .context("lstsq shape")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.diff_n(a, n)` — n-th order discrete difference.
+#[no_mangle]
+pub extern "C" fn polars__arr_diff_n(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("diff_n: 1-D required");
+        }
+        let n_diff = args.get("n").and_then(|v| v.as_u64()).unwrap_or(1) as usize;
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        for _ in 0..n_diff {
+            if data.len() < 2 {
+                data = Vec::new();
+                break;
+            }
+            let next: Vec<f64> = data.windows(2).map(|w| w[1] - w[0]).collect();
+            data = next;
+        }
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("diff_n shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.column_stack(a, b)` — stack two 1-D arrays as columns of a 2-D array.
+#[no_mangle]
+pub extern "C" fn polars__arr_column_stack(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("column_stack: 1-D inputs required");
+        }
+        if a.len() != b.len() {
+            bail!("column_stack: length mismatch");
+        }
+        let n = a.len();
+        let mut data = Vec::with_capacity(n * 2);
+        for i in 0..n {
+            data.push(a[[i]]);
+            data.push(b[[i]]);
+        }
+        let out = ArrayD::from_shape_vec(IxDyn(&[n, 2]), data).context("column_stack shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

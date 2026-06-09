@@ -333,6 +333,13 @@ exports = [
     "polars__arr_in1d",
     "polars__arr_cumtrapz",
     "polars__arr_pad",
+    "polars__np_fix",
+    "polars__np_around",
+    "polars__arr_inner",
+    "polars__arr_norm_axis",
+    "polars__linalg_lstsq",
+    "polars__arr_diff_n",
+    "polars__arr_column_stack",
 ]
 
 [scripts]

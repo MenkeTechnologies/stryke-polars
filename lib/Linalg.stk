@@ -97,4 +97,9 @@ fn Polars::Linalg::eigvals ($m) {
     Polars::_decode("linalg_eigvals", polars__linalg_eigvals(to_json({ matrix => $m })))->{array}
 }
 
+## Least-squares solution to `A x = b` (rank-deficient OK; uses SVD pseudo-inverse).
+fn Polars::Linalg::lstsq ($A, $b) {
+    Polars::_decode("linalg_lstsq", polars__linalg_lstsq(to_json({ matrix => $A, b => $b })))->{array}
+}
+
 1

@@ -119,4 +119,11 @@ fn Polars::Ufunc::select ($conditions, $choices, $default) {
     Polars::_decode("np_select", polars__np_select(to_json(\%req)))->{array}
 }
 
+fn Polars::Ufunc::fix    ($arr) { Polars::_decode("np_fix",    polars__np_fix   (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::around ($arr, $decimals) {
+    my %req = (array => $arr)
+    $req{decimals} = $decimals if defined $decimals
+    Polars::_decode("np_around", polars__np_around(to_json(\%req)))->{array}
+}
+
 1

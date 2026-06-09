@@ -412,4 +412,26 @@ fn Polars::NdArray::pad ($arr, $before, $after, $value) {
     Polars::_decode("arr_pad", polars__arr_pad(to_json(\%req)))->{array}
 }
 
+## `np.inner(a, b)` — 1-D inner product (scalar).
+fn Polars::NdArray::inner ($a, $b) {
+    Polars::_decode("arr_inner", polars__arr_inner(to_json({ a => $a, b => $b })))->{scalar}
+}
+
+## `np.linalg.norm(a, axis)` — axis-wise 2-norm.
+fn Polars::NdArray::norm_axis ($arr, $axis) {
+    Polars::_decode("arr_norm_axis", polars__arr_norm_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## N-th order discrete difference.
+fn Polars::NdArray::diff_n ($arr, $n) {
+    my %req = (array => $arr)
+    $req{n} = $n if defined $n
+    Polars::_decode("arr_diff_n", polars__arr_diff_n(to_json(\%req)))->{array}
+}
+
+## `np.column_stack(a, b)` — stack two 1-D arrays as columns of 2-D.
+fn Polars::NdArray::column_stack ($a, $b) {
+    Polars::_decode("arr_column_stack", polars__arr_column_stack(to_json({ a => $a, b => $b })))->{array}
+}
+
 1
