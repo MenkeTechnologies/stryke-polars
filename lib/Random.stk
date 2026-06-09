@@ -9,7 +9,7 @@ use Polars
 
 ## `np.random.normal(mean, std, n)` — n samples from Normal(mean, std).
 fn Polars::Random::normal ($n, $mean, $std, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mean} = $mean if defined $mean
     $req{std} = $std if defined $std
     $req{seed} = $seed if defined $seed
@@ -18,7 +18,7 @@ fn Polars::Random::normal ($n, $mean, $std, $seed) {
 
 ## `np.random.uniform(low, high, n)`.
 fn Polars::Random::uniform ($n, $low, $high, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{low} = $low if defined $low
     $req{high} = $high if defined $high
     $req{seed} = $seed if defined $seed
@@ -27,7 +27,7 @@ fn Polars::Random::uniform ($n, $low, $high, $seed) {
 
 ## `np.random.exponential(scale, n)`.
 fn Polars::Random::exponential ($n, $scale, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{scale} = $scale if defined $scale
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_exponential", polars__rand_exponential(to_json(\%req)))->{array}
@@ -35,14 +35,14 @@ fn Polars::Random::exponential ($n, $scale, $seed) {
 
 ## `np.random.beta(alpha, beta, n)`.
 fn Polars::Random::beta ($n, $alpha, $beta, $seed) {
-    my %req = (n => $n, alpha => $alpha, beta => $beta)
+    var %req = (n => $n, alpha => $alpha, beta => $beta)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_beta", polars__rand_beta(to_json(\%req)))->{array}
 }
 
 ## `np.random.gamma(shape, scale, n)`.
 fn Polars::Random::gamma ($n, $shape, $scale, $seed) {
-    my %req = (n => $n, shape => $shape)
+    var %req = (n => $n, shape => $shape)
     $req{scale} = $scale if defined $scale
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_gamma", polars__rand_gamma(to_json(\%req)))->{array}
@@ -50,28 +50,28 @@ fn Polars::Random::gamma ($n, $shape, $scale, $seed) {
 
 ## Sample without replacement: `$k` distinct values from `$arr`.
 fn Polars::Random::choice ($arr, $k, $seed) {
-    my %req = (array => $arr, k => $k)
+    var %req = (array => $arr, k => $k)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_choice", polars__rand_choice(to_json(\%req)))->{array}
 }
 
 ## Random permutation of `0..$n` (1-D u64 → f64).
 fn Polars::Random::permutation ($n, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_permutation", polars__rand_permutation(to_json(\%req)))->{array}
 }
 
 ## `np.random.randint(low, high, n)` — uniform ints in `[low, high)` (as f64).
 fn Polars::Random::randint ($n, $low, $high, $seed) {
-    my %req = (n => $n, low => $low, high => $high)
+    var %req = (n => $n, low => $low, high => $high)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_randint", polars__rand_randint(to_json(\%req)))->{array}
 }
 
 ## `np.random.poisson(lambda, n)`. Integer values as f64.
 fn Polars::Random::poisson ($n, $lambda, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{lambda} = $lambda if defined $lambda
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_poisson", polars__rand_poisson(to_json(\%req)))->{array}
@@ -79,14 +79,14 @@ fn Polars::Random::poisson ($n, $lambda, $seed) {
 
 ## `np.random.binomial(n_trials, p, n)`.
 fn Polars::Random::binomial ($n, $n_trials, $p, $seed) {
-    my %req = (n => $n, n_trials => $n_trials, p => $p)
+    var %req = (n => $n, n_trials => $n_trials, p => $p)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_binomial", polars__rand_binomial(to_json(\%req)))->{array}
 }
 
 ## `np.random.lognormal(mu, sigma, n)`.
 fn Polars::Random::lognormal ($n, $mu, $sigma, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     $req{seed} = $seed if defined $seed
@@ -95,63 +95,63 @@ fn Polars::Random::lognormal ($n, $mu, $sigma, $seed) {
 
 ## In-place shuffle of `$arr` (1-D). Returns shuffled copy.
 fn Polars::Random::shuffle ($arr, $seed) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_shuffle", polars__rand_shuffle(to_json(\%req)))->{array}
 }
 
 ## `np.random.geometric(p, n)`. Integer samples as f64.
 fn Polars::Random::geometric ($n, $p, $seed) {
-    my %req = (n => $n, p => $p)
+    var %req = (n => $n, p => $p)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_geometric", polars__rand_geometric(to_json(\%req)))->{array}
 }
 
 ## `np.random.dirichlet(alpha, n)` — Dirichlet samples. Returns 2-D `[n, k]`.
 fn Polars::Random::dirichlet ($n, $alpha, $seed) {
-    my %req = (n => $n, alpha => $alpha)
+    var %req = (n => $n, alpha => $alpha)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_dirichlet", polars__rand_dirichlet(to_json(\%req)))->{array}
 }
 
 ## `np.random.pareto(shape, n)`.
 fn Polars::Random::pareto ($n, $shape, $seed) {
-    my %req = (n => $n, shape => $shape)
+    var %req = (n => $n, shape => $shape)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_pareto", polars__rand_pareto(to_json(\%req)))->{array}
 }
 
 ## `np.random.weibull(shape, n)` (scale=1).
 fn Polars::Random::weibull ($n, $shape, $seed) {
-    my %req = (n => $n, shape => $shape)
+    var %req = (n => $n, shape => $shape)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_weibull", polars__rand_weibull(to_json(\%req)))->{array}
 }
 
 ## `np.random.standard_cauchy(n)` — Cauchy(0, 1).
 fn Polars::Random::cauchy ($n, $seed) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_cauchy", polars__rand_cauchy(to_json(\%req)))->{array}
 }
 
 ## `np.random.chisquare(df, n)`.
 fn Polars::Random::chisquare ($n, $df, $seed) {
-    my %req = (n => $n, df => $df)
+    var %req = (n => $n, df => $df)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_chisquare", polars__rand_chisquare(to_json(\%req)))->{array}
 }
 
 ## `np.random.standard_t(df, n)`.
 fn Polars::Random::t ($n, $df, $seed) {
-    my %req = (n => $n, df => $df)
+    var %req = (n => $n, df => $df)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_t", polars__rand_t(to_json(\%req)))->{array}
 }
 
 ## `np.random.f(dfn, dfd, n)`.
 fn Polars::Random::f ($n, $dfn, $dfd, $seed) {
-    my %req = (n => $n, dfn => $dfn, dfd => $dfd)
+    var %req = (n => $n, dfn => $dfn, dfd => $dfd)
     $req{seed} = $seed if defined $seed
     Polars::_decode("rand_f", polars__rand_f(to_json(\%req)))->{array}
 }

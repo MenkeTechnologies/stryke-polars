@@ -30,7 +30,7 @@ fn Polars::Hash::jenkins ($value) {
 
 ## Hash murmur32.
 fn Polars::Hash::murmur32 ($value, $seed) {
-    my %req = (value => $value)
+    var %req = (value => $value)
     $req{seed} = $seed if defined $seed
     Polars::_decode("hash_murmur32", polars__hash_murmur32(to_json(\%req)))->{hash}
 }

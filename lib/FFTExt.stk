@@ -30,7 +30,7 @@ fn Polars::FFTExt::rfft_pow ($array) {
 
 ## FFT rfftfreq v2.
 fn Polars::FFTExt::rfftfreq_v2 ($n, $d) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{d} = $d if defined $d
     Polars::_decode("fft_rfftfreq_v2", polars__fft_rfftfreq_v2(to_json(\%req)))->{array}
 }

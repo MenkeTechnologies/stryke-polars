@@ -8,7 +8,7 @@
 use Polars
 use Polars::DataFrame
 
-my $have_cdylib = eval { Polars::version(); 1 }
+val $have_cdylib = eval { Polars::version(); 1 }
 unless ($have_cdylib) {
     p "1..0 # SKIP cdylib not loaded — run `s pkg install -g .` first"
     exit 0
@@ -16,17 +16,17 @@ unless ($have_cdylib) {
 
 p "1..39"
 
-my $i = 0
+var $i = 0
 
 # ── version ─────────────────────────────────────────────────────────
 
-my $v
+var $v
 eval { $v = Polars::version() }
 $i++
 if ($@) {
     p "not ok $i - version call: $@"
 } else {
-    my $ok = ref($v) eq "HASH" && exists $v->{version} && exists $v->{polars} && exists $v->{ndarray}
+    var $ok = ref($v) eq "HASH" && exists $v->{version} && exists $v->{polars} && exists $v->{ndarray}
     p ($ok ? "ok $i - version returns hash with version + polars + ndarray" : "not ok $i - version shape unexpected")
 }
 
@@ -46,433 +46,433 @@ if (!defined $v || !defined $v->{ndarray} || length($v->{ndarray}) == 0) {
 
 # ── DataFrame round trip ────────────────────────────────────────────
 
-my %frame = (
+val %frame = (
     id    => [1, 2, 3, 4, 5],
     score => [1.5, 2.0, 3.25, 4.0, 5.5],
     name  => ["alice", "bob", "charlie", "dana", "eve"],
 )
 
 # new: shape + dtypes
-my $r
+var $r
 eval { $r = Polars::DataFrame::new(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_new call: $@"
 } else {
-    my $ok = ref($r) eq "HASH" && ref($r->{shape}) eq "ARRAY" && $r->{shape}[0] == 5 && $r->{shape}[1] == 3
+    var $ok = ref($r) eq "HASH" && ref($r->{shape}) eq "ARRAY" && $r->{shape}[0] == 5 && $r->{shape}[1] == 3
     p ($ok ? "ok $i - df_new shape=[5,3]" : "not ok $i - df_new wrong shape: " . to_json($r->{shape}))
 }
 
 # shape
-my $shape
+var $shape
 eval { $shape = Polars::DataFrame::shape(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_shape call: $@"
 } else {
-    my $ok = ref($shape) eq "ARRAY" && $shape->[0] == 5 && $shape->[1] == 3
+    var $ok = ref($shape) eq "ARRAY" && $shape->[0] == 5 && $shape->[1] == 3
     p ($ok ? "ok $i - df_shape=[5,3]" : "not ok $i - df_shape wrong: " . to_json($shape))
 }
 
 # columns
-my $columns
+var $columns
 eval { $columns = Polars::DataFrame::columns(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_columns call: $@"
 } else {
-    my $ok = ref($columns) eq "ARRAY" && scalar(@$columns) == 3
+    var $ok = ref($columns) eq "ARRAY" && scalar(@$columns) == 3
     p ($ok ? "ok $i - df_columns returns 3 names" : "not ok $i - df_columns wrong: " . to_json($columns))
 }
 
 # dtypes — should include numeric + string after inference
-my $dtypes
+var $dtypes
 eval { $dtypes = Polars::DataFrame::dtypes(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_dtypes call: $@"
 } else {
-    my $ok = ref($dtypes) eq "ARRAY" && scalar(@$dtypes) == 3
+    var $ok = ref($dtypes) eq "ARRAY" && scalar(@$dtypes) == 3
     p ($ok ? "ok $i - df_dtypes returns 3 dtypes" : "not ok $i - df_dtypes wrong: " . to_json($dtypes))
 }
 
 # head: 2 rows
-my $head
+var $head
 eval { $head = Polars::DataFrame::head(\%frame, 2) }
 $i++
 if ($@) {
     p "not ok $i - df_head call: $@"
 } else {
-    my $n = ref($head) eq "HASH" && ref($head->{id}) eq "ARRAY" ? scalar(@{$head->{id}}) : -1
+    var $n = ref($head) eq "HASH" && ref($head->{id}) eq "ARRAY" ? scalar(@{$head->{id}}) : -1
     p ($n == 2 ? "ok $i - df_head returns 2 rows" : "not ok $i - df_head wrong nrows=$n")
 }
 
 # tail: 2 rows
-my $tail
+var $tail
 eval { $tail = Polars::DataFrame::tail(\%frame, 2) }
 $i++
 if ($@) {
     p "not ok $i - df_tail call: $@"
 } else {
-    my $n = ref($tail) eq "HASH" && ref($tail->{id}) eq "ARRAY" ? scalar(@{$tail->{id}}) : -1
+    var $n = ref($tail) eq "HASH" && ref($tail->{id}) eq "ARRAY" ? scalar(@{$tail->{id}}) : -1
     p ($n == 2 ? "ok $i - df_tail returns 2 rows" : "not ok $i - df_tail wrong nrows=$n")
 }
 
 # select: id + score (drop name)
-my $sel
+var $sel
 eval { $sel = Polars::DataFrame::select(\%frame, ["id", "score"]) }
 $i++
 if ($@) {
     p "not ok $i - df_select call: $@"
 } else {
-    my $ok = ref($sel) eq "HASH" && exists $sel->{id} && exists $sel->{score} && !exists $sel->{name}
+    var $ok = ref($sel) eq "HASH" && exists $sel->{id} && exists $sel->{score} && !exists $sel->{name}
     p ($ok ? "ok $i - df_select projects [id, score]" : "not ok $i - df_select wrong shape")
 }
 
 # to_json round-trip — id column survives identical
-my $rt
+var $rt
 eval { $rt = Polars::DataFrame::to_json(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_to_json call: $@"
 } else {
-    my $ok = ref($rt) eq "HASH" && ref($rt->{id}) eq "ARRAY" && scalar(@{$rt->{id}}) == 5 && $rt->{id}[0] == 1 && $rt->{id}[4] == 5
+    var $ok = ref($rt) eq "HASH" && ref($rt->{id}) eq "ARRAY" && scalar(@{$rt->{id}}) == 5 && $rt->{id}[0] == 1 && $rt->{id}[4] == 5
     p ($ok ? "ok $i - df_to_json round-trip preserves id column" : "not ok $i - df_to_json round-trip failed")
 }
 
 # ── P1.1b: drop / rename / sort / filter ────────────────────────────
 
 # drop: remove `name` → only id + score remain
-my $dropped
+var $dropped
 eval { $dropped = Polars::DataFrame::drop(\%frame, ["name"]) }
 $i++
 if ($@) {
     p "not ok $i - df_drop call: $@"
 } else {
-    my $ok = ref($dropped) eq "HASH" && exists $dropped->{id} && exists $dropped->{score} && !exists $dropped->{name}
+    var $ok = ref($dropped) eq "HASH" && exists $dropped->{id} && exists $dropped->{score} && !exists $dropped->{name}
     p ($ok ? "ok $i - df_drop removed name" : "not ok $i - df_drop wrong shape")
 }
 
 # rename: id → uid
-my $renamed
+var $renamed
 eval { $renamed = Polars::DataFrame::rename(\%frame, { id => "uid" }) }
 $i++
 if ($@) {
     p "not ok $i - df_rename call: $@"
 } else {
-    my $ok = ref($renamed) eq "HASH" && exists $renamed->{uid} && !exists $renamed->{id}
+    var $ok = ref($renamed) eq "HASH" && exists $renamed->{uid} && !exists $renamed->{id}
     p ($ok ? "ok $i - df_rename id → uid" : "not ok $i - df_rename wrong shape")
 }
 
 # sort: score descending → top row has score == 5.5
-my $sorted
+var $sorted
 eval { $sorted = Polars::DataFrame::sort(\%frame, ["score"], 1) }
 $i++
 if ($@) {
     p "not ok $i - df_sort call: $@"
 } else {
-    my $top = ref($sorted) eq "HASH" && ref($sorted->{score}) eq "ARRAY" ? $sorted->{score}[0] : undef
+    val $top = ref($sorted) eq "HASH" && ref($sorted->{score}) eq "ARRAY" ? $sorted->{score}[0] : undef
     p (defined($top) && $top == 5.5 ? "ok $i - df_sort score desc → top=5.5" : "not ok $i - df_sort wrong top=" . (defined($top) ? $top : "undef"))
 }
 
 # filter_gt: score > 3.0 → 3 rows (score in {3.25, 4.0, 5.5})
-my $gt
+var $gt
 eval { $gt = Polars::DataFrame::filter_gt(\%frame, "score", 3.0) }
 $i++
 if ($@) {
     p "not ok $i - df_filter_gt call: $@"
 } else {
-    my $n = ref($gt) eq "HASH" && ref($gt->{score}) eq "ARRAY" ? scalar(@{$gt->{score}}) : -1
+    var $n = ref($gt) eq "HASH" && ref($gt->{score}) eq "ARRAY" ? scalar(@{$gt->{score}}) : -1
     p ($n == 3 ? "ok $i - df_filter_gt score > 3.0 → 3 rows" : "not ok $i - df_filter_gt wrong nrows=$n")
 }
 
 # filter_lt: id < 3 → 2 rows (id in {1, 2})
-my $lt
+var $lt
 eval { $lt = Polars::DataFrame::filter_lt(\%frame, "id", 3) }
 $i++
 if ($@) {
     p "not ok $i - df_filter_lt call: $@"
 } else {
-    my $n = ref($lt) eq "HASH" && ref($lt->{id}) eq "ARRAY" ? scalar(@{$lt->{id}}) : -1
+    var $n = ref($lt) eq "HASH" && ref($lt->{id}) eq "ARRAY" ? scalar(@{$lt->{id}}) : -1
     p ($n == 2 ? "ok $i - df_filter_lt id < 3 → 2 rows" : "not ok $i - df_filter_lt wrong nrows=$n")
 }
 
 # filter_eq: name == "bob" → 1 row
-my $eq
+var $eq
 eval { $eq = Polars::DataFrame::filter_eq(\%frame, "name", "bob") }
 $i++
 if ($@) {
     p "not ok $i - df_filter_eq call: $@"
 } else {
-    my $n = ref($eq) eq "HASH" && ref($eq->{name}) eq "ARRAY" ? scalar(@{$eq->{name}}) : -1
+    var $n = ref($eq) eq "HASH" && ref($eq->{name}) eq "ARRAY" ? scalar(@{$eq->{name}}) : -1
     p ($n == 1 ? "ok $i - df_filter_eq name == bob → 1 row" : "not ok $i - df_filter_eq wrong nrows=$n")
 }
 
 # ── P1.2: aggregations ──────────────────────────────────────────────
 
 # sum: id column sums to 1+2+3+4+5 = 15
-my $sum
+var $sum
 eval { $sum = Polars::DataFrame::sum(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_sum call: $@"
 } else {
-    my $ok = ref($sum) eq "HASH" && ref($sum->{id}) eq "ARRAY" && $sum->{id}[0] == 15
+    var $ok = ref($sum) eq "HASH" && ref($sum->{id}) eq "ARRAY" && $sum->{id}[0] == 15
     p ($ok ? "ok $i - df_sum id == 15" : "not ok $i - df_sum wrong id_sum=" . (defined $sum->{id}[0] ? $sum->{id}[0] : "undef"))
 }
 
 # mean: id mean = 3
-my $mean
+var $mean
 eval { $mean = Polars::DataFrame::mean(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_mean call: $@"
 } else {
-    my $ok = ref($mean) eq "HASH" && abs($mean->{id}[0] - 3.0) < 1e-9
+    var $ok = ref($mean) eq "HASH" && abs($mean->{id}[0] - 3.0) < 1e-9
     p ($ok ? "ok $i - df_mean id == 3.0" : "not ok $i - df_mean wrong")
 }
 
 # min: id min = 1
-my $mn
+var $mn
 eval { $mn = Polars::DataFrame::min(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_min call: $@"
 } else {
-    my $ok = ref($mn) eq "HASH" && $mn->{id}[0] == 1
+    var $ok = ref($mn) eq "HASH" && $mn->{id}[0] == 1
     p ($ok ? "ok $i - df_min id == 1" : "not ok $i - df_min wrong")
 }
 
 # nunique: 5 distinct ids
-my $nu
+var $nu
 eval { $nu = Polars::DataFrame::nunique(\%frame) }
 $i++
 if ($@) {
     p "not ok $i - df_nunique call: $@"
 } else {
-    my $ok = ref($nu) eq "HASH" && $nu->{id} == 5
+    var $ok = ref($nu) eq "HASH" && $nu->{id} == 5
     p ($ok ? "ok $i - df_nunique id == 5" : "not ok $i - df_nunique wrong id=" . (defined $nu->{id} ? $nu->{id} : "undef"))
 }
 
 # ── P1.2b: cumulative ───────────────────────────────────────────────
 
 # cumsum: id cumulative sum [1, 3, 6, 10, 15]
-my $cs
+var $cs
 eval { $cs = Polars::DataFrame::cumsum(\%frame, ["id"]) }
 $i++
 if ($@) {
     p "not ok $i - df_cumsum call: $@"
 } else {
-    my $ok = ref($cs) eq "HASH" && ref($cs->{id}) eq "ARRAY" && $cs->{id}[4] == 15 && $cs->{id}[0] == 1
+    var $ok = ref($cs) eq "HASH" && ref($cs->{id}) eq "ARRAY" && $cs->{id}[4] == 15 && $cs->{id}[0] == 1
     p ($ok ? "ok $i - df_cumsum id last=15" : "not ok $i - df_cumsum wrong")
 }
 
 # ── P1.2c: math ─────────────────────────────────────────────────────
 
 # abs on score (all positive; just round-trip)
-my $abs
+var $abs
 eval { $abs = Polars::DataFrame::abs(\%frame, ["score"]) }
 $i++
 if ($@) {
     p "not ok $i - df_abs call: $@"
 } else {
-    my $ok = ref($abs) eq "HASH" && ref($abs->{score}) eq "ARRAY" && $abs->{score}[0] == 1.5
+    var $ok = ref($abs) eq "HASH" && ref($abs->{score}) eq "ARRAY" && $abs->{score}[0] == 1.5
     p ($ok ? "ok $i - df_abs preserves score" : "not ok $i - df_abs wrong")
 }
 
 # floor: 3.25 → 3
-my $fl
+var $fl
 eval { $fl = Polars::DataFrame::floor(\%frame, ["score"]) }
 $i++
 if ($@) {
     p "not ok $i - df_floor call: $@"
 } else {
-    my $ok = ref($fl) eq "HASH" && $fl->{score}[2] == 3.0
+    var $ok = ref($fl) eq "HASH" && $fl->{score}[2] == 3.0
     p ($ok ? "ok $i - df_floor 3.25 → 3" : "not ok $i - df_floor wrong")
 }
 
 # ── P1.4: missing / unique ──────────────────────────────────────────
 
-my %nframe = (
+val %nframe = (
     id    => [1, 2, undef, 4],
     score => [1.5, undef, 3.0, 4.0],
 )
 
 # fill_null: replaces missing with 0
-my $fn
+var $fn
 eval { $fn = Polars::DataFrame::fill_null(\%nframe, 0) }
 $i++
 if ($@) {
     p "not ok $i - df_fill_null call: $@"
 } else {
-    my $ok = ref($fn) eq "HASH" && $fn->{id}[2] == 0 && $fn->{score}[1] == 0
+    var $ok = ref($fn) eq "HASH" && $fn->{id}[2] == 0 && $fn->{score}[1] == 0
     p ($ok ? "ok $i - df_fill_null replaces nulls with 0" : "not ok $i - df_fill_null wrong")
 }
 
 # drop_nulls: only rows where every column is non-null (id=1, id=4)
-my $dn
+var $dn
 eval { $dn = Polars::DataFrame::drop_nulls(\%nframe) }
 $i++
 if ($@) {
     p "not ok $i - df_drop_nulls call: $@"
 } else {
-    my $n = ref($dn) eq "HASH" && ref($dn->{id}) eq "ARRAY" ? scalar(@{$dn->{id}}) : -1
+    var $n = ref($dn) eq "HASH" && ref($dn->{id}) eq "ARRAY" ? scalar(@{$dn->{id}}) : -1
     p ($n == 2 ? "ok $i - df_drop_nulls → 2 complete rows" : "not ok $i - df_drop_nulls wrong nrows=$n")
 }
 
 # ── P1.4b: unique ───────────────────────────────────────────────────
 
-my %dup = (
+val %dup = (
     id    => [1, 2, 2, 3, 3, 3],
     name  => ["a", "b", "b", "c", "c", "c"],
 )
-my $u
+var $u
 eval { $u = Polars::DataFrame::unique(\%dup) }
 $i++
 if ($@) {
     p "not ok $i - df_unique call: $@"
 } else {
-    my $n = ref($u) eq "HASH" && ref($u->{id}) eq "ARRAY" ? scalar(@{$u->{id}}) : -1
+    var $n = ref($u) eq "HASH" && ref($u->{id}) eq "ARRAY" ? scalar(@{$u->{id}}) : -1
     p ($n == 3 ? "ok $i - df_unique → 3 distinct rows" : "not ok $i - df_unique wrong nrows=$n")
 }
 
 # ── P1.3: joins ─────────────────────────────────────────────────────
 
-my %left  = (k => [1, 2, 3], a => ["x", "y", "z"])
-my %right = (k => [2, 3, 4], b => ["p", "q", "r"])
+val %left  = (k => [1, 2, 3], a => ["x", "y", "z"])
+val %right = (k => [2, 3, 4], b => ["p", "q", "r"])
 
 # inner_join on k → 2 rows (k=2, k=3)
-my $ij
+var $ij
 eval { $ij = Polars::DataFrame::inner_join(\%left, \%right, ["k"], ["k"]) }
 $i++
 if ($@) {
     p "not ok $i - df_inner_join call: $@"
 } else {
-    my $n = ref($ij) eq "HASH" && ref($ij->{k}) eq "ARRAY" ? scalar(@{$ij->{k}}) : -1
+    var $n = ref($ij) eq "HASH" && ref($ij->{k}) eq "ARRAY" ? scalar(@{$ij->{k}}) : -1
     p ($n == 2 ? "ok $i - df_inner_join → 2 rows" : "not ok $i - df_inner_join wrong nrows=$n")
 }
 
 # left_join on k → 3 rows (left preserved)
-my $lj
+var $lj
 eval { $lj = Polars::DataFrame::left_join(\%left, \%right, ["k"], ["k"]) }
 $i++
 if ($@) {
     p "not ok $i - df_left_join call: $@"
 } else {
-    my $n = ref($lj) eq "HASH" && ref($lj->{k}) eq "ARRAY" ? scalar(@{$lj->{k}}) : -1
+    var $n = ref($lj) eq "HASH" && ref($lj->{k}) eq "ARRAY" ? scalar(@{$lj->{k}}) : -1
     p ($n == 3 ? "ok $i - df_left_join → 3 rows" : "not ok $i - df_left_join wrong nrows=$n")
 }
 
 # anti_join: left rows with NO match on right → 1 row (k=1)
-my $aj
+var $aj
 eval { $aj = Polars::DataFrame::anti_join(\%left, \%right, ["k"], ["k"]) }
 $i++
 if ($@) {
     p "not ok $i - df_anti_join call: $@"
 } else {
-    my $n = ref($aj) eq "HASH" && ref($aj->{k}) eq "ARRAY" ? scalar(@{$aj->{k}}) : -1
+    var $n = ref($aj) eq "HASH" && ref($aj->{k}) eq "ARRAY" ? scalar(@{$aj->{k}}) : -1
     p ($n == 1 ? "ok $i - df_anti_join → 1 row (k=1)" : "not ok $i - df_anti_join wrong nrows=$n")
 }
 
 # concat: stack two frames
-my $cat
+var $cat
 eval { $cat = Polars::DataFrame::concat(\%left, \%left) }
 $i++
 if ($@) {
     p "not ok $i - df_concat call: $@"
 } else {
-    my $n = ref($cat) eq "HASH" && ref($cat->{k}) eq "ARRAY" ? scalar(@{$cat->{k}}) : -1
+    val $n = ref($cat) eq "HASH" && ref($cat->{k}) eq "ARRAY" ? scalar(@{$cat->{k}}) : -1
     p ($n == 6 ? "ok $i - df_concat self+self → 6 rows" : "not ok $i - df_concat wrong nrows=$n")
 }
 
 # ── P1.5: window ────────────────────────────────────────────────────
 
 # shift: shift id by 1; first cell becomes null
-my $sh
+var $sh
 eval { $sh = Polars::DataFrame::shift(\%frame, 1, ["id"]) }
 $i++
 if ($@) {
     p "not ok $i - df_shift call: $@"
 } else {
-    my $ok = ref($sh) eq "HASH" && !defined($sh->{id}[0]) && $sh->{id}[4] == 4
+    var $ok = ref($sh) eq "HASH" && !defined($sh->{id}[0]) && $sh->{id}[4] == 4
     p ($ok ? "ok $i - df_shift id by 1" : "not ok $i - df_shift wrong")
 }
 
 # clip: clamp score to [2, 4] → first value (1.5) → 2.0, last (5.5) → 4.0
-my $cl
+var $cl
 eval { $cl = Polars::DataFrame::clip(\%frame, 2, 4, ["score"]) }
 $i++
 if ($@) {
     p "not ok $i - df_clip call: $@"
 } else {
-    my $ok = ref($cl) eq "HASH" && $cl->{score}[0] == 2.0 && $cl->{score}[4] == 4.0
+    var $ok = ref($cl) eq "HASH" && $cl->{score}[0] == 2.0 && $cl->{score}[4] == 4.0
     p ($ok ? "ok $i - df_clip [2,4]" : "not ok $i - df_clip wrong")
 }
 
 # ── P1.5b: groupby ──────────────────────────────────────────────────
 
-my %g = (
+val %g = (
     key => ["a", "a", "b", "b", "c"],
     v   => [1, 2, 10, 20, 100],
 )
 
 # groupby_sum: a→3, b→30, c→100 (in some order)
-my $gs
+var $gs
 eval { $gs = Polars::DataFrame::groupby_sum(\%g, ["key"]) }
 $i++
 if ($@) {
     p "not ok $i - df_groupby_sum call: $@"
 } else {
-    my $nrows = ref($gs) eq "HASH" && ref($gs->{key}) eq "ARRAY" ? scalar(@{$gs->{key}}) : -1
-    my $tot = 0
-    if ($nrows == 3) { for my $v (@{$gs->{v}}) { $tot += $v } }
+    var $nrows = ref($gs) eq "HASH" && ref($gs->{key}) eq "ARRAY" ? scalar(@{$gs->{key}}) : -1
+    var $tot = 0
+    if ($nrows == 3) { for val $v (@{$gs->{v}}) { $tot += $v } }
     p ($nrows == 3 && $tot == 133 ? "ok $i - df_groupby_sum 3 groups, total=133" : "not ok $i - df_groupby_sum nrows=$nrows total=$tot")
 }
 
 # groupby_count: each group has 2/2/1 rows
-my $gc
+var $gc
 eval { $gc = Polars::DataFrame::groupby_count(\%g, ["key"]) }
 $i++
 if ($@) {
     p "not ok $i - df_groupby_count call: $@"
 } else {
-    my $nrows = ref($gc) eq "HASH" && ref($gc->{key}) eq "ARRAY" ? scalar(@{$gc->{key}}) : -1
+    val $nrows = ref($gc) eq "HASH" && ref($gc->{key}) eq "ARRAY" ? scalar(@{$gc->{key}}) : -1
     p ($nrows == 3 ? "ok $i - df_groupby_count → 3 groups" : "not ok $i - df_groupby_count wrong nrows=$nrows")
 }
 
 # ── P1.5b: rolling ──────────────────────────────────────────────────
 
 # rolling_sum on id with window=2: [null, 3, 5, 7, 9]
-my $rs
+var $rs
 eval { $rs = Polars::DataFrame::rolling_sum(\%frame, 2, undef, ["id"]) }
 $i++
 if ($@) {
     p "not ok $i - df_rolling_sum call: $@"
 } else {
-    my $ok = ref($rs) eq "HASH" && $rs->{id}[1] == 3 && $rs->{id}[4] == 9
+    var $ok = ref($rs) eq "HASH" && $rs->{id}[1] == 3 && $rs->{id}[4] == 9
     p ($ok ? "ok $i - df_rolling_sum window=2 → [_,3,5,7,9]" : "not ok $i - df_rolling_sum wrong")
 }
 
 # rolling_mean on id window=2: [null, 1.5, 2.5, 3.5, 4.5]
-my $rm
+var $rm
 eval { $rm = Polars::DataFrame::rolling_mean(\%frame, 2, undef, ["id"]) }
 $i++
 if ($@) {
     p "not ok $i - df_rolling_mean call: $@"
 } else {
-    my $ok = ref($rm) eq "HASH" && abs($rm->{id}[1] - 1.5) < 1e-9 && abs($rm->{id}[4] - 4.5) < 1e-9
+    var $ok = ref($rm) eq "HASH" && abs($rm->{id}[1] - 1.5) < 1e-9 && abs($rm->{id}[4] - 4.5) < 1e-9
     p ($ok ? "ok $i - df_rolling_mean window=2" : "not ok $i - df_rolling_mean wrong")
 }
 
 # ── P1.5b: ewm ──────────────────────────────────────────────────────
 
 # ewm_mean on id with alpha=0.5
-my $em
+var $em
 eval { $em = Polars::DataFrame::ewm_mean(\%frame, 0.5, ["id"]) }
 $i++
 if ($@) {
     p "not ok $i - df_ewm_mean call: $@"
 } else {
-    my $ok = ref($em) eq "HASH" && ref($em->{id}) eq "ARRAY" && scalar(@{$em->{id}}) == 5
+    val $ok = ref($em) eq "HASH" && ref($em->{id}) eq "ARRAY" && scalar(@{$em->{id}}) == 5
     p ($ok ? "ok $i - df_ewm_mean returns 5-element series" : "not ok $i - df_ewm_mean wrong")
 }

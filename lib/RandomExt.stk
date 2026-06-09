@@ -20,7 +20,7 @@ fn Polars::RandomExt::beta_v2 ($n, $alpha, $beta) {
 
 ## Random cauchy v2.
 fn Polars::RandomExt::cauchy_v2 ($n, $mu, $scale) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mu} = $mu if defined $mu
     $req{scale} = $scale if defined $scale
     Polars::_decode("rand_cauchy_v2", polars__rand_cauchy_v2(to_json(\%req)))->{array}
@@ -38,7 +38,7 @@ fn Polars::RandomExt::dirichlet_v2 ($alpha) {
 
 ## Random exponential v2.
 fn Polars::RandomExt::exponential_v2 ($n, $lambda) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{lambda} = $lambda if defined $lambda
     Polars::_decode("rand_exponential_v2", polars__rand_exponential_v2(to_json(\%req)))->{array}
 }
@@ -50,14 +50,14 @@ fn Polars::RandomExt::f_v2 ($n, $d1, $d2) {
 
 ## Random gamma v2.
 fn Polars::RandomExt::gamma_v2 ($n, $shape_p, $scale) {
-    my %req = (n => $n, shape_p => $shape_p)
+    var %req = (n => $n, shape_p => $shape_p)
     $req{scale} = $scale if defined $scale
     Polars::_decode("rand_gamma_v2", polars__rand_gamma_v2(to_json(\%req)))->{array}
 }
 
 ## Random gumbel.
 fn Polars::RandomExt::gumbel ($n, $mu, $beta) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mu} = $mu if defined $mu
     $req{beta} = $beta if defined $beta
     Polars::_decode("rand_gumbel", polars__rand_gumbel(to_json(\%req)))->{array}
@@ -65,7 +65,7 @@ fn Polars::RandomExt::gumbel ($n, $mu, $beta) {
 
 ## Random laplace.
 fn Polars::RandomExt::laplace ($n, $mu, $scale) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mu} = $mu if defined $mu
     $req{scale} = $scale if defined $scale
     Polars::_decode("rand_laplace", polars__rand_laplace(to_json(\%req)))->{array}
@@ -73,7 +73,7 @@ fn Polars::RandomExt::laplace ($n, $mu, $scale) {
 
 ## Random logistic.
 fn Polars::RandomExt::logistic ($n, $mu, $scale) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{mu} = $mu if defined $mu
     $req{scale} = $scale if defined $scale
     Polars::_decode("rand_logistic", polars__rand_logistic(to_json(\%req)))->{array}
@@ -81,7 +81,7 @@ fn Polars::RandomExt::logistic ($n, $mu, $scale) {
 
 ## Random pareto v2.
 fn Polars::RandomExt::pareto_v2 ($n, $alpha, $scale) {
-    my %req = (n => $n, alpha => $alpha)
+    var %req = (n => $n, alpha => $alpha)
     $req{scale} = $scale if defined $scale
     Polars::_decode("rand_pareto_v2", polars__rand_pareto_v2(to_json(\%req)))->{array}
 }
@@ -98,7 +98,7 @@ fn Polars::RandomExt::random ($n) {
 
 ## Random rayleigh.
 fn Polars::RandomExt::rayleigh ($n, $sigma) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("rand_rayleigh", polars__rand_rayleigh(to_json(\%req)))->{array}
 }
@@ -120,14 +120,14 @@ fn Polars::RandomExt::triangular ($n, $left, $mode, $right) {
 
 ## Random weibull v2.
 fn Polars::RandomExt::weibull_v2 ($n, $k, $lambda) {
-    my %req = (n => $n, k => $k)
+    var %req = (n => $n, k => $k)
     $req{lambda} = $lambda if defined $lambda
     Polars::_decode("rand_weibull_v2", polars__rand_weibull_v2(to_json(\%req)))->{array}
 }
 
 ## Random zipf.
 fn Polars::RandomExt::zipf ($n, $s, $max) {
-    my %req = (n => $n, s => $s)
+    var %req = (n => $n, s => $s)
     $req{max} = $max if defined $max
     Polars::_decode("rand_zipf", polars__rand_zipf(to_json(\%req)))->{array}
 }

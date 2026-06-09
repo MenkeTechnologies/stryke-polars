@@ -75,28 +75,28 @@ fn Polars::Dist::euclidean ($a, $b) {
 
 ## Exp cdf.
 fn Polars::Dist::exp_cdf ($x, $lambda) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{lambda} = $lambda if defined $lambda
     Polars::_decode("dist_exp_cdf", polars__dist_exp_cdf(to_json(\%req)))->{cdf}
 }
 
 ## Exp pdf.
 fn Polars::Dist::exp_pdf ($x, $lambda) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{lambda} = $lambda if defined $lambda
     Polars::_decode("dist_exp_pdf", polars__dist_exp_pdf(to_json(\%req)))->{pdf}
 }
 
 ## Gamma cdf.
 fn Polars::Dist::gamma_cdf ($x, $k, $theta) {
-    my %req = (x => $x, k => $k)
+    var %req = (x => $x, k => $k)
     $req{theta} = $theta if defined $theta
     Polars::_decode("dist_gamma_cdf", polars__dist_gamma_cdf(to_json(\%req)))->{cdf}
 }
 
 ## Gamma pdf.
 fn Polars::Dist::gamma_pdf ($x, $k, $theta) {
-    my %req = (x => $x, k => $k)
+    var %req = (x => $x, k => $k)
     $req{theta} = $theta if defined $theta
     Polars::_decode("dist_gamma_pdf", polars__dist_gamma_pdf(to_json(\%req)))->{pdf}
 }
@@ -118,7 +118,7 @@ fn Polars::Dist::jaccard ($a, $b) {
 
 ## Lognormal cdf.
 fn Polars::Dist::lognormal_cdf ($x, $mu, $sigma) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("dist_lognormal_cdf", polars__dist_lognormal_cdf(to_json(\%req)))->{cdf}
@@ -126,7 +126,7 @@ fn Polars::Dist::lognormal_cdf ($x, $mu, $sigma) {
 
 ## Lognormal pdf.
 fn Polars::Dist::lognormal_pdf ($x, $mu, $sigma) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("dist_lognormal_pdf", polars__dist_lognormal_pdf(to_json(\%req)))->{pdf}
@@ -144,7 +144,7 @@ fn Polars::Dist::manhattan ($a, $b) {
 
 ## Distance minkowski.
 fn Polars::Dist::minkowski ($a, $b, $p) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{p} = $p if defined $p
     Polars::_decode("dist_minkowski", polars__dist_minkowski(to_json(\%req)))->{distance}
 }
@@ -156,7 +156,7 @@ fn Polars::Dist::negbinom_pmf ($k, $r, $p) {
 
 ## Normal cdf.
 fn Polars::Dist::normal_cdf ($x, $mu, $sigma) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("dist_normal_cdf", polars__dist_normal_cdf(to_json(\%req)))->{cdf}
@@ -164,7 +164,7 @@ fn Polars::Dist::normal_cdf ($x, $mu, $sigma) {
 
 ## Normal pdf.
 fn Polars::Dist::normal_pdf ($x, $mu, $sigma) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("dist_normal_pdf", polars__dist_normal_pdf(to_json(\%req)))->{pdf}
@@ -172,7 +172,7 @@ fn Polars::Dist::normal_pdf ($x, $mu, $sigma) {
 
 ## Normal ppf.
 fn Polars::Dist::normal_ppf ($p, $mu, $sigma) {
-    my %req = (p => $p)
+    var %req = (p => $p)
     $req{mu} = $mu if defined $mu
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("dist_normal_ppf", polars__dist_normal_ppf(to_json(\%req)))->{ppf}
@@ -200,7 +200,7 @@ fn Polars::Dist::t_pdf ($x, $df) {
 
 ## Uniform cdf.
 fn Polars::Dist::uniform_cdf ($x, $lo, $hi) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{lo} = $lo if defined $lo
     $req{hi} = $hi if defined $hi
     Polars::_decode("dist_uniform_cdf", polars__dist_uniform_cdf(to_json(\%req)))->{cdf}
@@ -208,7 +208,7 @@ fn Polars::Dist::uniform_cdf ($x, $lo, $hi) {
 
 ## Uniform pdf.
 fn Polars::Dist::uniform_pdf ($x, $lo, $hi) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{lo} = $lo if defined $lo
     $req{hi} = $hi if defined $hi
     Polars::_decode("dist_uniform_pdf", polars__dist_uniform_pdf(to_json(\%req)))->{pdf}

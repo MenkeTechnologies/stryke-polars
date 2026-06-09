@@ -35,7 +35,7 @@ fn Polars::Geo::distance_3d ($x1, $y1, $z1, $x2, $y2, $z2) {
 
 ## Geometric haversine.
 fn Polars::Geo::haversine ($lat1, $lon1, $lat2, $lon2, $radius) {
-    my %req = (lat1 => $lat1, lon1 => $lon1, lat2 => $lat2, lon2 => $lon2)
+    var %req = (lat1 => $lat1, lon1 => $lon1, lat2 => $lat2, lon2 => $lon2)
     $req{radius} = $radius if defined $radius
     Polars::_decode("geo_haversine", polars__geo_haversine(to_json(\%req)))->{distance}
 }
@@ -57,7 +57,7 @@ fn Polars::Geo::polygon_perimeter ($x, $y) {
 
 ## Geometric rotate.
 fn Polars::Geo::rotate ($x, $y, $angle, $cx, $cy) {
-    my %req = (x => $x, y => $y, angle => $angle)
+    var %req = (x => $x, y => $y, angle => $angle)
     $req{cx} = $cx if defined $cx
     $req{cy} = $cy if defined $cy
     Polars::_decode("geo_rotate", polars__geo_rotate(to_json(\%req)))->{x}
@@ -65,7 +65,7 @@ fn Polars::Geo::rotate ($x, $y, $angle, $cx, $cy) {
 
 ## Geometric scale.
 fn Polars::Geo::scale ($x, $y, $sx, $sy) {
-    my %req = (x => $x, y => $y)
+    var %req = (x => $x, y => $y)
     $req{sx} = $sx if defined $sx
     $req{sy} = $sy if defined $sy
     Polars::_decode("geo_scale", polars__geo_scale(to_json(\%req)))->{x}
@@ -73,7 +73,7 @@ fn Polars::Geo::scale ($x, $y, $sx, $sy) {
 
 ## Geometric translate.
 fn Polars::Geo::translate ($x, $y, $tx, $ty) {
-    my %req = (x => $x, y => $y)
+    var %req = (x => $x, y => $y)
     $req{tx} = $tx if defined $tx
     $req{ty} = $ty if defined $ty
     Polars::_decode("geo_translate", polars__geo_translate(to_json(\%req)))->{x}

@@ -25,7 +25,7 @@ fn Polars::Cluster::inertia ($points, $centroids, $assignments) {
 
 ## Clustering kmeans.
 fn Polars::Cluster::kmeans ($points, $k, $max_iter) {
-    my %req = (points => $points, k => $k)
+    var %req = (points => $points, k => $k)
     $req{max_iter} = $max_iter if defined $max_iter
     Polars::_decode("cluster_kmeans", polars__cluster_kmeans(to_json(\%req)))->{centroids}
 }

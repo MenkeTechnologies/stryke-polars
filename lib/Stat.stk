@@ -110,21 +110,21 @@ fn Polars::Stat::spearman ($a, $b) {
 
 ## Statistics stdev.
 fn Polars::Stat::stdev ($data, $ddof) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{ddof} = $ddof if defined $ddof
     Polars::_decode("stat_stdev", polars__stat_stdev(to_json(\%req)))->{stdev}
 }
 
 ## Statistics trimmed mean.
 fn Polars::Stat::trimmed_mean ($data, $p) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{p} = $p if defined $p
     Polars::_decode("stat_trimmed_mean", polars__stat_trimmed_mean(to_json(\%req)))->{trimmed_mean}
 }
 
 ## Statistics variance.
 fn Polars::Stat::variance ($data, $ddof) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{ddof} = $ddof if defined $ddof
     Polars::_decode("stat_variance", polars__stat_variance(to_json(\%req)))->{variance}
 }

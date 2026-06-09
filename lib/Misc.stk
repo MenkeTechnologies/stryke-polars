@@ -20,7 +20,7 @@ fn Polars::Misc::choose ($n, $k) {
 
 ## Math clamp.
 fn Polars::Misc::clamp ($x, $min, $max) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{min} = $min if defined $min
     $req{max} = $max if defined $max
     Polars::_decode("misc_clamp", polars__misc_clamp(to_json(\%req)))->{clamped}
@@ -33,7 +33,7 @@ fn Polars::Misc::digit_sum ($n) {
 
 ## Math digits.
 fn Polars::Misc::digits ($n, $base) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{base} = $base if defined $base
     Polars::_decode("misc_digits", polars__misc_digits(to_json(\%req)))->{digits}
 }
@@ -95,14 +95,14 @@ fn Polars::Misc::reverse_number ($n) {
 
 ## Math safe div.
 fn Polars::Misc::safe_div ($a, $b, $default) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{default} = $default if defined $default
     Polars::_decode("misc_safe_div", polars__misc_safe_div(to_json(\%req)))->{value}
 }
 
 ## Math safe log.
 fn Polars::Misc::safe_log ($x, $eps) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{eps} = $eps if defined $eps
     Polars::_decode("misc_safe_log", polars__misc_safe_log(to_json(\%req)))->{value}
 }
@@ -119,7 +119,7 @@ fn Polars::Misc::sign ($x) {
 
 ## Math smoothstep.
 fn Polars::Misc::smoothstep ($x, $edge0, $edge1) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{edge0} = $edge0 if defined $edge0
     $req{edge1} = $edge1 if defined $edge1
     Polars::_decode("misc_smoothstep", polars__misc_smoothstep(to_json(\%req)))->{value}
@@ -127,7 +127,7 @@ fn Polars::Misc::smoothstep ($x, $edge0, $edge1) {
 
 ## Math step.
 fn Polars::Misc::step ($x, $edge) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{edge} = $edge if defined $edge
     Polars::_decode("misc_step", polars__misc_step(to_json(\%req)))->{value}
 }

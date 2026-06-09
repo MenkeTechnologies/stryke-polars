@@ -25,7 +25,7 @@ fn Polars::Index::argmin ($index) {
 
 ## Index argsort.
 fn Polars::Index::argsort ($index, $desc) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{desc} = $desc if defined $desc
     Polars::_decode("idx_argsort", polars__idx_argsort(to_json(\%req)))->{argsort}
 }
@@ -47,7 +47,7 @@ fn Polars::Index::astype_str ($index) {
 
 ## Index contains.
 fn Polars::Index::contains ($index, $value) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{value} = $value if defined $value
     Polars::_decode("idx_contains", polars__idx_contains(to_json(\%req)))->{contains}
 }
@@ -99,7 +99,7 @@ fn Polars::Index::factorize ($index) {
 
 ## Index fillna.
 fn Polars::Index::fillna ($index, $value) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{value} = $value if defined $value
     Polars::_decode("idx_fillna", polars__idx_fillna(to_json(\%req)))->{index}
 }
@@ -136,14 +136,14 @@ fn Polars::Index::get_indexer ($index, $values) {
 
 ## Index get level values.
 fn Polars::Index::get_level_values ($index, $level) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{level} = $level if defined $level
     Polars::_decode("idx_get_level_values", polars__idx_get_level_values(to_json(\%req)))->{index}
 }
 
 ## Index get loc.
 fn Polars::Index::get_loc ($index, $value) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{value} = $value if defined $value
     Polars::_decode("idx_get_loc", polars__idx_get_loc(to_json(\%req)))->{loc}
 }
@@ -155,7 +155,7 @@ fn Polars::Index::has_duplicates ($index) {
 
 ## Index head.
 fn Polars::Index::head ($index, $n) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{n} = $n if defined $n
     Polars::_decode("idx_head", polars__idx_head(to_json(\%req)))->{index}
 }
@@ -167,7 +167,7 @@ fn Polars::Index::identical ($a, $b) {
 
 ## Index insert.
 fn Polars::Index::insert ($index, $position, $value) {
-    my %req = (index => $index, position => $position)
+    var %req = (index => $index, position => $position)
     $req{value} = $value if defined $value
     Polars::_decode("idx_insert", polars__idx_insert(to_json(\%req)))->{index}
 }
@@ -254,7 +254,7 @@ fn Polars::Index::nunique ($index) {
 
 ## Index range.
 fn Polars::Index::range ($stop, $start, $step) {
-    my %req = (stop => $stop)
+    var %req = (stop => $stop)
     $req{start} = $start if defined $start
     $req{step} = $step if defined $step
     Polars::_decode("idx_range", polars__idx_range(to_json(\%req)))
@@ -277,7 +277,7 @@ fn Polars::Index::searchsorted ($index, $value) {
 
 ## Index shift.
 fn Polars::Index::shift ($index, $n) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{n} = $n if defined $n
     Polars::_decode("idx_shift", polars__idx_shift(to_json(\%req)))->{index}
 }
@@ -289,7 +289,7 @@ fn Polars::Index::size ($index) {
 
 ## Index slice.
 fn Polars::Index::slice ($index, $start, $stop) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{start} = $start if defined $start
     $req{stop} = $stop if defined $stop
     Polars::_decode("idx_slice", polars__idx_slice(to_json(\%req)))->{index}
@@ -297,7 +297,7 @@ fn Polars::Index::slice ($index, $start, $stop) {
 
 ## Index sort.
 fn Polars::Index::sort ($index, $desc) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{desc} = $desc if defined $desc
     Polars::_decode("idx_sort", polars__idx_sort(to_json(\%req)))->{index}
 }
@@ -329,7 +329,7 @@ fn Polars::Index::sum ($index) {
 
 ## Index swap levels.
 fn Polars::Index::swap_levels ($index, $i, $j) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{i} = $i if defined $i
     $req{j} = $j if defined $j
     Polars::_decode("idx_swap_levels", polars__idx_swap_levels(to_json(\%req)))->{index}
@@ -342,7 +342,7 @@ fn Polars::Index::symmetric_difference ($a, $b) {
 
 ## Index tail.
 fn Polars::Index::tail ($index, $n) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{n} = $n if defined $n
     Polars::_decode("idx_tail", polars__idx_tail(to_json(\%req)))->{index}
 }
@@ -359,7 +359,7 @@ fn Polars::Index::to_array ($index) {
 
 ## Index to frame.
 fn Polars::Index::to_frame ($index, $name) {
-    my %req = (index => $index)
+    var %req = (index => $index)
     $req{name} = $name if defined $name
     Polars::_decode("idx_to_frame", polars__idx_to_frame(to_json(\%req)))->{frame}
 }

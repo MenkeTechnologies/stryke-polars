@@ -30,7 +30,7 @@ fn Polars::Metric::cohen_kappa ($y_true, $y_pred) {
 
 ## ML metric confusion matrix.
 fn Polars::Metric::confusion_matrix ($y_true, $y_pred, $n_classes) {
-    my %req = (y_true => $y_true, y_pred => $y_pred)
+    var %req = (y_true => $y_true, y_pred => $y_pred)
     $req{n_classes} = $n_classes if defined $n_classes
     Polars::_decode("metric_confusion_matrix", polars__metric_confusion_matrix(to_json(\%req)))->{confusion_matrix}
 }
@@ -47,7 +47,7 @@ fn Polars::Metric::f1 ($y_true, $y_pred) {
 
 ## ML metric fbeta.
 fn Polars::Metric::fbeta ($y_true, $y_pred, $beta) {
-    my %req = (y_true => $y_true, y_pred => $y_pred)
+    var %req = (y_true => $y_true, y_pred => $y_pred)
     $req{beta} = $beta if defined $beta
     Polars::_decode("metric_fbeta", polars__metric_fbeta(to_json(\%req)))->{fbeta}
 }
@@ -119,7 +119,7 @@ fn Polars::Metric::smape ($y_true, $y_pred) {
 
 ## ML metric top k accuracy.
 fn Polars::Metric::top_k_accuracy ($y_true, $y_score, $k) {
-    my %req = (y_true => $y_true, y_score => $y_score)
+    var %req = (y_true => $y_true, y_score => $y_score)
     $req{k} = $k if defined $k
     Polars::_decode("metric_top_k_accuracy", polars__metric_top_k_accuracy(to_json(\%req)))->{top_k_accuracy}
 }

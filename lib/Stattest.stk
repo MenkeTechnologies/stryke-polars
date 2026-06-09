@@ -10,7 +10,7 @@ use Polars
 
 ## Statistical test acf.
 fn Polars::Stattest::acf ($a, $max_lag) {
-    my %req = (a => $a)
+    var %req = (a => $a)
     $req{max_lag} = $max_lag if defined $max_lag
     Polars::_decode("stattest_acf", polars__stattest_acf(to_json(\%req)))->{acf}
 }
@@ -27,7 +27,7 @@ fn Polars::Stattest::chi2 ($observed, $expected) {
 
 ## Statistical test confidence interval mean.
 fn Polars::Stattest::confidence_interval_mean ($a, $alpha) {
-    my %req = (a => $a)
+    var %req = (a => $a)
     $req{alpha} = $alpha if defined $alpha
     Polars::_decode("stattest_confidence_interval_mean", polars__stattest_confidence_interval_mean(to_json(\%req)))->{mean}
 }
@@ -79,7 +79,7 @@ fn Polars::Stattest::normality_test ($a) {
 
 ## Statistical test pacf.
 fn Polars::Stattest::pacf ($a, $max_lag) {
-    my %req = (a => $a)
+    var %req = (a => $a)
     $req{max_lag} = $max_lag if defined $max_lag
     Polars::_decode("stattest_pacf", polars__stattest_pacf(to_json(\%req)))->{pacf}
 }
@@ -106,7 +106,7 @@ fn Polars::Stattest::shapiro ($a) {
 
 ## Statistical test ttest 1samp.
 fn Polars::Stattest::ttest_1samp ($a, $popmean) {
-    my %req = (a => $a)
+    var %req = (a => $a)
     $req{popmean} = $popmean if defined $popmean
     Polars::_decode("stattest_ttest_1samp", polars__stattest_ttest_1samp(to_json(\%req)))->{statistic}
 }
@@ -133,7 +133,7 @@ fn Polars::Stattest::zscore ($a) {
 
 ## Statistical test ztest.
 fn Polars::Stattest::ztest ($a, $sigma, $popmean) {
-    my %req = (a => $a, sigma => $sigma)
+    var %req = (a => $a, sigma => $sigma)
     $req{popmean} = $popmean if defined $popmean
     Polars::_decode("stattest_ztest", polars__stattest_ztest(to_json(\%req)))->{statistic}
 }

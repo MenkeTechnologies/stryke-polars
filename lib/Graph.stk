@@ -20,7 +20,7 @@ fn Polars::Graph::average_degree () {
 
 ## Graph bfs.
 fn Polars::Graph::bfs ($start) {
-    my %req = ()
+    var %req = ()
     $req{start} = $start if defined $start
     Polars::_decode("graph_bfs", polars__graph_bfs(to_json(\%req)))->{order}
 }
@@ -47,7 +47,7 @@ fn Polars::Graph::density () {
 
 ## Graph dfs.
 fn Polars::Graph::dfs ($start) {
-    my %req = ()
+    var %req = ()
     $req{start} = $start if defined $start
     Polars::_decode("graph_dfs", polars__graph_dfs(to_json(\%req)))->{order}
 }
@@ -69,7 +69,7 @@ fn Polars::Graph::out_degree () {
 
 ## Graph pagerank.
 fn Polars::Graph::pagerank ($damping, $iters) {
-    my %req = ()
+    var %req = ()
     $req{damping} = $damping if defined $damping
     $req{iters} = $iters if defined $iters
     Polars::_decode("graph_pagerank", polars__graph_pagerank(to_json(\%req)))->{pagerank}
@@ -77,7 +77,7 @@ fn Polars::Graph::pagerank ($damping, $iters) {
 
 ## Graph shortest path.
 fn Polars::Graph::shortest_path ($start) {
-    my %req = ()
+    var %req = ()
     $req{start} = $start if defined $start
     Polars::_decode("graph_shortest_path", polars__graph_shortest_path(to_json(\%req)))->{distances}
 }

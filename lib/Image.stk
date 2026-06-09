@@ -20,35 +20,35 @@ fn Polars::Image::argmin_2d ($image) {
 
 ## Image box blur.
 fn Polars::Image::box_blur ($image, $window) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{window} = $window if defined $window
     Polars::_decode("img_box_blur", polars__img_box_blur(to_json(\%req)))->{image}
 }
 
 ## Image brightness.
 fn Polars::Image::brightness ($image, $delta) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{delta} = $delta if defined $delta
     Polars::_decode("img_brightness", polars__img_brightness(to_json(\%req)))->{image}
 }
 
 ## Image close.
 fn Polars::Image::close ($image, $radius) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{radius} = $radius if defined $radius
     Polars::_decode("img_close", polars__img_close(to_json(\%req)))->{image}
 }
 
 ## Image contrast.
 fn Polars::Image::contrast ($image, $factor) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{factor} = $factor if defined $factor
     Polars::_decode("img_contrast", polars__img_contrast(to_json(\%req)))->{image}
 }
 
 ## Image crop.
 fn Polars::Image::crop ($image, $r1, $c1, $r0, $c0) {
-    my %req = (image => $image, r1 => $r1, c1 => $c1)
+    var %req = (image => $image, r1 => $r1, c1 => $c1)
     $req{r0} = $r0 if defined $r0
     $req{c0} = $c0 if defined $c0
     Polars::_decode("img_crop", polars__img_crop(to_json(\%req)))->{image}
@@ -56,7 +56,7 @@ fn Polars::Image::crop ($image, $r1, $c1, $r0, $c0) {
 
 ## Image dilate.
 fn Polars::Image::dilate ($image, $radius) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{radius} = $radius if defined $radius
     Polars::_decode("img_dilate", polars__img_dilate(to_json(\%req)))->{image}
 }
@@ -68,14 +68,14 @@ fn Polars::Image::emboss ($image) {
 
 ## Image equalize.
 fn Polars::Image::equalize ($image, $levels) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{levels} = $levels if defined $levels
     Polars::_decode("img_equalize", polars__img_equalize(to_json(\%req)))->{image}
 }
 
 ## Image erode.
 fn Polars::Image::erode ($image, $radius) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{radius} = $radius if defined $radius
     Polars::_decode("img_erode", polars__img_erode(to_json(\%req)))->{image}
 }
@@ -92,21 +92,21 @@ fn Polars::Image::flip_vertical ($image) {
 
 ## Image gamma.
 fn Polars::Image::gamma ($image, $gamma) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{gamma} = $gamma if defined $gamma
     Polars::_decode("img_gamma", polars__img_gamma(to_json(\%req)))->{image}
 }
 
 ## Image gaussian blur.
 fn Polars::Image::gaussian_blur ($image, $sigma) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("img_gaussian_blur", polars__img_gaussian_blur(to_json(\%req)))->{image}
 }
 
 ## Image histogram.
 fn Polars::Image::histogram ($image, $bins) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{bins} = $bins if defined $bins
     Polars::_decode("img_histogram", polars__img_histogram(to_json(\%req)))->{histogram}
 }
@@ -118,7 +118,7 @@ fn Polars::Image::integral_image ($image) {
 
 ## Image invert.
 fn Polars::Image::invert ($image, $max) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{max} = $max if defined $max
     Polars::_decode("img_invert", polars__img_invert(to_json(\%req)))->{image}
 }
@@ -140,7 +140,7 @@ fn Polars::Image::mean ($image) {
 
 ## Image median filter.
 fn Polars::Image::median_filter ($image, $radius) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{radius} = $radius if defined $radius
     Polars::_decode("img_median_filter", polars__img_median_filter(to_json(\%req)))->{image}
 }
@@ -157,14 +157,14 @@ fn Polars::Image::normalize ($image) {
 
 ## Image open.
 fn Polars::Image::open ($image, $radius) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{radius} = $radius if defined $radius
     Polars::_decode("img_open", polars__img_open(to_json(\%req)))->{image}
 }
 
 ## Image pad.
 fn Polars::Image::pad ($image, $pad, $value) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{pad} = $pad if defined $pad
     $req{value} = $value if defined $value
     Polars::_decode("img_pad", polars__img_pad(to_json(\%req)))->{image}
@@ -237,7 +237,7 @@ fn Polars::Image::sum ($image) {
 
 ## Image threshold.
 fn Polars::Image::threshold ($image, $threshold, $max) {
-    my %req = (image => $image)
+    var %req = (image => $image)
     $req{threshold} = $threshold if defined $threshold
     $req{max} = $max if defined $max
     Polars::_decode("img_threshold", polars__img_threshold(to_json(\%req)))->{image}

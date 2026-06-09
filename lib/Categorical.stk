@@ -65,14 +65,14 @@ fn Polars::Categorical::first ($categorical) {
 
 ## Categorical from codes.
 fn Polars::Categorical::from_codes ($codes, $categories, $ordered) {
-    my %req = (codes => $codes, categories => $categories)
+    var %req = (codes => $codes, categories => $categories)
     $req{ordered} = $ordered if defined $ordered
     Polars::_decode("cat_from_codes", polars__cat_from_codes(to_json(\%req)))->{categorical}
 }
 
 ## Categorical head.
 fn Polars::Categorical::head ($categorical, $n) {
-    my %req = (categorical => $categorical)
+    var %req = (categorical => $categorical)
     $req{n} = $n if defined $n
     Polars::_decode("cat_head", polars__cat_head(to_json(\%req)))->{categorical}
 }
@@ -119,7 +119,7 @@ fn Polars::Categorical::mode ($categorical) {
 
 ## Categorical new.
 fn Polars::Categorical::new ($values, $categories, $ordered) {
-    my %req = (values => $values)
+    var %req = (values => $values)
     $req{categories} = $categories if defined $categories
     $req{ordered} = $ordered if defined $ordered
     Polars::_decode("cat_new", polars__cat_new(to_json(\%req)))->{categorical}
@@ -147,7 +147,7 @@ fn Polars::Categorical::remove_unused ($categorical) {
 
 ## Categorical rename categories.
 fn Polars::Categorical::rename_categories ($categorical, $new_categories) {
-    my %req = (categorical => $categorical, new_categories => $new_categories)
+    val %req = (categorical => $categorical, new_categories => $new_categories)
     Polars::_decode("cat_rename_categories", polars__cat_rename_categories(to_json(\%req)))
 }
 
@@ -168,14 +168,14 @@ fn Polars::Categorical::set_categories () {
 
 ## Categorical sort.
 fn Polars::Categorical::sort ($categorical, $desc) {
-    my %req = (categorical => $categorical)
+    var %req = (categorical => $categorical)
     $req{desc} = $desc if defined $desc
     Polars::_decode("cat_sort", polars__cat_sort(to_json(\%req)))->{categorical}
 }
 
 ## Categorical tail.
 fn Polars::Categorical::tail ($categorical, $n) {
-    my %req = (categorical => $categorical)
+    var %req = (categorical => $categorical)
     $req{n} = $n if defined $n
     Polars::_decode("cat_tail", polars__cat_tail(to_json(\%req)))->{categorical}
 }

@@ -29,7 +29,7 @@ package Polars
 
 ## Decode the cdylib's JSON return; die on `{error}` payload.
 fn Polars::_decode ($name, $json) {
-    my $o = from_json $json
+    val $o = from_json $json
     if (ref $o eq "HASH" && exists $o->{error}) {
         die "Polars::$name: $o->{error}"
     }

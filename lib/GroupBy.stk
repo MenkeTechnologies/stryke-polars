@@ -10,28 +10,28 @@ use Polars
 
 ## Groupby all.
 fn Polars::GroupBy::all ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_all", polars__gb_all(to_json(\%req)))->{frame}
 }
 
 ## Groupby any.
 fn Polars::GroupBy::any ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_any", polars__gb_any(to_json(\%req)))->{frame}
 }
 
 ## Groupby count.
 fn Polars::GroupBy::count ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_count", polars__gb_count(to_json(\%req)))->{frame}
 }
 
 ## Groupby first.
 fn Polars::GroupBy::first ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_first", polars__gb_first(to_json(\%req)))->{frame}
 }
@@ -43,70 +43,70 @@ fn Polars::GroupBy::groups ($frame, $by) {
 
 ## Groupby head.
 fn Polars::GroupBy::head ($frame, $by, $n) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{n} = $n if defined $n
     Polars::_decode("gb_head", polars__gb_head(to_json(\%req)))->{frame}
 }
 
 ## Groupby kurt.
 fn Polars::GroupBy::kurt ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_kurt", polars__gb_kurt(to_json(\%req)))->{frame}
 }
 
 ## Groupby last.
 fn Polars::GroupBy::last ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_last", polars__gb_last(to_json(\%req)))->{frame}
 }
 
 ## Groupby max.
 fn Polars::GroupBy::max ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_max", polars__gb_max(to_json(\%req)))->{frame}
 }
 
 ## Groupby mean.
 fn Polars::GroupBy::mean ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_mean", polars__gb_mean(to_json(\%req)))->{frame}
 }
 
 ## Groupby median.
 fn Polars::GroupBy::median ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_median", polars__gb_median(to_json(\%req)))->{frame}
 }
 
 ## Groupby min.
 fn Polars::GroupBy::min ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_min", polars__gb_min(to_json(\%req)))->{frame}
 }
 
 ## Groupby n unique.
 fn Polars::GroupBy::n_unique ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_n_unique", polars__gb_n_unique(to_json(\%req)))->{frame}
 }
 
 ## Groupby product.
 fn Polars::GroupBy::product ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_product", polars__gb_product(to_json(\%req)))->{frame}
 }
 
 ## Groupby quantile.
 fn Polars::GroupBy::quantile ($frame, $by, $q, $value_columns) {
-    my %req = (frame => $frame, by => $by, q => $q)
+    var %req = (frame => $frame, by => $by, q => $q)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_quantile", polars__gb_quantile(to_json(\%req)))->{frame}
 }
@@ -118,35 +118,35 @@ fn Polars::GroupBy::size ($frame, $by) {
 
 ## Groupby skew.
 fn Polars::GroupBy::skew ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_skew", polars__gb_skew(to_json(\%req)))->{frame}
 }
 
 ## Groupby std.
 fn Polars::GroupBy::std ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_std", polars__gb_std(to_json(\%req)))->{frame}
 }
 
 ## Groupby sum.
 fn Polars::GroupBy::sum ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_sum", polars__gb_sum(to_json(\%req)))->{frame}
 }
 
 ## Groupby tail.
 fn Polars::GroupBy::tail ($frame, $by, $n) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{n} = $n if defined $n
     Polars::_decode("gb_tail", polars__gb_tail(to_json(\%req)))->{frame}
 }
 
 ## Groupby var.
 fn Polars::GroupBy::var ($frame, $by, $value_columns) {
-    my %req = (frame => $frame, by => $by)
+    var %req = (frame => $frame, by => $by)
     $req{value_columns} = $value_columns if defined $value_columns
     Polars::_decode("gb_var", polars__gb_var(to_json(\%req)))->{frame}
 }

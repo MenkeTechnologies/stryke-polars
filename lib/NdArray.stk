@@ -21,7 +21,7 @@ fn Polars::NdArray::ones ($shape) {
 
 ## `numpy.arange(start, stop, step)` — 1-D.
 fn Polars::NdArray::arange ($start, $stop, $step) {
-    my %req = (stop => $stop)
+    var %req = (stop => $stop)
     $req{start} = $start if defined $start
     $req{step} = $step if defined $step
     Polars::_decode("arr_arange", polars__arr_arange(to_json(\%req)))->{array}
@@ -58,7 +58,7 @@ fn Polars::NdArray::dot ($a, $b) {
 
 ## Concatenate two arrays along `$axis` (default 0).
 fn Polars::NdArray::concatenate ($a, $b, $axis) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{axis} = $axis if defined $axis
     Polars::_decode("arr_concatenate", polars__arr_concatenate(to_json(\%req)))->{array}
 }
@@ -106,7 +106,7 @@ fn Polars::NdArray::argsort ($arr) {
 }
 ## Clip to `[$lower, $upper]`. Either bound optional.
 fn Polars::NdArray::clip ($arr, $lower, $upper) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{lower} = $lower if defined $lower
     $req{upper} = $upper if defined $upper
     Polars::_decode("arr_clip", polars__arr_clip(to_json(\%req)))->{array}
@@ -191,7 +191,7 @@ fn Polars::NdArray::normalize ($arr) {
 }
 ## `np.logspace(start, stop, n, base=10)` — log-spaced 1-D array.
 fn Polars::NdArray::logspace ($start, $stop, $n, $base) {
-    my %req = (start => $start, stop => $stop, n => $n)
+    var %req = (start => $start, stop => $stop, n => $n)
     $req{base} = $base if defined $base
     Polars::_decode("arr_logspace", polars__arr_logspace(to_json(\%req)))->{array}
 }
@@ -238,7 +238,7 @@ fn Polars::NdArray::gradient ($arr) {
 
 ## `np.trapezoid(y, dx=1)` — trapezoidal integration scalar.
 fn Polars::NdArray::trapezoid ($arr, $dx) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{dx} = $dx if defined $dx
     Polars::_decode("arr_trapezoid", polars__arr_trapezoid(to_json(\%req)))->{scalar}
 }
@@ -250,7 +250,7 @@ fn Polars::NdArray::convolve ($a, $v) {
 
 ## Elementwise approx-equal mask. `$rtol` default 1e-5, `$atol` default 1e-8.
 fn Polars::NdArray::isclose ($a, $b, $rtol, $atol) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{rtol} = $rtol if defined $rtol
     $req{atol} = $atol if defined $atol
     Polars::_decode("arr_isclose", polars__arr_isclose(to_json(\%req)))->{array}
@@ -311,7 +311,7 @@ fn Polars::NdArray::array_equal ($a, $b) {
 
 ## `np.allclose(a, b, rtol, atol)` — all elements close to within tol.
 fn Polars::NdArray::allclose ($a, $b, $rtol, $atol) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{rtol} = $rtol if defined $rtol
     $req{atol} = $atol if defined $atol
     Polars::_decode("arr_allclose", polars__arr_allclose(to_json(\%req)))->{bool}
@@ -399,13 +399,13 @@ fn Polars::NdArray::in1d ($a, $b) {
 }
 ## Cumulative trapezoidal integration (1-D). Output length n-1.
 fn Polars::NdArray::cumtrapz ($arr, $dx) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{dx} = $dx if defined $dx
     Polars::_decode("arr_cumtrapz", polars__arr_cumtrapz(to_json(\%req)))->{array}
 }
 ## `np.pad(a, before, after, value)` — constant-pad 1-D array.
 fn Polars::NdArray::pad ($arr, $before, $after, $value) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{before} = $before if defined $before
     $req{after} = $after if defined $after
     $req{value} = $value if defined $value
@@ -424,7 +424,7 @@ fn Polars::NdArray::norm_axis ($arr, $axis) {
 
 ## N-th order discrete difference.
 fn Polars::NdArray::diff_n ($arr, $n) {
-    my %req = (array => $arr)
+    var %req = (array => $arr)
     $req{n} = $n if defined $n
     Polars::_decode("arr_diff_n", polars__arr_diff_n(to_json(\%req)))->{array}
 }

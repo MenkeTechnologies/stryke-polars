@@ -15,7 +15,7 @@ fn Polars::Interp::cubic_natural ($x, $y, $xnew) {
 
 ## Interpolation grid 2d.
 fn Polars::Interp::grid_2d ($grid, $x, $y) {
-    my %req = (grid => $grid)
+    var %req = (grid => $grid)
     $req{x} = $x if defined $x
     $req{y} = $y if defined $y
     Polars::_decode("interp_grid_2d", polars__interp_grid_2d(to_json(\%req)))->{value}

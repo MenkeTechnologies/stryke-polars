@@ -25,14 +25,14 @@ fn Polars::Series::append ($series, $value) {
 
 ## Series apply lambda.
 fn Polars::Series::apply_lambda ($series, $op) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{op} = $op if defined $op
     Polars::_decode("sr_apply_lambda", polars__sr_apply_lambda(to_json(\%req)))->{series}
 }
 
 ## Series argbottom.
 fn Polars::Series::argbottom ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_argbottom", polars__sr_argbottom(to_json(\%req)))->{argbottom}
 }
@@ -44,7 +44,7 @@ fn Polars::Series::argmax ($series) {
 
 ## Series argmax n.
 fn Polars::Series::argmax_n ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_argmax_n", polars__sr_argmax_n(to_json(\%req)))->{argmax_n}
 }
@@ -56,21 +56,21 @@ fn Polars::Series::argmin ($series) {
 
 ## Series argmin n.
 fn Polars::Series::argmin_n ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_argmin_n", polars__sr_argmin_n(to_json(\%req)))->{argmin_n}
 }
 
 ## Series argsort.
 fn Polars::Series::argsort ($series, $desc) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{desc} = $desc if defined $desc
     Polars::_decode("sr_argsort", polars__sr_argsort(to_json(\%req)))->{series}
 }
 
 ## Series argtop.
 fn Polars::Series::argtop ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_argtop", polars__sr_argtop(to_json(\%req)))->{argtop}
 }
@@ -87,14 +87,14 @@ fn Polars::Series::between ($series, $min, $max) {
 
 ## Series bottom k.
 fn Polars::Series::bottom_k ($series, $k) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{k} = $k if defined $k
     Polars::_decode("sr_bottom_k", polars__sr_bottom_k(to_json(\%req)))->{series}
 }
 
 ## Series clip.
 fn Polars::Series::clip ($series, $min, $max) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{min} = $min if defined $min
     $req{max} = $max if defined $max
     Polars::_decode("sr_clip", polars__sr_clip(to_json(\%req)))->{series}
@@ -197,14 +197,14 @@ fn Polars::Series::describe ($series) {
 
 ## Series diff.
 fn Polars::Series::diff ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_diff", polars__sr_diff(to_json(\%req)))->{series}
 }
 
 ## Series div safe.
 fn Polars::Series::div_safe ($series, $scalar, $default) {
-    my %req = (series => $series, scalar => $scalar)
+    var %req = (series => $series, scalar => $scalar)
     $req{default} = $default if defined $default
     Polars::_decode("sr_div_safe", polars__sr_div_safe(to_json(\%req)))->{series}
 }
@@ -321,7 +321,7 @@ fn Polars::Series::empty ($series) {
 
 ## Series ewm mean.
 fn Polars::Series::ewm_mean ($series, $alpha) {
-    my %req = (series => $series, alpha => $alpha)
+    val %req = (series => $series, alpha => $alpha)
     Polars::_decode("sr_ewm_mean", polars__sr_ewm_mean(to_json(\%req)))
 }
 
@@ -367,7 +367,7 @@ fn Polars::Series::expanding_var ($series) {
 
 ## Series fill nan.
 fn Polars::Series::fill_nan ($series, $value) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{value} = $value if defined $value
     Polars::_decode("sr_fill_nan", polars__sr_fill_nan(to_json(\%req)))->{series}
 }
@@ -419,7 +419,7 @@ fn Polars::Series::floordiv_scalar ($series, $scalar) {
 
 ## Series from numpy.
 fn Polars::Series::from_numpy ($array, $name) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{name} = $name if defined $name
     Polars::_decode("sr_from_numpy", polars__sr_from_numpy(to_json(\%req)))->{series}
 }
@@ -436,14 +436,14 @@ fn Polars::Series::has_nulls ($series) {
 
 ## First `n` values.
 fn Polars::Series::head ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_head", polars__sr_head(to_json(\%req)))->{series}
 }
 
 ## Series insert.
 fn Polars::Series::insert ($series, $i, $value) {
-    my %req = (series => $series, i => $i, value => $value)
+    val %req = (series => $series, i => $i, value => $value)
     Polars::_decode("sr_insert", polars__sr_insert(to_json(\%req)))
 }
 
@@ -514,7 +514,7 @@ fn Polars::Series::logsumexp ($series) {
 
 ## Series mask.
 fn Polars::Series::mask ($series, $mask, $other) {
-    my %req = (series => $series, mask => $mask)
+    var %req = (series => $series, mask => $mask)
     $req{other} = $other if defined $other
     Polars::_decode("sr_mask", polars__sr_mask(to_json(\%req)))->{series}
 }
@@ -561,7 +561,7 @@ fn Polars::Series::new ($series) {
 
 ## Series nlargest.
 fn Polars::Series::nlargest ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_nlargest", polars__sr_nlargest(to_json(\%req)))->{series}
 }
@@ -583,7 +583,7 @@ fn Polars::Series::normalize_l2 ($series) {
 
 ## Series nsmallest.
 fn Polars::Series::nsmallest ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_nsmallest", polars__sr_nsmallest(to_json(\%req)))->{series}
 }
@@ -600,7 +600,7 @@ fn Polars::Series::nunique ($series) {
 
 ## Series pad value.
 fn Polars::Series::pad_value ($series, $length, $value) {
-    my %req = (series => $series, length => $length)
+    var %req = (series => $series, length => $length)
     $req{value} = $value if defined $value
     Polars::_decode("sr_pad_value", polars__sr_pad_value(to_json(\%req)))->{series}
 }
@@ -612,7 +612,7 @@ fn Polars::Series::partition ($series, $k) {
 
 ## Series pct change.
 fn Polars::Series::pct_change ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_pct_change", polars__sr_pct_change(to_json(\%req)))->{series}
 }
@@ -654,7 +654,7 @@ fn Polars::Series::quantile ($series, $q) {
 
 ## Series quantile method.
 fn Polars::Series::quantile_method ($series, $q, $method) {
-    my %req = (series => $series, q => $q)
+    var %req = (series => $series, q => $q)
     $req{method} = $method if defined $method
     Polars::_decode("sr_quantile_method", polars__sr_quantile_method(to_json(\%req)))->{quantile}
 }
@@ -746,14 +746,14 @@ fn Polars::Series::rolling_var ($series) {
 
 ## Series round.
 fn Polars::Series::round ($series, $dp) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{dp} = $dp if defined $dp
     Polars::_decode("sr_round", polars__sr_round(to_json(\%req)))->{series}
 }
 
 ## Series sample.
 fn Polars::Series::sample ($series, $n, $with_replacement, $seed) {
-    my %req = (series => $series, n => $n)
+    var %req = (series => $series, n => $n)
     $req{with_replacement} = $with_replacement if defined $with_replacement
     $req{seed} = $seed if defined $seed
     Polars::_decode("sr_sample", polars__sr_sample(to_json(\%req)))->{series}
@@ -766,7 +766,7 @@ fn Polars::Series::set ($series, $i, $value) {
 
 ## Series shift.
 fn Polars::Series::shift ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_shift", polars__sr_shift(to_json(\%req)))->{series}
 }
@@ -778,7 +778,7 @@ fn Polars::Series::skew ($series) {
 
 ## Slice [offset, offset+length).
 fn Polars::Series::slice ($series, $offset, $length) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{offset} = $offset if defined $offset
     $req{length} = $length if defined $length
     Polars::_decode("sr_slice", polars__sr_slice(to_json(\%req)))->{series}
@@ -791,7 +791,7 @@ fn Polars::Series::softmax ($series) {
 
 ## Series sort.
 fn Polars::Series::sort ($series, $desc) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{desc} = $desc if defined $desc
     Polars::_decode("sr_sort", polars__sr_sort(to_json(\%req)))->{series}
 }
@@ -803,7 +803,7 @@ fn Polars::Series::standardize ($series) {
 
 ## Series std.
 fn Polars::Series::std ($series, $ddof) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{ddof} = $ddof if defined $ddof
     Polars::_decode("sr_std", polars__sr_std(to_json(\%req)))->{std}
 }
@@ -820,14 +820,14 @@ fn Polars::Series::str_capitalize ($series) {
 
 ## Series str center.
 fn Polars::Series::str_center ($series, $width, $fill) {
-    my %req = (series => $series, width => $width)
+    var %req = (series => $series, width => $width)
     $req{fill} = $fill if defined $fill
     Polars::_decode("sr_str_center", polars__sr_str_center(to_json(\%req)))->{series}
 }
 
 ## Series str concat.
 fn Polars::Series::str_concat ($series, $suffix) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{suffix} = $suffix if defined $suffix
     Polars::_decode("sr_str_concat", polars__sr_str_concat(to_json(\%req)))->{series}
 }
@@ -889,7 +889,7 @@ fn Polars::Series::str_isupper ($series) {
 
 ## Series str join.
 fn Polars::Series::str_join ($series, $sep) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{sep} = $sep if defined $sep
     Polars::_decode("sr_str_join", polars__sr_str_join(to_json(\%req)))->{joined}
 }
@@ -916,14 +916,14 @@ fn Polars::Series::str_lstrip ($series) {
 
 ## Series str pad.
 fn Polars::Series::str_pad ($series, $width, $fill) {
-    my %req = (series => $series, width => $width)
+    var %req = (series => $series, width => $width)
     $req{fill} = $fill if defined $fill
     Polars::_decode("sr_str_pad", polars__sr_str_pad(to_json(\%req)))->{series}
 }
 
 ## Series str pad right.
 fn Polars::Series::str_pad_right ($series, $width, $fill) {
-    my %req = (series => $series, width => $width)
+    var %req = (series => $series, width => $width)
     $req{fill} = $fill if defined $fill
     Polars::_decode("sr_str_pad_right", polars__sr_str_pad_right(to_json(\%req)))->{series}
 }
@@ -955,7 +955,7 @@ fn Polars::Series::str_rstrip ($series) {
 
 ## Series str slice.
 fn Polars::Series::str_slice ($series, $start, $length) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{start} = $start if defined $start
     $req{length} = $length if defined $length
     Polars::_decode("sr_str_slice", polars__sr_str_slice(to_json(\%req)))->{series}
@@ -963,7 +963,7 @@ fn Polars::Series::str_slice ($series, $start, $length) {
 
 ## Series str split n.
 fn Polars::Series::str_split_n ($series, $sep) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{sep} = $sep if defined $sep
     Polars::_decode("sr_str_split_n", polars__sr_str_split_n(to_json(\%req)))->{series}
 }
@@ -980,7 +980,7 @@ fn Polars::Series::str_strip ($series) {
 
 ## Series str strip chars.
 fn Polars::Series::str_strip_chars ($series, $chars) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{chars} = $chars if defined $chars
     Polars::_decode("sr_str_strip_chars", polars__sr_str_strip_chars(to_json(\%req)))->{series}
 }
@@ -1027,7 +1027,7 @@ fn Polars::Series::swap ($series, $i, $j) {
 
 ## Last `n` values.
 fn Polars::Series::tail ($series, $n) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{n} = $n if defined $n
     Polars::_decode("sr_tail", polars__sr_tail(to_json(\%req)))->{series}
 }
@@ -1079,7 +1079,7 @@ fn Polars::Series::to_str ($series) {
 
 ## Series top k.
 fn Polars::Series::top_k ($series, $k) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{k} = $k if defined $k
     Polars::_decode("sr_top_k", polars__sr_top_k(to_json(\%req)))->{series}
 }
@@ -1106,14 +1106,14 @@ fn Polars::Series::value_range ($series) {
 
 ## Series var.
 fn Polars::Series::var ($series, $ddof) {
-    my %req = (series => $series)
+    var %req = (series => $series)
     $req{ddof} = $ddof if defined $ddof
     Polars::_decode("sr_var", polars__sr_var(to_json(\%req)))->{var}
 }
 
 ## Series where.
 fn Polars::Series::where ($series, $mask, $other) {
-    my %req = (series => $series, mask => $mask)
+    var %req = (series => $series, mask => $mask)
     $req{other} = $other if defined $other
     Polars::_decode("sr_where", polars__sr_where(to_json(\%req)))->{series}
 }

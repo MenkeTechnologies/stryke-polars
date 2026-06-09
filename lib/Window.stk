@@ -35,7 +35,7 @@ fn Polars::Window::cosine ($n) {
 
 ## Window function exponential.
 fn Polars::Window::exponential ($n, $tau) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{tau} = $tau if defined $tau
     Polars::_decode("win_exponential", polars__win_exponential(to_json(\%req)))->{array}
 }
@@ -47,7 +47,7 @@ fn Polars::Window::flattop ($n) {
 
 ## Window function gaussian.
 fn Polars::Window::gaussian ($n, $sigma) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{sigma} = $sigma if defined $sigma
     Polars::_decode("win_gaussian", polars__win_gaussian(to_json(\%req)))->{array}
 }
@@ -64,7 +64,7 @@ fn Polars::Window::hann ($n) {
 
 ## Window function kaiser.
 fn Polars::Window::kaiser ($n, $beta) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{beta} = $beta if defined $beta
     Polars::_decode("win_kaiser", polars__win_kaiser(to_json(\%req)))->{array}
 }
@@ -96,7 +96,7 @@ fn Polars::Window::triangular ($n) {
 
 ## Window function tukey.
 fn Polars::Window::tukey ($n, $alpha) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{alpha} = $alpha if defined $alpha
     Polars::_decode("win_tukey", polars__win_tukey(to_json(\%req)))->{array}
 }

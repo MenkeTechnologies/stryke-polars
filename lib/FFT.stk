@@ -22,7 +22,7 @@ fn Polars::FFT::ifft ($cplx) {
 
 ## DFT sample frequencies (`np.fft.fftfreq(n, d=1.0)`). Returns 1-D array.
 fn Polars::FFT::fftfreq ($n, $d) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{d} = $d if defined $d
     Polars::_decode("fft_fftfreq", polars__fft_fftfreq(to_json(\%req)))->{array}
 }
@@ -50,7 +50,7 @@ fn Polars::FFT::ifftshift ($arr) {
 
 ## `np.fft.rfftfreq(n, d=1)` — sample frequencies for `rfft` output.
 fn Polars::FFT::rfftfreq ($n, $d) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{d} = $d if defined $d
     Polars::_decode("fft_rfftfreq", polars__fft_rfftfreq(to_json(\%req)))->{array}
 }

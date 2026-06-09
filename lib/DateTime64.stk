@@ -151,7 +151,7 @@ fn Polars::DateTime64::date_range ($start, $end) {
 
 ## `[start, end)` half-open range with `$step_days` stride.
 fn Polars::DateTime64::arange ($start, $end, $step_days) {
-    my %req = (start => $start, end => $end)
+    var %req = (start => $start, end => $end)
     $req{step_days} = $step_days if defined $step_days
     Polars::_decode("dt64_arange", polars__dt64_arange(to_json(\%req)))->{dates}
 }

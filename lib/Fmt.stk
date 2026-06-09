@@ -10,7 +10,7 @@ use Polars
 
 ## Format binary str.
 fn Polars::Fmt::binary_str ($n, $width) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{width} = $width if defined $width
     Polars::_decode("fmt_binary_str", polars__fmt_binary_str(to_json(\%req)))->{binary}
 }
@@ -22,7 +22,7 @@ fn Polars::Fmt::ceil ($x) {
 
 ## Format currency.
 fn Polars::Fmt::currency ($x, $symbol) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{symbol} = $symbol if defined $symbol
     Polars::_decode("fmt_currency", polars__fmt_currency(to_json(\%req)))->{currency}
 }
@@ -49,21 +49,21 @@ fn Polars::Fmt::ordinal ($n) {
 
 ## Format pad left.
 fn Polars::Fmt::pad_left ($value, $width, $pad) {
-    my %req = (value => $value, width => $width)
+    var %req = (value => $value, width => $width)
     $req{pad} = $pad if defined $pad
     Polars::_decode("fmt_pad_left", polars__fmt_pad_left(to_json(\%req)))->{value}
 }
 
 ## Format pad right.
 fn Polars::Fmt::pad_right ($value, $width, $pad) {
-    my %req = (value => $value, width => $width)
+    var %req = (value => $value, width => $width)
     $req{pad} = $pad if defined $pad
     Polars::_decode("fmt_pad_right", polars__fmt_pad_right(to_json(\%req)))->{value}
 }
 
 ## Format percent.
 fn Polars::Fmt::percent ($x, $dp) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{dp} = $dp if defined $dp
     Polars::_decode("fmt_percent", polars__fmt_percent(to_json(\%req)))->{percent}
 }
@@ -75,14 +75,14 @@ fn Polars::Fmt::roman ($n) {
 
 ## Format round.
 fn Polars::Fmt::round ($x, $dp) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{dp} = $dp if defined $dp
     Polars::_decode("fmt_round", polars__fmt_round(to_json(\%req)))->{rounded}
 }
 
 ## Format scientific.
 fn Polars::Fmt::scientific ($x, $dp) {
-    my %req = (x => $x)
+    var %req = (x => $x)
     $req{dp} = $dp if defined $dp
     Polars::_decode("fmt_scientific", polars__fmt_scientific(to_json(\%req)))->{scientific}
 }

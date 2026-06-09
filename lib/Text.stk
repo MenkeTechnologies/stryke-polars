@@ -25,7 +25,7 @@ fn Polars::Text::char_count ($text) {
 
 ## Text char ngrams.
 fn Polars::Text::char_ngrams ($text, $n) {
-    my %req = (text => $text)
+    var %req = (text => $text)
     $req{n} = $n if defined $n
     Polars::_decode("text_char_ngrams", polars__text_char_ngrams(to_json(\%req)))->{ngrams}
 }
@@ -72,14 +72,14 @@ fn Polars::Text::lower ($text) {
 
 ## Text ngrams.
 fn Polars::Text::ngrams ($text, $n) {
-    my %req = (text => $text)
+    var %req = (text => $text)
     $req{n} = $n if defined $n
     Polars::_decode("text_ngrams", polars__text_ngrams(to_json(\%req)))->{ngrams}
 }
 
 ## Text pad to.
 fn Polars::Text::pad_to ($text, $width, $pad) {
-    my %req = (text => $text)
+    var %req = (text => $text)
     $req{width} = $width if defined $width
     $req{pad} = $pad if defined $pad
     Polars::_decode("text_pad_to", polars__text_pad_to(to_json(\%req)))->{text}
@@ -127,7 +127,7 @@ fn Polars::Text::tokenize ($text) {
 
 ## Text truncate.
 fn Polars::Text::truncate ($text, $width) {
-    my %req = (text => $text)
+    var %req = (text => $text)
     $req{width} = $width if defined $width
     Polars::_decode("text_truncate", polars__text_truncate(to_json(\%req)))->{text}
 }

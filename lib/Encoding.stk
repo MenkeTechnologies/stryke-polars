@@ -15,7 +15,7 @@ fn Polars::Encoding::base64 ($value) {
 
 ## Encoding binary.
 fn Polars::Encoding::binary ($data, $threshold) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{threshold} = $threshold if defined $threshold
     Polars::_decode("enc_binary", polars__enc_binary(to_json(\%req)))->{array}
 }

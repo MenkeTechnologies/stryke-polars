@@ -65,7 +65,7 @@ fn Polars::LinalgExt::lstsq_v2 ($a, $b) {
 
 ## Linear algebra matrix power v2.
 fn Polars::LinalgExt::matrix_power_v2 ($matrix, $p) {
-    my %req = (matrix => $matrix)
+    var %req = (matrix => $matrix)
     $req{p} = $p if defined $p
     Polars::_decode("linalg_matrix_power_v2", polars__linalg_matrix_power_v2(to_json(\%req)))->{matrix}
 }

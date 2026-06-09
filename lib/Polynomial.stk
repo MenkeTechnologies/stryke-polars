@@ -21,7 +21,7 @@ fn Polars::Polynomial::polyder ($coefficients) {
 ## Integral coefficients: `[c0, c1, ...]` → `[c0_int, c0, c1/2, c2/3, ...]`.
 ## `$c0_int` is the integration constant (default 0).
 fn Polars::Polynomial::polyint ($coefficients, $c0) {
-    my %req = (coefficients => $coefficients)
+    var %req = (coefficients => $coefficients)
     $req{c0} = $c0 if defined $c0
     Polars::_decode("poly_polyint", polars__poly_polyint(to_json(\%req)))->{coefficients}
 }

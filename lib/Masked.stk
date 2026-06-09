@@ -55,14 +55,14 @@ fn Polars::Masked::array_equal ($a, $b) {
 
 ## Masked array average.
 fn Polars::Masked::average ($masked, $weights) {
-    my %req = (masked => $masked)
+    var %req = (masked => $masked)
     $req{weights} = $weights if defined $weights
     Polars::_decode("ma_average", polars__ma_average(to_json(\%req)))->{average}
 }
 
 ## Masked array clip.
 fn Polars::Masked::clip ($masked, $min, $max) {
-    my %req = (masked => $masked)
+    var %req = (masked => $masked)
     $req{min} = $min if defined $min
     $req{max} = $max if defined $max
     Polars::_decode("ma_clip", polars__ma_clip(to_json(\%req)))->{masked}
@@ -125,14 +125,14 @@ fn Polars::Masked::dot ($a, $b) {
 
 ## Masked array empty.
 fn Polars::Masked::empty ($n) {
-    my %req = ()
+    var %req = ()
     $req{n} = $n if defined $n
     Polars::_decode("ma_empty", polars__ma_empty(to_json(\%req)))->{masked}
 }
 
 ## Masked array filled.
 fn Polars::Masked::filled ($masked, $value) {
-    my %req = (masked => $masked)
+    var %req = (masked => $masked)
     $req{value} = $value if defined $value
     Polars::_decode("ma_filled", polars__ma_filled(to_json(\%req)))->{data}
 }
@@ -254,7 +254,7 @@ fn Polars::Masked::nomask ($masked) {
 
 ## Masked array ones.
 fn Polars::Masked::ones ($n) {
-    my %req = ()
+    var %req = ()
     $req{n} = $n if defined $n
     Polars::_decode("ma_ones", polars__ma_ones(to_json(\%req)))->{masked}
 }
@@ -271,7 +271,7 @@ fn Polars::Masked::ravel ($masked) {
 
 ## Masked array repeat.
 fn Polars::Masked::repeat ($masked, $times) {
-    my %req = (masked => $masked)
+    var %req = (masked => $masked)
     $req{times} = $times if defined $times
     Polars::_decode("ma_repeat", polars__ma_repeat(to_json(\%req)))->{masked}
 }
@@ -283,7 +283,7 @@ fn Polars::Masked::reverse ($masked) {
 
 ## Masked array set fill value.
 fn Polars::Masked::set_fill_value ($masked, $fill_value) {
-    my %req = (masked => $masked)
+    var %req = (masked => $masked)
     $req{fill_value} = $fill_value if defined $fill_value
     Polars::_decode("ma_set_fill_value", polars__ma_set_fill_value(to_json(\%req)))->{masked}
 }
@@ -310,7 +310,7 @@ fn Polars::Masked::std ($masked) {
 
 ## Masked array take.
 fn Polars::Masked::take ($masked, $indices) {
-    my %req = (masked => $masked, indices => $indices)
+    val %req = (masked => $masked, indices => $indices)
     Polars::_decode("ma_take", polars__ma_take(to_json(\%req)))
 }
 
@@ -326,7 +326,7 @@ fn Polars::Masked::var ($masked) {
 
 ## Masked array zeros.
 fn Polars::Masked::zeros ($n) {
-    my %req = ()
+    var %req = ()
     $req{n} = $n if defined $n
     Polars::_decode("ma_zeros", polars__ma_zeros(to_json(\%req)))->{masked}
 }

@@ -25,7 +25,7 @@ fn Polars::DataFrameExt::any_nulls ($frame) {
 
 ## DataFrame clip v2.
 fn Polars::DataFrameExt::clip_v2 ($frame, $min, $max) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{min} = $min if defined $min
     $req{max} = $max if defined $max
     Polars::_decode("df_clip_v2", polars__df_clip_v2(to_json(\%req)))->{frame}
@@ -33,7 +33,7 @@ fn Polars::DataFrameExt::clip_v2 ($frame, $min, $max) {
 
 ## DataFrame concat horizontal.
 fn Polars::DataFrameExt::concat_horizontal ($frames) {
-    my %req = (frames => $frames)
+    val %req = (frames => $frames)
     Polars::_decode("df_concat_horizontal", polars__df_concat_horizontal(to_json(\%req)))
 }
 
@@ -59,7 +59,7 @@ fn Polars::DataFrameExt::describe ($frame) {
 
 ## DataFrame diff v2.
 fn Polars::DataFrameExt::diff_v2 ($frame, $n) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{n} = $n if defined $n
     Polars::_decode("df_diff_v2", polars__df_diff_v2(to_json(\%req)))->{frame}
 }
@@ -76,7 +76,7 @@ fn Polars::DataFrameExt::empty ($frame) {
 
 ## DataFrame explode v2.
 fn Polars::DataFrameExt::explode_v2 ($frame, $columns) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{columns} = $columns if defined $columns
     Polars::_decode("df_explode_v2", polars__df_explode_v2(to_json(\%req)))->{frame}
 }
@@ -123,7 +123,7 @@ fn Polars::DataFrameExt::height ($frame) {
 
 ## DataFrame melt.
 fn Polars::DataFrameExt::melt ($frame, $id_vars, $value_vars) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{id_vars} = $id_vars if defined $id_vars
     $req{value_vars} = $value_vars if defined $value_vars
     Polars::_decode("df_melt", polars__df_melt(to_json(\%req)))->{frame}
@@ -136,14 +136,14 @@ fn Polars::DataFrameExt::mode_per_column ($frame) {
 
 ## DataFrame pct change v2.
 fn Polars::DataFrameExt::pct_change_v2 ($frame, $n) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{n} = $n if defined $n
     Polars::_decode("df_pct_change_v2", polars__df_pct_change_v2(to_json(\%req)))->{frame}
 }
 
 ## DataFrame pivot.
 fn Polars::DataFrameExt::pivot ($frame) {
-    my %req = (frame => $frame)
+    val %req = (frame => $frame)
     Polars::_decode("df_pivot", polars__df_pivot(to_json(\%req)))
 }
 
@@ -164,7 +164,7 @@ fn Polars::DataFrameExt::sample_frac ($frame, $frac) {
 
 ## DataFrame sample n.
 fn Polars::DataFrameExt::sample_n ($frame, $n, $with_replacement, $seed) {
-    my %req = (frame => $frame, n => $n)
+    var %req = (frame => $frame, n => $n)
     $req{with_replacement} = $with_replacement if defined $with_replacement
     $req{seed} = $seed if defined $seed
     Polars::_decode("df_sample_n", polars__df_sample_n(to_json(\%req)))->{frame}
@@ -182,7 +182,7 @@ fn Polars::DataFrameExt::set_index ($frame) {
 
 ## DataFrame shift v2.
 fn Polars::DataFrameExt::shift_v2 ($frame, $n) {
-    my %req = (frame => $frame)
+    var %req = (frame => $frame)
     $req{n} = $n if defined $n
     Polars::_decode("df_shift_v2", polars__df_shift_v2(to_json(\%req)))->{frame}
 }

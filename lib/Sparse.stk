@@ -45,7 +45,7 @@ fn Polars::Sparse::nnz ($sparse) {
 
 ## Sparse matrix scale.
 fn Polars::Sparse::scale ($sparse, $alpha) {
-    my %req = (sparse => $sparse)
+    var %req = (sparse => $sparse)
     $req{alpha} = $alpha if defined $alpha
     Polars::_decode("sparse_scale", polars__sparse_scale(to_json(\%req)))->{sparse}
 }

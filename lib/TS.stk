@@ -15,14 +15,14 @@ fn Polars::TS::cumulative_returns ($data) {
 
 ## Time series cvar.
 fn Polars::TS::cvar ($data, $alpha) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{alpha} = $alpha if defined $alpha
     Polars::_decode("ts_cvar", polars__ts_cvar(to_json(\%req)))->{cvar}
 }
 
 ## Time series diff.
 fn Polars::TS::diff ($data, $n) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{n} = $n if defined $n
     Polars::_decode("ts_diff", polars__ts_diff(to_json(\%req)))->{array}
 }
@@ -34,14 +34,14 @@ fn Polars::TS::drawdown ($data) {
 
 ## Time series lag.
 fn Polars::TS::lag ($data, $lag) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{lag} = $lag if defined $lag
     Polars::_decode("ts_lag", polars__ts_lag(to_json(\%req)))->{array}
 }
 
 ## Time series lead.
 fn Polars::TS::lead ($data, $lead) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{lead} = $lead if defined $lead
     Polars::_decode("ts_lead", polars__ts_lead(to_json(\%req)))->{array}
 }
@@ -58,7 +58,7 @@ fn Polars::TS::max_drawdown ($data) {
 
 ## Time series sharpe.
 fn Polars::TS::sharpe ($data, $risk_free) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{risk_free} = $risk_free if defined $risk_free
     Polars::_decode("ts_sharpe", polars__ts_sharpe(to_json(\%req)))->{sharpe}
 }
@@ -70,21 +70,21 @@ fn Polars::TS::simple_returns ($data) {
 
 ## Time series sortino.
 fn Polars::TS::sortino ($data, $risk_free) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{risk_free} = $risk_free if defined $risk_free
     Polars::_decode("ts_sortino", polars__ts_sortino(to_json(\%req)))->{sortino}
 }
 
 ## Time series var.
 fn Polars::TS::var ($data, $alpha) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{alpha} = $alpha if defined $alpha
     Polars::_decode("ts_var", polars__ts_var(to_json(\%req)))->{var}
 }
 
 ## Time series volatility.
 fn Polars::TS::volatility ($data, $annualize) {
-    my %req = (data => $data)
+    var %req = (data => $data)
     $req{annualize} = $annualize if defined $annualize
     Polars::_decode("ts_volatility", polars__ts_volatility(to_json(\%req)))->{volatility}
 }

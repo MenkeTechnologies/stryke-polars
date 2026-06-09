@@ -10,7 +10,7 @@ use Polars
 
 ## ndarray allclose v2.
 fn Polars::NdArrayExt::allclose_v2 ($a, $b, $rtol, $atol) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{rtol} = $rtol if defined $rtol
     $req{atol} = $atol if defined $atol
     Polars::_decode("arr_allclose_v2", polars__arr_allclose_v2(to_json(\%req)))->{allclose}
@@ -18,7 +18,7 @@ fn Polars::NdArrayExt::allclose_v2 ($a, $b, $rtol, $atol) {
 
 ## ndarray argmax axis v2.
 fn Polars::NdArrayExt::argmax_axis_v2 ($array, $axis) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{axis} = $axis if defined $axis
     Polars::_decode("arr_argmax_axis_v2", polars__arr_argmax_axis_v2(to_json(\%req)))->{argmax}
 }
@@ -30,7 +30,7 @@ fn Polars::NdArrayExt::argmax_flat ($array) {
 
 ## ndarray argmin axis v2.
 fn Polars::NdArrayExt::argmin_axis_v2 ($array, $axis) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{axis} = $axis if defined $axis
     Polars::_decode("arr_argmin_axis_v2", polars__arr_argmin_axis_v2(to_json(\%req)))->{argmin}
 }
@@ -72,7 +72,7 @@ fn Polars::NdArrayExt::choose ($index, $choices) {
 
 ## ndarray clip axis.
 fn Polars::NdArrayExt::clip_axis ($array, $min, $max) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{min} = $min if defined $min
     $req{max} = $max if defined $max
     Polars::_decode("arr_clip_axis", polars__arr_clip_axis(to_json(\%req)))->{array}
@@ -100,7 +100,7 @@ fn Polars::NdArrayExt::diagflat ($array) {
 
 ## ndarray diagonal offset.
 fn Polars::NdArrayExt::diagonal_offset ($array, $offset) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{offset} = $offset if defined $offset
     Polars::_decode("arr_diagonal_offset", polars__arr_diagonal_offset(to_json(\%req)))->{array}
 }
@@ -127,14 +127,14 @@ fn Polars::NdArrayExt::entropy ($array) {
 
 ## ndarray expand dims.
 fn Polars::NdArrayExt::expand_dims ($array, $axis) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{axis} = $axis if defined $axis
     Polars::_decode("arr_expand_dims", polars__arr_expand_dims(to_json(\%req)))->{array}
 }
 
 ## ndarray eye v2.
 fn Polars::NdArrayExt::eye_v2 ($n, $m) {
-    my %req = (n => $n)
+    var %req = (n => $n)
     $req{m} = $m if defined $m
     Polars::_decode("arr_eye_v2", polars__arr_eye_v2(to_json(\%req)))->{array}
 }
@@ -146,14 +146,14 @@ fn Polars::NdArrayExt::flatten_v2 ($array) {
 
 ## ndarray full like v2.
 fn Polars::NdArrayExt::full_like_v2 ($array, $value) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{value} = $value if defined $value
     Polars::_decode("arr_full_like_v2", polars__arr_full_like_v2(to_json(\%req)))->{array}
 }
 
 ## ndarray full v2.
 fn Polars::NdArrayExt::full_v2 ($shape, $value) {
-    my %req = (shape => $shape)
+    var %req = (shape => $shape)
     $req{value} = $value if defined $value
     Polars::_decode("arr_full_v2", polars__arr_full_v2(to_json(\%req)))->{array}
 }
@@ -170,7 +170,7 @@ fn Polars::NdArrayExt::identity ($n) {
 
 ## ndarray isclose v2.
 fn Polars::NdArrayExt::isclose_v2 ($a, $b, $rtol, $atol) {
-    my %req = (a => $a, b => $b)
+    var %req = (a => $a, b => $b)
     $req{rtol} = $rtol if defined $rtol
     $req{atol} = $atol if defined $atol
     Polars::_decode("arr_isclose_v2", polars__arr_isclose_v2(to_json(\%req)))->{array}
@@ -233,7 +233,7 @@ fn Polars::NdArrayExt::ones_like_v2 ($array) {
 
 ## ndarray pad v2.
 fn Polars::NdArrayExt::pad_v2 ($array, $before, $after, $value) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{before} = $before if defined $before
     $req{after} = $after if defined $after
     $req{value} = $value if defined $value
@@ -257,7 +257,7 @@ fn Polars::NdArrayExt::ravel ($array) {
 
 ## ndarray repeat along.
 fn Polars::NdArrayExt::repeat_along ($array, $repeats) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{repeats} = $repeats if defined $repeats
     Polars::_decode("arr_repeat_along", polars__arr_repeat_along(to_json(\%req)))->{array}
 }
@@ -269,7 +269,7 @@ fn Polars::NdArrayExt::resize ($array, $shape) {
 
 ## ndarray roll v2.
 fn Polars::NdArrayExt::roll_v2 ($array, $shift) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{shift} = $shift if defined $shift
     Polars::_decode("arr_roll_v2", polars__arr_roll_v2(to_json(\%req)))->{array}
 }
@@ -281,7 +281,7 @@ fn Polars::NdArrayExt::searchsorted_v2 ($array, $value) {
 
 ## ndarray select.
 fn Polars::NdArrayExt::select ($conditions, $choices, $default) {
-    my %req = (conditions => $conditions, choices => $choices)
+    var %req = (conditions => $conditions, choices => $choices)
     $req{default} = $default if defined $default
     Polars::_decode("arr_select", polars__arr_select(to_json(\%req)))->{array}
 }
@@ -328,7 +328,7 @@ fn Polars::NdArrayExt::take_flat ($array, $indices) {
 
 ## ndarray tile v2.
 fn Polars::NdArrayExt::tile_v2 ($array, $reps) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{reps} = $reps if defined $reps
     Polars::_decode("arr_tile_v2", polars__arr_tile_v2(to_json(\%req)))->{array}
 }
@@ -340,14 +340,14 @@ fn Polars::NdArrayExt::tri ($n) {
 
 ## ndarray tril.
 fn Polars::NdArrayExt::tril ($array, $k) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{k} = $k if defined $k
     Polars::_decode("arr_tril", polars__arr_tril(to_json(\%req)))->{array}
 }
 
 ## ndarray triu.
 fn Polars::NdArrayExt::triu ($array, $k) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{k} = $k if defined $k
     Polars::_decode("arr_triu", polars__arr_triu(to_json(\%req)))->{array}
 }
@@ -359,7 +359,7 @@ fn Polars::NdArrayExt::unique_flat ($array) {
 
 ## ndarray vander.
 fn Polars::NdArrayExt::vander ($array, $n) {
-    my %req = (array => $array)
+    var %req = (array => $array)
     $req{n} = $n if defined $n
     Polars::_decode("arr_vander", polars__arr_vander(to_json(\%req)))->{array}
 }
