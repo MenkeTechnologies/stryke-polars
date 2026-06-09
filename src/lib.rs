@@ -25,8 +25,23 @@
 //!   - `polars__ma_*`     — masked arrays
 //!   - `polars__dt64_*`   — datetime64 / timedelta64
 
+mod cat;
 mod df;
+mod dt64;
+mod extras;
+mod extras2;
+mod extras3;
+mod extras4;
+mod idx;
+mod img;
+mod io;
+mod ma;
+mod more_nd;
+mod more_sr;
 mod nd;
+mod signal;
+mod sr;
+mod stattest;
 
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
