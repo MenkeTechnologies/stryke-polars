@@ -581,8 +581,11 @@ pub extern "C" fn polars__idx_get_loc(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
         let d = get_index(&args)?;
         let val = args.get("value").cloned().unwrap_or(Value::Null);
+        // Compare by JSON equality first; fall back to string-form equality
+        // so that callers can ask `value: "30"` against numeric `[..., 30, ...]`
+        // (and vice versa) without dtype-juggling.
         let vs = val.to_string();
-        let r = d.iter().position(|v| *v == vs);
+        let r = d.iter().position(|v| *v == val || *v.to_string() == *vs);
         Ok(json!({"loc": r.map(|x| x as i64).unwrap_or(-1)}))
     })
 }
@@ -1080,4 +1083,88 @@ pub extern "C" fn polars__idx_to_frame(args: *const c_char) -> *mut c_char {
         m.insert(name.to_string(), Value::Array(d));
         Ok(json!({"frame": Value::Object(m)}))
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn idx_union_preserves_a_then_appends_b_unique() {
+        // a=[1,2,3], b=[3,4,5] → union=[1,2,3,4,5].
+        let v = call(
+            polars__idx_union,
+            json!({"a": {"data": [1, 2, 3]}, "b": {"data": [3, 4, 5]}}),
+        );
+        let d: Vec<i64> = v["index"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(d, vec![1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn idx_intersection_keeps_overlap_only() {
+        // [1,2,3,4] ∩ [3,4,5,6] = [3,4].
+        let v = call(
+            polars__idx_intersection,
+            json!({"a": {"data": [1, 2, 3, 4]}, "b": {"data": [3, 4, 5, 6]}}),
+        );
+        let d: Vec<i64> = v["index"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(d, vec![3, 4]);
+    }
+
+    #[test]
+    fn idx_difference_drops_b_from_a() {
+        let v = call(
+            polars__idx_difference,
+            json!({"a": {"data": [1, 2, 3, 4]}, "b": {"data": [2, 4]}}),
+        );
+        let d: Vec<i64> = v["index"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(d, vec![1, 3]);
+    }
+
+    #[test]
+    fn idx_is_monotonic_increasing_detects_strictly_sorted() {
+        let v = call(
+            polars__idx_is_monotonic_increasing,
+            json!({"index": {"data": [1, 2, 3, 4]}}),
+        );
+        assert_eq!(v["is_monotonic_increasing"], true);
+        let v = call(
+            polars__idx_is_monotonic_increasing,
+            json!({"index": {"data": [1, 3, 2]}}),
+        );
+        assert_eq!(v["is_monotonic_increasing"], false);
+    }
+
+    #[test]
+    fn idx_get_loc_returns_match_index_or_minus_one() {
+        let v = call(
+            polars__idx_get_loc,
+            json!({"index": {"data": [10, 20, 30, 40]}, "value": 30}),
+        );
+        assert_eq!(v["loc"].as_i64().unwrap(), 2);
+        let v = call(
+            polars__idx_get_loc,
+            json!({"index": {"data": [10, 20, 30]}, "value": 999}),
+        );
+        assert_eq!(v["loc"].as_i64().unwrap(), -1);
+    }
 }

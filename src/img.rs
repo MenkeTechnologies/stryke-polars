@@ -894,3 +894,107 @@ pub extern "C" fn polars__img_argmin_2d(args: *const c_char) -> *mut c_char {
         Ok(json!({"row": best.0, "col": best.1, "value": best.2}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    fn img_data(v: serde_json::Value) -> Vec<f64> {
+        v["image"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn img_transpose_swaps_rows_and_cols() {
+        // Input [[1, 2, 3], [4, 5, 6]] (2x3) → transpose 3x2.
+        let v = call(
+            polars__img_transpose,
+            json!({"image": {"data": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0], "shape": [2, 3]}}),
+        );
+        let shape: Vec<u64> = v["image"]["shape"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_u64().unwrap())
+            .collect();
+        assert_eq!(shape, vec![3, 2]);
+        assert_eq!(img_data(v), vec![1.0, 4.0, 2.0, 5.0, 3.0, 6.0]);
+    }
+
+    #[test]
+    fn img_rotate90_then_rotate270_is_identity() {
+        let original = json!({"data": [1.0, 2.0, 3.0, 4.0], "shape": [2, 2]});
+        let r90 = call(polars__img_rotate90, json!({"image": original.clone()}));
+        let r360 = call(
+            polars__img_rotate270,
+            json!({"image": r90["image"].clone()}),
+        );
+        let restored: Vec<f64> = r360["image"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        let orig: Vec<f64> = original["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(restored, orig);
+    }
+
+    #[test]
+    fn img_flip_horizontal_reverses_each_row() {
+        let v = call(
+            polars__img_flip_horizontal,
+            json!({"image": {"data": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0], "shape": [2, 3]}}),
+        );
+        assert_eq!(img_data(v), vec![3.0, 2.0, 1.0, 6.0, 5.0, 4.0]);
+    }
+
+    #[test]
+    fn img_threshold_binarizes() {
+        let v = call(
+            polars__img_threshold,
+            json!({
+                "image": {"data": [0.1, 0.4, 0.5, 0.6, 0.9, 1.0], "shape": [2, 3]},
+                "threshold": 0.5,
+                "max": 1.0,
+            }),
+        );
+        // The test uses >= so 0.5 hits max.
+        assert_eq!(img_data(v), vec![0.0, 0.0, 1.0, 1.0, 1.0, 1.0]);
+    }
+
+    #[test]
+    fn img_integral_image_corners_match_input_and_sum() {
+        let v = call(
+            polars__img_integral_image,
+            json!({"image": {"data": [1.0, 2.0, 3.0, 4.0], "shape": [2, 2]}}),
+        );
+        let d = img_data(v);
+        assert_eq!(d[0], 1.0, "top-left == input top-left");
+        assert_eq!(d[3], 10.0, "bottom-right == total sum");
+    }
+
+    #[test]
+    fn img_argmax_2d_locates_max_pixel() {
+        // Max value is 9 at (row=1, col=2).
+        let v = call(
+            polars__img_argmax_2d,
+            json!({"image": {"data": [1.0, 2.0, 3.0, 4.0, 5.0, 9.0, 7.0, 8.0, 6.0], "shape": [3, 3]}}),
+        );
+        assert_eq!(v["row"].as_u64().unwrap(), 1);
+        assert_eq!(v["col"].as_u64().unwrap(), 2);
+        assert_eq!(v["value"].as_f64().unwrap(), 9.0);
+    }
+}

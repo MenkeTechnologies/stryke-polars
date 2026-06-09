@@ -1102,3 +1102,101 @@ pub extern "C" fn polars__ma_soften_mask(args: *const c_char) -> *mut c_char {
         return_masked(d, m)
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    fn mk(data: Vec<f64>, mask: Vec<bool>) -> serde_json::Value {
+        json!({"masked": {"data": data, "mask": mask}})
+    }
+
+    #[test]
+    fn ma_filled_replaces_masked_elements() {
+        let mut req = mk(vec![1.0, 2.0, 3.0, 4.0], vec![false, true, false, true]);
+        req.as_object_mut()
+            .unwrap()
+            .insert("value".to_string(), json!(0.0));
+        let v = call(polars__ma_filled, req);
+        let d: Vec<f64> = v["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(d, vec![1.0, 0.0, 3.0, 0.0]);
+    }
+
+    #[test]
+    fn ma_compressed_drops_masked_elements() {
+        let v = call(
+            polars__ma_compressed,
+            mk(vec![1.0, 2.0, 3.0, 4.0], vec![false, true, false, true]),
+        );
+        let d: Vec<f64> = v["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(d, vec![1.0, 3.0]);
+    }
+
+    #[test]
+    fn ma_count_excludes_masked() {
+        let v = call(
+            polars__ma_count,
+            mk(
+                vec![1.0, 2.0, 3.0, 4.0, 5.0],
+                vec![false, true, false, true, false],
+            ),
+        );
+        assert_eq!(v["count"].as_u64().unwrap(), 3);
+    }
+
+    #[test]
+    fn ma_mean_skips_masked() {
+        // mean([1, masked, 3]) = 2.
+        let v = call(
+            polars__ma_mean,
+            mk(vec![1.0, 99.0, 3.0], vec![false, true, false]),
+        );
+        assert!((v["mean"].as_f64().unwrap() - 2.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn ma_cumsum_does_not_advance_through_masked() {
+        // The accumulator does not advance over a masked element, so the
+        // position-1 cumsum equals position-0.
+        let v = call(
+            polars__ma_cumsum,
+            mk(vec![1.0, 99.0, 2.0, 3.0], vec![false, true, false, false]),
+        );
+        let d: Vec<f64> = v["masked"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(d, vec![1.0, 1.0, 3.0, 6.0]);
+    }
+
+    #[test]
+    fn ma_invert_mask_flips_every_bit() {
+        let v = call(
+            polars__ma_invert_mask,
+            mk(vec![1.0, 2.0, 3.0], vec![false, true, false]),
+        );
+        let m: Vec<bool> = v["masked"]["mask"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_bool().unwrap())
+            .collect();
+        assert_eq!(m, vec![true, false, true]);
+    }
+}

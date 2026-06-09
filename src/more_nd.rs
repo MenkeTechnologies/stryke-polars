@@ -2043,3 +2043,147 @@ pub extern "C" fn polars__arr_choose(args: *const c_char) -> *mut c_char {
         Ok(json!({"array": array_to_value(&arr)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    fn arr_data(v: serde_json::Value) -> Vec<f64> {
+        v["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn poly_chebyshev_t_at_x_equals_one() {
+        // T_n(1) = 1 for every n.
+        for n in 0..6u64 {
+            let v = call(
+                polars__poly_chebyshev_t,
+                json!({"n": n, "x": {"data": [1.0], "shape": [1]}}),
+            );
+            assert!((arr_data(v)[0] - 1.0).abs() < 1e-12, "T_{n}(1)");
+        }
+        // T_n(-1) = (-1)^n.
+        for n in 0..6u64 {
+            let v = call(
+                polars__poly_chebyshev_t,
+                json!({"n": n, "x": {"data": [-1.0], "shape": [1]}}),
+            );
+            let expected = if n % 2 == 0 { 1.0 } else { -1.0 };
+            assert!((arr_data(v)[0] - expected).abs() < 1e-12, "T_{n}(-1)");
+        }
+    }
+
+    #[test]
+    fn poly_legendre_at_one_is_one() {
+        // P_n(1) = 1 for every n.
+        for n in 0..5u64 {
+            let v = call(
+                polars__poly_legendre,
+                json!({"n": n, "x": {"data": [1.0], "shape": [1]}}),
+            );
+            assert!((arr_data(v)[0] - 1.0).abs() < 1e-12, "P_{n}(1)");
+        }
+    }
+
+    #[test]
+    fn poly_hermite_known_values_at_zero() {
+        // Physicist's Hermite at 0: H_0=1, H_2=-2, H_4=12; odd n → 0.
+        let cases = [(0u64, 1.0_f64), (1, 0.0), (2, -2.0), (3, 0.0), (4, 12.0)];
+        for (n, expected) in cases {
+            let v = call(
+                polars__poly_hermite,
+                json!({"n": n, "x": {"data": [0.0], "shape": [1]}}),
+            );
+            assert!((arr_data(v)[0] - expected).abs() < 1e-12, "H_{n}(0)");
+        }
+    }
+
+    #[test]
+    fn poly_laguerre_at_zero_is_one() {
+        for n in 0..5u64 {
+            let v = call(
+                polars__poly_laguerre,
+                json!({"n": n, "x": {"data": [0.0], "shape": [1]}}),
+            );
+            assert!((arr_data(v)[0] - 1.0).abs() < 1e-12, "L_{n}(0)");
+        }
+    }
+
+    #[test]
+    fn poly_polyfit_v2_recovers_linear_coefficients() {
+        // y = 2x + 1 → polyfit_v2 returns coefficients lowest-degree-first:
+        // [intercept=1, slope=2].
+        let v = call(
+            polars__poly_polyfit_v2,
+            json!({
+                "x": {"data": [0.0, 1.0, 2.0, 3.0, 4.0], "shape": [5]},
+                "y": {"data": [1.0, 3.0, 5.0, 7.0, 9.0], "shape": [5]},
+                "deg": 1,
+            }),
+        );
+        let c: Vec<f64> = v["coefficients"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert!((c[0] - 1.0).abs() < 1e-9, "intercept (lowest-degree first)");
+        assert!((c[1] - 2.0).abs() < 1e-9, "slope");
+    }
+
+    #[test]
+    fn arr_eye_v2_diagonal_is_one() {
+        // 3x3 identity: row-major indices 0, 4, 8 are diagonal.
+        let v = call(polars__arr_eye_v2, json!({"n": 3}));
+        let d = arr_data(v);
+        assert_eq!(d[0], 1.0);
+        assert_eq!(d[4], 1.0);
+        assert_eq!(d[8], 1.0);
+        assert_eq!(d[1], 0.0);
+    }
+
+    #[test]
+    fn arr_diagflat_places_input_on_diagonal() {
+        let v = call(
+            polars__arr_diagflat,
+            json!({"array": {"data": [2.0, 5.0, 7.0], "shape": [3]}}),
+        );
+        let d = arr_data(v);
+        assert_eq!(d[0], 2.0);
+        assert_eq!(d[4], 5.0);
+        assert_eq!(d[8], 7.0);
+    }
+
+    #[test]
+    fn linalg_trace_v2_sums_diagonal() {
+        let v = call(
+            polars__linalg_trace_v2,
+            json!({"array": {"data": [1.0, 2.0, 3.0, 4.0], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["trace"].as_f64().unwrap(), 5.0);
+    }
+
+    #[test]
+    fn linalg_matrix_rank_handles_known_cases() {
+        let v = call(
+            polars__linalg_matrix_rank,
+            json!({"array": {"data": [1.0, 0.0, 0.0, 1.0], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["rank"].as_u64().unwrap(), 2);
+        // [[1, 2], [2, 4]] has rank 1.
+        let v = call(
+            polars__linalg_matrix_rank,
+            json!({"array": {"data": [1.0, 2.0, 2.0, 4.0], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["rank"].as_u64().unwrap(), 1);
+    }
+}

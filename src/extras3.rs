@@ -1619,3 +1619,345 @@ pub extern "C" fn polars__linalg_gram_schmidt(args: *const c_char) -> *mut c_cha
         Ok(json!({"matrix": array_to_value(&arr_out)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn metric_accuracy_counts_exact_matches() {
+        let v = call(
+            polars__metric_accuracy,
+            json!({"y_true": [1, 0, 1, 1, 0], "y_pred": [1, 0, 1, 0, 0]}),
+        );
+        assert!((v["accuracy"].as_f64().unwrap() - 0.8).abs() < 1e-12);
+        let v = call(
+            polars__metric_accuracy,
+            json!({"y_true": [1, 1, 1], "y_pred": [1, 1, 1]}),
+        );
+        assert_eq!(v["accuracy"].as_f64().unwrap(), 1.0);
+    }
+
+    #[test]
+    fn metric_precision_recall_f1_form_consistent_triple() {
+        // 3 TP, 1 FP, 1 FN → precision = recall = 0.75; F1 = harmonic mean.
+        let y_true = json!([1, 1, 1, 1, 0, 0]);
+        let y_pred = json!([1, 1, 1, 0, 1, 0]);
+        let p = call(
+            polars__metric_precision,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        let r = call(
+            polars__metric_recall,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        let f = call(
+            polars__metric_f1,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        let pv = p["precision"].as_f64().unwrap();
+        let rv = r["recall"].as_f64().unwrap();
+        let fv = f["f1"].as_f64().unwrap();
+        assert!((pv - 0.75).abs() < 1e-12);
+        assert!((rv - 0.75).abs() < 1e-12);
+        let expected_f1 = 2.0 * pv * rv / (pv + rv);
+        assert!((fv - expected_f1).abs() < 1e-12);
+    }
+
+    #[test]
+    fn metric_confusion_matrix_counts_match_input() {
+        // cm[true][pred] flattened: [TN=3, FP=0, FN=1, TP=2].
+        let v = call(
+            polars__metric_confusion_matrix,
+            json!({
+                "y_true": [1, 1, 1, 0, 0, 0],
+                "y_pred": [1, 1, 0, 0, 0, 0],
+                "n_classes": 2,
+            }),
+        );
+        let cm: Vec<i64> = v["confusion_matrix"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(cm, vec![3, 0, 1, 2]);
+    }
+
+    #[test]
+    fn metric_roc_auc_perfect_ranking_is_one() {
+        let v = call(
+            polars__metric_roc_auc,
+            json!({"y_true": [0, 0, 0, 1, 1, 1], "y_score": [0.1, 0.2, 0.3, 0.7, 0.8, 0.9]}),
+        );
+        assert!((v["auc"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+        // Reversed ranking → AUC = 0.
+        let v = call(
+            polars__metric_roc_auc,
+            json!({"y_true": [0, 0, 0, 1, 1, 1], "y_score": [0.9, 0.8, 0.7, 0.3, 0.2, 0.1]}),
+        );
+        assert!(v["auc"].as_f64().unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn metric_mae_mse_rmse_match_manual_calc() {
+        // diffs = ±0.5, |diff| mean = 0.5, squared mean = 0.25, rmse = 0.5.
+        let y_true = json!([1.0, 2.0, 3.0, 4.0]);
+        let y_pred = json!([1.5, 2.5, 2.5, 4.5]);
+        let mae = call(
+            polars__metric_mae,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        let mse = call(
+            polars__metric_mse,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        let rmse = call(
+            polars__metric_rmse,
+            json!({"y_true": y_true, "y_pred": y_pred}),
+        );
+        assert!((mae["mae"].as_f64().unwrap() - 0.5).abs() < 1e-12);
+        assert!((mse["mse"].as_f64().unwrap() - 0.25).abs() < 1e-12);
+        assert!((rmse["rmse"].as_f64().unwrap() - 0.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn metric_r2_perfect_prediction_is_one() {
+        let v = call(
+            polars__metric_r2,
+            json!({"y_true": [1.0, 2.0, 3.0, 4.0], "y_pred": [1.0, 2.0, 3.0, 4.0]}),
+        );
+        assert!((v["r2"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn metric_log_loss_near_zero_for_perfect_calibration() {
+        // Implementation clamps probs to [eps, 1-eps]; perfect prediction
+        // gives a tiny loss bounded by -ln(1-eps).
+        let v = call(
+            polars__metric_log_loss,
+            json!({"y_true": [1.0, 0.0], "y_prob": [1.0, 0.0]}),
+        );
+        let loss = v["log_loss"].as_f64().unwrap();
+        assert!(loss < 1e-10, "near-perfect log loss = {loss}");
+    }
+
+    #[test]
+    fn text_levenshtein_matches_kitten_sitting() {
+        // Wikipedia's canonical example: kitten → sitting in 3 edits.
+        let v = call(
+            polars__text_levenshtein,
+            json!({"a": "kitten", "b": "sitting"}),
+        );
+        assert_eq!(v["levenshtein"].as_u64().unwrap(), 3);
+        let v = call(polars__text_levenshtein, json!({"a": "abc", "b": "abc"}));
+        assert_eq!(v["levenshtein"].as_u64().unwrap(), 0);
+        let v = call(polars__text_levenshtein, json!({"a": "abc", "b": "abd"}));
+        assert_eq!(v["levenshtein"].as_u64().unwrap(), 1);
+        let v = call(polars__text_levenshtein, json!({"a": "", "b": "abcde"}));
+        assert_eq!(v["levenshtein"].as_u64().unwrap(), 5);
+    }
+
+    #[test]
+    fn text_lcs_length_matches_table() {
+        let v = call(polars__text_lcs, json!({"a": "AGCAT", "b": "GAC"}));
+        assert_eq!(v["length"].as_u64().unwrap(), 2);
+        let v = call(polars__text_lcs, json!({"a": "ABCBDAB", "b": "BDCAB"}));
+        assert_eq!(v["length"].as_u64().unwrap(), 4);
+    }
+
+    #[test]
+    fn text_jaccard_known_word_sets() {
+        // {"the","cat","sat"} ∩ {"the","dog","sat"} = {"the","sat"} → 2/4 = 0.5.
+        let v = call(
+            polars__text_jaccard,
+            json!({"a": "the cat sat", "b": "the dog sat"}),
+        );
+        assert!((v["jaccard"].as_f64().unwrap() - 0.5).abs() < 1e-12);
+        let v = call(polars__text_jaccard, json!({"a": "x y z", "b": "z y x"}));
+        assert_eq!(v["jaccard"].as_f64().unwrap(), 1.0);
+    }
+
+    #[test]
+    fn text_camel_snake_round_trip() {
+        let snake = call(
+            polars__text_camel_to_snake,
+            json!({"text": "userIdHashTable"}),
+        );
+        assert_eq!(snake["text"].as_str().unwrap(), "user_id_hash_table");
+        let back = call(
+            polars__text_snake_to_camel,
+            json!({"text": "user_id_hash_table"}),
+        );
+        assert_eq!(back["text"].as_str().unwrap(), "userIdHashTable");
+    }
+
+    #[test]
+    fn text_ngrams_window_size_matches() {
+        let v = call(
+            polars__text_ngrams,
+            json!({"text": "the quick brown fox", "n": 2}),
+        );
+        let ngrams: Vec<&str> = v["ngrams"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap())
+            .collect();
+        assert_eq!(ngrams, vec!["the quick", "quick brown", "brown fox"]);
+    }
+
+    #[test]
+    fn graph_bfs_order_on_triangle() {
+        // 0-1, 0-2, 1-2 → BFS from 0 visits 0, then 1, then 2.
+        let v = call(
+            polars__graph_bfs,
+            json!({
+                "n_nodes": 3,
+                "edges": [[0, 1, 1.0], [0, 2, 1.0], [1, 2, 1.0]],
+                "start": 0,
+            }),
+        );
+        let order: Vec<i64> = v["order"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(order, vec![0, 1, 2]);
+    }
+
+    #[test]
+    fn graph_dijkstra_finds_shortest_paths() {
+        // 0->3 = 4 via 0-1-2-3 (1+2+1), not direct 0-3 = 5.
+        let v = call(
+            polars__graph_shortest_path,
+            json!({
+                "n_nodes": 4,
+                "edges": [[0, 1, 1.0], [1, 2, 2.0], [0, 3, 5.0], [2, 3, 1.0]],
+                "start": 0,
+            }),
+        );
+        let d: Vec<f64> = v["distances"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(d, vec![0.0, 1.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn graph_connected_components_split_disconnected() {
+        let v = call(
+            polars__graph_connected_components,
+            json!({
+                "n_nodes": 4,
+                "edges": [[0, 1, 1.0], [2, 3, 1.0]],
+            }),
+        );
+        assert_eq!(v["n_components"].as_i64().unwrap(), 2);
+        let comp: Vec<i64> = v["components"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(comp[0], comp[1], "0/1 share component");
+        assert_eq!(comp[2], comp[3], "2/3 share component");
+        assert_ne!(comp[0], comp[2], "components disjoint");
+    }
+
+    #[test]
+    fn graph_pagerank_distribution_sums_to_one() {
+        // PageRank is a probability distribution; symmetric cycle → uniform.
+        let v = call(
+            polars__graph_pagerank,
+            json!({
+                "n_nodes": 4,
+                "edges": [[0, 1, 1.0], [1, 2, 1.0], [2, 3, 1.0], [3, 0, 1.0]],
+                "damping": 0.85,
+                "iters": 100,
+            }),
+        );
+        let r: Vec<f64> = v["pagerank"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        let sum: f64 = r.iter().sum();
+        assert!((sum - 1.0).abs() < 1e-9, "rank sum {sum}");
+        for &x in &r {
+            assert!((x - 0.25).abs() < 1e-6, "got {x}, expected ~0.25");
+        }
+    }
+
+    #[test]
+    fn linalg_l2_norm_of_3_4_is_5() {
+        let v = call(
+            polars__linalg_l2_norm,
+            json!({"matrix": {"data": [3.0, 4.0], "shape": [2]}}),
+        );
+        assert!((v["l2"].as_f64().unwrap() - 5.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn linalg_frobenius_equals_l2_on_vector() {
+        let arr = json!({"data": [1.0, 2.0, 3.0, 4.0], "shape": [4]});
+        let frob = call(
+            polars__linalg_frobenius_norm,
+            json!({"matrix": arr.clone()}),
+        );
+        let l2 = call(polars__linalg_l2_norm, json!({"matrix": arr}));
+        assert!((frob["frobenius"].as_f64().unwrap() - l2["l2"].as_f64().unwrap()).abs() < 1e-12);
+    }
+
+    #[test]
+    fn linalg_is_symmetric_recognizes_known_matrix() {
+        let v = call(
+            polars__linalg_is_symmetric,
+            json!({"matrix": {"data": [1.0, 2.0, 2.0, 1.0], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["is_symmetric"], true);
+        let v = call(
+            polars__linalg_is_symmetric,
+            json!({"matrix": {"data": [1.0, 2.0, 3.0, 1.0], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["is_symmetric"], false);
+    }
+
+    #[test]
+    fn linalg_is_orthogonal_for_2d_rotation() {
+        // R = [[cos, -sin], [sin, cos]] is orthogonal — R R^T = I.
+        let theta = 0.42_f64;
+        let (c, s) = (theta.cos(), theta.sin());
+        let v = call(
+            polars__linalg_is_orthogonal,
+            json!({"matrix": {"data": [c, -s, s, c], "shape": [2, 2]}}),
+        );
+        assert_eq!(v["is_orthogonal"], true);
+    }
+
+    #[test]
+    fn linalg_normalize_rows_yields_unit_rows() {
+        let v = call(
+            polars__linalg_normalize_rows,
+            json!({"matrix": {"data": [3.0, 4.0, 0.0, 0.0, 1.0, 0.0], "shape": [2, 3]}}),
+        );
+        let d: Vec<f64> = v["matrix"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        // Row 0: (3/5, 4/5, 0); row 1: (0, 1, 0).
+        assert!((d[0] - 0.6).abs() < 1e-12);
+        assert!((d[1] - 0.8).abs() < 1e-12);
+        assert!((d[4] - 1.0).abs() < 1e-12);
+    }
+}

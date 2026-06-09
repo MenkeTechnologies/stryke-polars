@@ -2651,3 +2651,94 @@ pub extern "C" fn polars__sr_dt_time(args: *const c_char) -> *mut c_char {
         return_series(&from_str_vec(s.name(), out))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    fn series_data(v: serde_json::Value) -> Vec<f64> {
+        // The wire format encodes NaN as JSON null; map nulls to NaN so tests
+        // can use `.is_nan()` checks on the leading entries of diff/pct_change.
+        v["series"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap_or(f64::NAN))
+            .collect()
+    }
+
+    #[test]
+    fn sr_cumsum_runs_prefix_sums() {
+        let v = call(polars__sr_cumsum, json!({"series": {"data": [1, 2, 3, 4]}}));
+        assert_eq!(series_data(v), vec![1.0, 3.0, 6.0, 10.0]);
+    }
+
+    #[test]
+    fn sr_cumprod_runs_prefix_products() {
+        let v = call(
+            polars__sr_cumprod,
+            json!({"series": {"data": [1, 2, 3, 4]}}),
+        );
+        assert_eq!(series_data(v), vec![1.0, 2.0, 6.0, 24.0]);
+    }
+
+    #[test]
+    fn sr_diff_lag_1_matches_finite_difference() {
+        let v = call(
+            polars__sr_diff,
+            json!({"series": {"data": [1.0, 3.0, 6.0, 10.0]}, "n": 1}),
+        );
+        let d = series_data(v);
+        assert!(d[0].is_nan());
+        assert_eq!(&d[1..], &[2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn sr_pct_change_matches_formula() {
+        let v = call(
+            polars__sr_pct_change,
+            json!({"series": {"data": [1.0, 2.0, 4.0, 8.0]}, "n": 1}),
+        );
+        let d = series_data(v);
+        assert!(d[0].is_nan());
+        assert_eq!(&d[1..], &[1.0, 1.0, 1.0]);
+    }
+
+    #[test]
+    fn sr_mean_matches_arithmetic_average() {
+        let v = call(
+            polars__sr_mean,
+            json!({"series": {"data": [1.0, 2.0, 3.0, 4.0]}}),
+        );
+        assert!((v["mean"].as_f64().unwrap() - 2.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn sr_median_handles_odd_and_even_length() {
+        let v = call(
+            polars__sr_median,
+            json!({"series": {"data": [1.0, 2.0, 3.0]}}),
+        );
+        assert_eq!(v["median"].as_f64().unwrap(), 2.0);
+        let v = call(
+            polars__sr_median,
+            json!({"series": {"data": [1.0, 2.0, 3.0, 4.0]}}),
+        );
+        assert_eq!(v["median"].as_f64().unwrap(), 2.5);
+    }
+
+    #[test]
+    fn sr_rolling_mean_window_two_averages_adjacent() {
+        let v = call(
+            polars__sr_rolling_mean,
+            json!({"series": {"data": [1.0, 3.0, 5.0, 7.0]}, "window": 2}),
+        );
+        let d = series_data(v);
+        assert!(d[0].is_nan());
+        assert_eq!(&d[1..], &[2.0, 4.0, 6.0]);
+    }
+}

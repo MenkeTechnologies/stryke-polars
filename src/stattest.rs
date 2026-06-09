@@ -1568,3 +1568,130 @@ pub extern "C" fn polars__stattest_normality_test(args: *const c_char) -> *mut c
         Ok(json!({"statistic": scalar(k2), "pvalue": scalar(p)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use std::f64::consts::PI;
+
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn dist_normal_pdf_at_zero_with_unit_sigma() {
+        // φ(0; 0, 1) = 1/√(2π).
+        let v = call(
+            polars__dist_normal_pdf,
+            json!({"x": [0.0], "mu": 0.0, "sigma": 1.0}),
+        );
+        let p = v["pdf"][0].as_f64().unwrap();
+        assert!((p - 1.0 / (2.0 * PI).sqrt()).abs() < 1e-12);
+    }
+
+    #[test]
+    fn dist_normal_cdf_at_three_sigma() {
+        // Standard normal CDF(0) = 0.5 within the erf approximation's bound.
+        let v = call(
+            polars__dist_normal_cdf,
+            json!({"x": [0.0], "mu": 0.0, "sigma": 1.0}),
+        );
+        assert!((v["cdf"][0].as_f64().unwrap() - 0.5).abs() < 1e-4);
+        // Φ(3) ≈ 0.99865.
+        let v = call(
+            polars__dist_normal_cdf,
+            json!({"x": [3.0], "mu": 0.0, "sigma": 1.0}),
+        );
+        assert!((v["cdf"][0].as_f64().unwrap() - 0.99865).abs() < 1e-3);
+    }
+
+    #[test]
+    fn dist_uniform_cdf_linear_in_range() {
+        let v = call(
+            polars__dist_uniform_cdf,
+            json!({"x": [0.3], "lo": 0.0, "hi": 1.0}),
+        );
+        assert!((v["cdf"][0].as_f64().unwrap() - 0.3).abs() < 1e-12);
+    }
+
+    #[test]
+    fn dist_exp_cdf_at_one_is_one_minus_one_over_e() {
+        let v = call(polars__dist_exp_cdf, json!({"x": [1.0], "lambda": 1.0}));
+        assert!((v["cdf"][0].as_f64().unwrap() - (1.0 - 1.0_f64.exp().recip())).abs() < 1e-12);
+    }
+
+    #[test]
+    fn interp_linear_matches_endpoints_and_midpoint() {
+        let v = call(
+            polars__interp_linear,
+            json!({"x": [0.0, 10.0], "y": [0.0, 100.0], "xnew": [0.0, 5.0, 10.0]}),
+        );
+        let y: Vec<f64> = v["y"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(y, vec![0.0, 50.0, 100.0]);
+    }
+
+    #[test]
+    fn interp_nearest_picks_closest_neighbor() {
+        let v = call(
+            polars__interp_nearest,
+            json!({"x": [0.0, 10.0], "y": [1.0, 9.0], "xnew": [4.0, 6.0]}),
+        );
+        let y: Vec<f64> = v["y"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(y, vec![1.0, 9.0]);
+    }
+
+    #[test]
+    fn stattest_linregress_recovers_slope_intercept() {
+        // y = 2x + 1 → slope=2, intercept=1, r=1.
+        let v = call(
+            polars__stattest_linregress,
+            json!({"x": [0.0, 1.0, 2.0, 3.0, 4.0], "y": [1.0, 3.0, 5.0, 7.0, 9.0]}),
+        );
+        assert!((v["slope"].as_f64().unwrap() - 2.0).abs() < 1e-12);
+        assert!((v["intercept"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+        assert!((v["rvalue"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn stattest_ttest_1samp_zero_for_matching_mean() {
+        let v = call(
+            polars__stattest_ttest_1samp,
+            json!({"a": [1.0, 2.0, 3.0, 4.0, 5.0], "popmean": 3.0}),
+        );
+        assert!(v["statistic"].as_f64().unwrap().abs() < 1e-12);
+    }
+
+    #[test]
+    fn stattest_anova_zero_between_identical_groups() {
+        let v = call(
+            polars__stattest_anova,
+            json!({"groups": [[1.0, 2.0], [1.0, 2.0], [1.0, 2.0]]}),
+        );
+        assert!(v["statistic"].as_f64().unwrap().abs() < 1e-12);
+    }
+
+    #[test]
+    fn stattest_zscore_centered_and_mirrored() {
+        // For symmetric series centered on the mean, z[1]=0 and z[0]=-z[2].
+        let v = call(polars__stattest_zscore, json!({"a": [1.0, 2.0, 3.0]}));
+        let z: Vec<f64> = v["zscore"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert!(z[1].abs() < 1e-12);
+        assert!((z[0] + z[2]).abs() < 1e-12);
+    }
+}

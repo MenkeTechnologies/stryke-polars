@@ -1153,3 +1153,143 @@ pub extern "C" fn polars__sig_unwrap(args: *const c_char) -> *mut c_char {
         Ok(json!({"array": array_to_value(&arr)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    fn data(v: serde_json::Value) -> Vec<f64> {
+        v["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn win_hann_symmetric_and_zero_at_endpoints() {
+        // Hann window: 0 at i=0 and i=n-1, peak in the middle.
+        let v = call(polars__win_hann, json!({"n": 9}));
+        let w = data(v);
+        assert!(w[0].abs() < 1e-12, "left endpoint zero");
+        assert!(w[8].abs() < 1e-12, "right endpoint zero");
+        for i in 0..4 {
+            assert!((w[i] - w[8 - i]).abs() < 1e-12, "symmetric at {i}");
+        }
+    }
+
+    #[test]
+    fn win_hamming_endpoints_match_alpha() {
+        // Hamming endpoints: w[0] = w[n-1] = a0 - a1 = 0.54 - 0.46 = 0.08.
+        let v = call(polars__win_hamming, json!({"n": 11}));
+        let w = data(v);
+        assert!((w[0] - 0.08).abs() < 1e-12);
+        assert!((w[10] - 0.08).abs() < 1e-12);
+    }
+
+    #[test]
+    fn win_rectangular_is_all_ones() {
+        let v = call(polars__win_rectangular, json!({"n": 7}));
+        for x in data(v) {
+            assert_eq!(x, 1.0);
+        }
+    }
+
+    #[test]
+    fn win_bartlett_peaks_at_middle() {
+        // Triangular: max at center = 1.
+        let v = call(polars__win_bartlett, json!({"n": 9}));
+        let w = data(v);
+        assert_eq!(w[4], 1.0, "center is 1");
+        assert!(w[0].abs() < 1e-12, "endpoint 0");
+    }
+
+    #[test]
+    fn sig_convolve_full_size_matches_formula() {
+        // For arrays of length M, N, full convolution has length M + N - 1.
+        let v = call(
+            polars__sig_convolve,
+            json!({
+                "a": {"data": [1.0, 2.0, 3.0], "shape": [3]},
+                "b": {"data": [1.0, 1.0], "shape": [2]},
+                "mode": "full",
+            }),
+        );
+        let out = data(v);
+        assert_eq!(out.len(), 4, "M + N - 1 = 4");
+        // [1*1, 1*1+2*1, 2*1+3*1, 3*1] = [1, 3, 5, 3].
+        assert_eq!(out, vec![1.0, 3.0, 5.0, 3.0]);
+    }
+
+    #[test]
+    fn sig_convolve_identity_kernel() {
+        // Convolving with [1] returns the input unchanged.
+        let v = call(
+            polars__sig_convolve,
+            json!({
+                "a": {"data": [1.0, 2.0, 3.0, 4.0], "shape": [4]},
+                "b": {"data": [1.0], "shape": [1]},
+                "mode": "same",
+            }),
+        );
+        assert_eq!(data(v), vec![1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn sig_trapz_matches_known_integral() {
+        // ∫_0^1 x dx = 0.5; sampled at [0, 1] with dx=1 gives trapz = 0.5.
+        let v = call(
+            polars__sig_trapz,
+            json!({"array": {"data": [0.0, 1.0], "shape": [2]}, "dx": 1.0}),
+        );
+        assert!((v["trapz"].as_f64().unwrap() - 0.5).abs() < 1e-12);
+        // [0, 1, 2, 3] with dx=1: triangle area = ((0+1) + (1+2) + (2+3))/2 = 4.5.
+        let v = call(
+            polars__sig_trapz,
+            json!({"array": {"data": [0.0, 1.0, 2.0, 3.0], "shape": [4]}, "dx": 1.0}),
+        );
+        assert!((v["trapz"].as_f64().unwrap() - 4.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn sig_rms_matches_formula() {
+        // RMS([3, 4]) = sqrt((9 + 16) / 2) = sqrt(12.5).
+        let v = call(
+            polars__sig_rms,
+            json!({"array": {"data": [3.0, 4.0], "shape": [2]}}),
+        );
+        let rms = v["rms"].as_f64().unwrap();
+        assert!((rms - 12.5_f64.sqrt()).abs() < 1e-12);
+    }
+
+    #[test]
+    fn sig_zero_crossings_counts_sign_flips() {
+        // [1, -1, 1, -1] has 3 zero crossings.
+        let v = call(
+            polars__sig_zero_crossings,
+            json!({"array": {"data": [1.0, -1.0, 1.0, -1.0], "shape": [4]}}),
+        );
+        assert_eq!(v["zero_crossings"].as_u64().unwrap(), 3);
+    }
+
+    #[test]
+    fn sig_find_peaks_classic_triangle() {
+        // Local max at index 2 (value 3).
+        let v = call(
+            polars__sig_find_peaks,
+            json!({"array": {"data": [1.0, 2.0, 3.0, 2.0, 1.0], "shape": [5]}}),
+        );
+        let p: Vec<i64> = v["peaks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(p, vec![2]);
+    }
+}

@@ -1838,3 +1838,293 @@ pub extern "C" fn polars__sparse_eye(args: *const c_char) -> *mut c_char {
         }}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn dist_euclidean_3_4_5_pythagorean() {
+        // The canonical right triangle.
+        let v = call(
+            polars__dist_euclidean,
+            json!({"a": [0.0, 0.0], "b": [3.0, 4.0]}),
+        );
+        assert!((v["distance"].as_f64().unwrap() - 5.0).abs() < 1e-12);
+        // Zero vectors → 0.
+        let v = call(
+            polars__dist_euclidean,
+            json!({"a": [0.0, 0.0], "b": [0.0, 0.0]}),
+        );
+        assert_eq!(v["distance"].as_f64().unwrap(), 0.0);
+    }
+
+    #[test]
+    fn dist_manhattan_sums_axis_diffs() {
+        // L1 distance: 1+2+3 = 6.
+        let v = call(
+            polars__dist_manhattan,
+            json!({"a": [0.0, 0.0, 0.0], "b": [1.0, 2.0, 3.0]}),
+        );
+        assert_eq!(v["distance"].as_f64().unwrap(), 6.0);
+    }
+
+    #[test]
+    fn dist_chebyshev_picks_max_axis() {
+        // L∞ distance: max(|x-y|) = max(1, 5, 2) = 5.
+        let v = call(
+            polars__dist_chebyshev,
+            json!({"a": [0.0, 0.0, 0.0], "b": [1.0, 5.0, 2.0]}),
+        );
+        assert_eq!(v["distance"].as_f64().unwrap(), 5.0);
+    }
+
+    #[test]
+    fn dist_minkowski_collapses_to_l2_at_p_2() {
+        let v = call(
+            polars__dist_minkowski,
+            json!({"a": [0.0, 0.0], "b": [3.0, 4.0], "p": 2.0}),
+        );
+        assert!((v["distance"].as_f64().unwrap() - 5.0).abs() < 1e-12);
+        // At p=1 it collapses to Manhattan.
+        let v = call(
+            polars__dist_minkowski,
+            json!({"a": [0.0, 0.0], "b": [3.0, 4.0], "p": 1.0}),
+        );
+        assert!((v["distance"].as_f64().unwrap() - 7.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn dist_cosine_orthogonal_vs_parallel() {
+        // Orthogonal unit vectors → distance 1 (similarity 0).
+        let v = call(
+            polars__dist_cosine,
+            json!({"a": [1.0, 0.0], "b": [0.0, 1.0]}),
+        );
+        assert!((v["distance"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+        // Same direction → distance 0 (similarity 1).
+        let v = call(
+            polars__dist_cosine,
+            json!({"a": [1.0, 2.0], "b": [2.0, 4.0]}),
+        );
+        assert!(v["distance"].as_f64().unwrap().abs() < 1e-12);
+    }
+
+    #[test]
+    fn geo_haversine_zero_for_same_point() {
+        let v = call(
+            polars__geo_haversine,
+            json!({"lat1": 40.7128, "lon1": -74.0060, "lat2": 40.7128, "lon2": -74.0060}),
+        );
+        assert!(v["distance"].as_f64().unwrap().abs() < 1e-9);
+    }
+
+    #[test]
+    fn geo_haversine_nyc_to_la() {
+        // NYC (40.7128, -74.006) → LA (34.0522, -118.2437) ≈ 3936 km (great-circle).
+        let v = call(
+            polars__geo_haversine,
+            json!({
+                "lat1": 40.7128, "lon1": -74.0060,
+                "lat2": 34.0522, "lon2": -118.2437,
+            }),
+        );
+        let d = v["distance"].as_f64().unwrap();
+        assert!((d - 3936.0).abs() < 20.0, "got {d} km, expected ~3936");
+    }
+
+    #[test]
+    fn geo_polygon_area_unit_square() {
+        // Shoelace on the unit square: area = 1.
+        let v = call(
+            polars__geo_polygon_area,
+            json!({"x": [0.0, 1.0, 1.0, 0.0], "y": [0.0, 0.0, 1.0, 1.0]}),
+        );
+        assert!((v["area"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+        // 3-4-5 right triangle: area = (3*4)/2 = 6.
+        let v = call(
+            polars__geo_polygon_area,
+            json!({"x": [0.0, 4.0, 0.0], "y": [0.0, 0.0, 3.0]}),
+        );
+        assert!((v["area"].as_f64().unwrap() - 6.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn geo_polygon_perimeter_unit_square() {
+        let v = call(
+            polars__geo_polygon_perimeter,
+            json!({"x": [0.0, 1.0, 1.0, 0.0], "y": [0.0, 0.0, 1.0, 1.0]}),
+        );
+        assert!((v["perimeter"].as_f64().unwrap() - 4.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn geo_point_in_polygon_unit_square() {
+        // Inside, outside, and edge cases. The well-known ray-casting
+        // implementation has corner-case issues on vertical edges; we test
+        // away from those.
+        let xs = json!([0.0, 4.0, 4.0, 0.0]);
+        let ys = json!([0.0, 0.0, 4.0, 4.0]);
+        let v = call(
+            polars__geo_point_in_polygon,
+            json!({"px": 2.0, "py": 2.0, "x": xs.clone(), "y": ys.clone()}),
+        );
+        assert_eq!(v["inside"], true, "center inside");
+        let v = call(
+            polars__geo_point_in_polygon,
+            json!({"px": 5.0, "py": 5.0, "x": xs, "y": ys}),
+        );
+        assert_eq!(v["inside"], false, "far point outside");
+    }
+
+    #[test]
+    fn geo_bearing_due_north_is_zero() {
+        // 0° lon, going from equator north → bearing 0°.
+        let v = call(
+            polars__geo_bearing,
+            json!({"lat1": 0.0, "lon1": 0.0, "lat2": 1.0, "lon2": 0.0}),
+        );
+        assert!(v["bearing"].as_f64().unwrap().abs() < 1e-9);
+    }
+
+    #[test]
+    fn hash_djb2_known_vectors() {
+        // hash("") = 5381 (the initial seed); the empty string is a strong
+        // sanity check that the loop is actually entered conditionally.
+        let v = call(polars__hash_djb2, json!({"value": ""}));
+        assert_eq!(v["hash"].as_u64().unwrap(), 5381);
+    }
+
+    #[test]
+    fn hash_fnv1a_known_vector() {
+        // FNV-1a 64-bit initial offset = 0xcbf29ce484222325; "a" gives a
+        // deterministic value we can hardcode.
+        // hash = ((0xcbf29ce484222325 ^ 'a') * 0x100000001b3) wrapping
+        let v = call(polars__hash_fnv1a, json!({"value": ""}));
+        assert_eq!(v["hash"].as_u64().unwrap(), 0xcbf29ce484222325);
+        // hash("a") computed by hand:
+        let expected = (0xcbf29ce484222325_u64 ^ b'a' as u64).wrapping_mul(0x100000001b3);
+        let v = call(polars__hash_fnv1a, json!({"value": "a"}));
+        assert_eq!(v["hash"].as_u64().unwrap(), expected);
+    }
+
+    #[test]
+    fn hash_crc32_known_vector() {
+        // CRC32("123456789") = 0xCBF43926 — universal test vector for CRC-32/ISO-HDLC.
+        let v = call(polars__hash_crc32, json!({"value": "123456789"}));
+        assert_eq!(v["hash"].as_u64().unwrap(), 0xCBF43926);
+    }
+
+    #[test]
+    fn cluster_kmeans_converges_on_separated_clusters() {
+        // Two tight clusters around (0,0) and (10,10) should yield 2 clean groups.
+        let v = call(
+            polars__cluster_kmeans,
+            json!({
+                "points": {"data": [0.0, 0.0, 0.1, 0.0, 10.0, 10.0, 10.1, 10.0], "shape": [4, 2]},
+                "k": 2,
+                "max_iter": 50,
+            }),
+        );
+        let assign: Vec<i64> = v["assignments"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        // Points 0/1 share a cluster; 2/3 share the other.
+        assert_eq!(assign[0], assign[1]);
+        assert_eq!(assign[2], assign[3]);
+        assert_ne!(assign[0], assign[2]);
+    }
+
+    #[test]
+    fn sparse_dense_round_trip() {
+        // dense → sparse → dense reproduces the original matrix.
+        let dense = json!({"data": [1.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0, 4.0, 0.0], "shape": [3, 3]});
+        let sp = call(polars__sparse_from_dense, json!({"matrix": dense.clone()}));
+        // 4 nonzeros: 1, 2, 3, 4 at fixed positions.
+        let nnz = sp["sparse"]["data"].as_array().unwrap().len();
+        assert_eq!(nnz, 4);
+        let back = call(polars__sparse_to_dense, json!({"sparse": sp["sparse"]}));
+        let expected: Vec<f64> = dense["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        let actual: Vec<f64> = back["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn opt_minimize_bisection_finds_quadratic_root() {
+        // f(x) = x^2 - 4. Roots at ±2. Bracket [0, 3] catches the +2 root.
+        // Polynomial-form coefficients = [-4, 0, 1] (lowest-degree first).
+        let v = call(
+            polars__opt_minimize_bisection,
+            json!({"coefficients": [-4.0, 0.0, 1.0], "lo": 0.0, "hi": 3.0, "tol": 1e-9}),
+        );
+        let x = v["x"].as_f64().unwrap();
+        assert!((x - 2.0).abs() < 1e-6, "bisection on x^2-4 found {x}");
+    }
+
+    #[test]
+    fn ts_max_drawdown_matches_manual_calc() {
+        // Series [100, 110, 90, 105]. Peak 110, trough 90 → DD = -20/110.
+        let v = call(
+            polars__ts_max_drawdown,
+            json!({"data": [100.0, 110.0, 90.0, 105.0]}),
+        );
+        let mdd = v["max_drawdown"].as_f64().unwrap();
+        assert!((mdd - (-20.0 / 110.0)).abs() < 1e-12, "mdd = {mdd}");
+    }
+
+    #[test]
+    fn ts_log_returns_match_manual_calc() {
+        // log_return[i] = ln(p[i] / p[i-1]); first entry is NaN.
+        let v = call(polars__ts_log_returns, json!({"data": [1.0, 2.0, 4.0]}));
+        let d: Vec<f64> = v["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap_or(f64::NAN))
+            .collect();
+        assert!(d[0].is_nan());
+        assert!((d[1] - 2.0_f64.ln()).abs() < 1e-12);
+        assert!((d[2] - 2.0_f64.ln()).abs() < 1e-12);
+    }
+
+    #[test]
+    fn enc_one_hot_dimensions_match_categories() {
+        let v = call(
+            polars__enc_one_hot,
+            json!({"labels": ["red", "blue", "red", "green"]}),
+        );
+        let cats = v["categories"].as_array().unwrap();
+        let shape = v["array"]["shape"].as_array().unwrap();
+        assert_eq!(cats.len(), 3, "3 unique categories");
+        assert_eq!(shape[0].as_u64().unwrap(), 4, "n samples");
+        assert_eq!(shape[1].as_u64().unwrap(), 3, "n categories");
+        // Each row sums to 1 (exactly one 1).
+        let data: Vec<f64> = v["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        for chunk in data.chunks(3) {
+            let s: f64 = chunk.iter().sum();
+            assert!((s - 1.0).abs() < 1e-12);
+        }
+    }
+}

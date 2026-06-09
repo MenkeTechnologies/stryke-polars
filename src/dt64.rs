@@ -639,3 +639,92 @@ pub extern "C" fn polars__dt64_format(args: *const c_char) -> *mut c_char {
         Ok(json!({"formatted": out}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn dt64_is_leap_year_gregorian_rule() {
+        // 2000 leap (÷400), 1900 not (÷100 but not 400), 2024 leap, 2023 not.
+        let v = call(
+            polars__dt64_is_leap_year,
+            json!({"values": ["2000-01-01", "1900-01-01", "2024-01-01", "2023-01-01"]}),
+        );
+        let r: Vec<bool> = v["is_leap_year"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_bool().unwrap())
+            .collect();
+        assert_eq!(r, vec![true, false, true, false]);
+    }
+
+    #[test]
+    fn dt64_days_in_month_handles_leap_february() {
+        let v = call(
+            polars__dt64_days_in_month,
+            json!({"values": ["2024-02-15", "2023-02-15", "2024-04-15", "2024-12-15"]}),
+        );
+        let d: Vec<i64> = v["days_in_month"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(d, vec![29, 28, 30, 31]);
+    }
+
+    #[test]
+    fn dt64_quarter_partition() {
+        let v = call(
+            polars__dt64_quarter,
+            json!({"values": ["2024-01-15", "2024-04-15", "2024-07-15", "2024-10-15", "2024-12-31"]}),
+        );
+        let q: Vec<i64> = v["quarter"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(q, vec![1, 2, 3, 4, 4]);
+    }
+
+    #[test]
+    fn dt64_add_days_round_trip_via_diff() {
+        let added = call(
+            polars__dt64_add_days,
+            json!({"values": ["2024-01-01 00:00:00"], "n": 30}),
+        );
+        let added_str = added["datetimes"][0].as_str().unwrap().to_string();
+        let diff = call(
+            polars__dt64_diff_days,
+            json!({"a": [added_str], "b": ["2024-01-01 00:00:00"]}),
+        );
+        assert_eq!(diff["days"][0].as_i64().unwrap(), 30);
+    }
+
+    #[test]
+    fn dt64_business_day_count_january_2024() {
+        // Jan 1 (Mon) → Feb 1 (Thu), excluding end: 23 business days.
+        let v = call(
+            polars__dt64_business_day_count,
+            json!({"start": "2024-01-01", "end": "2024-02-01"}),
+        );
+        assert_eq!(v["business_days"].as_u64().unwrap(), 23);
+    }
+
+    #[test]
+    fn dt64_date_range_inclusive_count() {
+        let v = call(
+            polars__dt64_date_range,
+            json!({"start": "2024-01-01", "end": "2024-01-05"}),
+        );
+        let n = v["dates"].as_array().unwrap().len();
+        assert_eq!(n, 5);
+    }
+}

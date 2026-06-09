@@ -1740,3 +1740,272 @@ pub extern "C" fn polars__misc_char_frequency(args: *const c_char) -> *mut c_cha
         Ok(json!({"frequency": arr}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    #[test]
+    fn factorial_matches_table() {
+        // 20! is the largest value that still fits in u64
+        // (2_432_902_008_176_640_000) — the saturation boundary.
+        let cases = [(0u64, 1u64), (1, 1), (5, 120), (10, 3_628_800)];
+        for (n, expect) in cases {
+            let v = call(polars__misc_factorial, json!({"n": n}));
+            assert_eq!(v["factorial"].as_u64().unwrap(), expect, "{n}!");
+        }
+        let v = call(polars__misc_factorial, json!({"n": 20u64}));
+        assert_eq!(v["factorial"].as_u64().unwrap(), 2_432_902_008_176_640_000);
+    }
+
+    #[test]
+    fn choose_matches_pascal_row() {
+        // C(n,k) == C(n,n-k); standard Pascal-row values.
+        let v = call(polars__misc_choose, json!({"n": 5u64, "k": 2u64}));
+        assert_eq!(v["choose"].as_u64().unwrap(), 10);
+        let v = call(polars__misc_choose, json!({"n": 5u64, "k": 3u64}));
+        assert_eq!(v["choose"].as_u64().unwrap(), 10);
+        let v = call(polars__misc_choose, json!({"n": 10u64, "k": 5u64}));
+        assert_eq!(v["choose"].as_u64().unwrap(), 252);
+        let v = call(polars__misc_choose, json!({"n": 5u64, "k": 10u64}));
+        assert_eq!(v["choose"].as_u64().unwrap(), 0, "k > n returns 0");
+    }
+
+    #[test]
+    fn fibonacci_matches_table() {
+        let cases = [
+            (0u64, 0u64),
+            (1, 1),
+            (2, 1),
+            (10, 55),
+            (20, 6765),
+            (30, 832_040),
+        ];
+        for (n, expect) in cases {
+            let v = call(polars__misc_fibonacci, json!({"n": n}));
+            assert_eq!(v["value"].as_u64().unwrap(), expect, "F({n})");
+        }
+    }
+
+    #[test]
+    fn is_prime_edge_cases() {
+        // 0/1 are not prime; 2 is the only even prime; 25 and 49 sit on the
+        // sqrt boundary that a naive loop bound can miss.
+        let primes = [2u64, 3, 5, 7, 11, 13, 17, 97, 1009];
+        let composites = [0u64, 1, 4, 6, 25, 49, 100, 1000];
+        for n in primes {
+            let v = call(polars__misc_is_prime, json!({"n": n}));
+            assert_eq!(v["is_prime"], true, "{n} prime");
+        }
+        for n in composites {
+            let v = call(polars__misc_is_prime, json!({"n": n}));
+            assert_eq!(v["is_prime"], false, "{n} composite");
+        }
+    }
+
+    #[test]
+    fn gcd_lcm_relationship_holds() {
+        // gcd(a, b) * lcm(a, b) == a * b for any non-zero pair.
+        for (a, b) in [(12i64, 18), (7, 13), (100, 75), (1, 5)] {
+            let g = call(polars__misc_gcd, json!({"a": a, "b": b}));
+            let l = call(polars__misc_lcm, json!({"a": a, "b": b}));
+            let gv = g["gcd"].as_i64().unwrap();
+            let lv = l["lcm"].as_i64().unwrap();
+            assert_eq!(gv * lv, a * b, "gcd*lcm == a*b for ({a},{b})");
+        }
+    }
+
+    #[test]
+    fn modpow_matches_known_values() {
+        let v = call(
+            polars__misc_modpow,
+            json!({"base": 2u64, "exp": 10u64, "m": 1000u64}),
+        );
+        assert_eq!(v["value"].as_u64().unwrap(), 24);
+        // 7^256 mod 13: by Fermat 7^12 ≡ 1, so 7^256 ≡ 7^4 = 2401 ≡ 9.
+        let v = call(
+            polars__misc_modpow,
+            json!({"base": 7u64, "exp": 256u64, "m": 13u64}),
+        );
+        assert_eq!(v["value"].as_u64().unwrap(), 9);
+    }
+
+    #[test]
+    fn palindrome_recognizes_known_strings() {
+        for s in ["racecar", "level", "a", ""] {
+            let v = call(polars__misc_is_palindrome, json!({"value": s}));
+            assert_eq!(v["is_palindrome"], true, "{s}");
+        }
+        for s in ["hello", "world", "ab"] {
+            let v = call(polars__misc_is_palindrome, json!({"value": s}));
+            assert_eq!(v["is_palindrome"], false, "{s}");
+        }
+    }
+
+    #[test]
+    fn digit_sum_is_a_divisibility_witness_for_9() {
+        // The classic divisibility-by-9 invariant: digit_sum(n) ≡ n (mod 9).
+        for n in [0u64, 7, 99, 1234, 99_999, 1_000_000] {
+            let v = call(polars__misc_digit_sum, json!({"n": n}));
+            let s = v["sum"].as_i64().unwrap() as u64;
+            assert_eq!(s % 9, n % 9, "digit_sum({n}) ≢ {n} (mod 9)");
+        }
+    }
+
+    #[test]
+    fn bit_popcount_matches_table() {
+        let cases = [(0i64, 0u32), (1, 1), (7, 3), (255, 8), (-1, 64)];
+        for (x, expect) in cases {
+            let v = call(polars__bit_popcount, json!({"x": x}));
+            assert_eq!(
+                v["popcount"].as_u64().unwrap(),
+                expect as u64,
+                "popcount({x})"
+            );
+        }
+    }
+
+    #[test]
+    fn bit_toggle_is_self_inverse() {
+        // Setting bit 3 of 0 = 8; clearing it = 0; toggling twice = identity.
+        let v = call(polars__bit_set, json!({"x": 0i64, "n": 3u64}));
+        assert_eq!(v["set"].as_i64().unwrap(), 8);
+        let v = call(polars__bit_clear, json!({"x": 8i64, "n": 3u64}));
+        assert_eq!(v["clear"].as_i64().unwrap(), 0);
+        let v = call(polars__bit_toggle, json!({"x": 0i64, "n": 3u64}));
+        let toggled = v["toggle"].as_i64().unwrap();
+        let v = call(polars__bit_toggle, json!({"x": toggled, "n": 3u64}));
+        assert_eq!(v["toggle"].as_i64().unwrap(), 0);
+    }
+
+    #[test]
+    fn bit_radix_round_trips() {
+        for &x in &[0i64, 1, 255, 1023, 65_535] {
+            let bin = call(polars__bit_to_bin, json!({"x": x}));
+            let back = call(
+                polars__bit_from_bin,
+                json!({"value": bin["binary"].as_str().unwrap()}),
+            );
+            assert_eq!(back["value"].as_i64().unwrap(), x, "binary {x}");
+
+            let hex = call(polars__bit_to_hex, json!({"x": x}));
+            let back = call(
+                polars__bit_from_hex,
+                json!({"value": hex["hex"].as_str().unwrap()}),
+            );
+            assert_eq!(back["value"].as_i64().unwrap(), x, "hex {x}");
+
+            let oct = call(polars__bit_to_oct, json!({"x": x}));
+            let back = call(
+                polars__bit_from_oct,
+                json!({"value": oct["octal"].as_str().unwrap()}),
+            );
+            assert_eq!(back["value"].as_i64().unwrap(), x, "oct {x}");
+        }
+    }
+
+    #[test]
+    fn fmt_roman_handles_subtractive_pairs() {
+        // The subtractive cases (CM, CD, XC, XL, IX, IV) are the only places
+        // a greedy converter can go wrong.
+        let cases = [
+            (1u64, "I"),
+            (4, "IV"),
+            (9, "IX"),
+            (40, "XL"),
+            (49, "XLIX"),
+            (90, "XC"),
+            (400, "CD"),
+            (900, "CM"),
+            (1994, "MCMXCIV"),
+            (2024, "MMXXIV"),
+            (3999, "MMMCMXCIX"),
+        ];
+        for (n, expect) in cases {
+            let v = call(polars__fmt_roman, json!({"n": n}));
+            assert_eq!(v["roman"].as_str().unwrap(), expect, "roman({n})");
+        }
+    }
+
+    #[test]
+    fn fmt_ordinal_handles_teens() {
+        // 11/12/13 use "th", not the digit-based st/nd/rd — the standard bug magnet.
+        let cases = [
+            (1i64, "1st"),
+            (2, "2nd"),
+            (3, "3rd"),
+            (4, "4th"),
+            (11, "11th"),
+            (12, "12th"),
+            (13, "13th"),
+            (21, "21st"),
+            (22, "22nd"),
+            (23, "23rd"),
+            (101, "101st"),
+            (111, "111th"),
+            (112, "112th"),
+        ];
+        for (n, expect) in cases {
+            let v = call(polars__fmt_ordinal, json!({"n": n}));
+            assert_eq!(v["ordinal"].as_str().unwrap(), expect, "ordinal({n})");
+        }
+    }
+
+    #[test]
+    fn fmt_with_commas_handles_negative_and_zero() {
+        for (n, expect) in [
+            (0i64, "0"),
+            (1_000, "1,000"),
+            (1_000_000, "1,000,000"),
+            (-1_234_567, "-1,234,567"),
+        ] {
+            let v = call(polars__fmt_with_commas, json!({"x": n}));
+            assert_eq!(v["formatted"].as_str().unwrap(), expect);
+        }
+    }
+
+    #[test]
+    fn json_path_resolves_nested_keys() {
+        let v = call(
+            polars__json_path,
+            json!({
+                "value": {"a": {"b": {"c": 42}}},
+                "path": "a.b.c",
+            }),
+        );
+        assert_eq!(v["result"], 42);
+        let v = call(polars__json_path, json!({"value": {"a": 1}, "path": "x.y"}));
+        assert!(v["result"].is_null());
+    }
+
+    #[test]
+    fn arr_concatenate_v2_flattens_in_input_order() {
+        // The variadic version takes an array-of-arrays and produces one
+        // flat 1-D vector in declaration order. Order preservation across
+        // ragged inputs is the load-bearing invariant.
+        let v = call(
+            polars__arr_concatenate_v2,
+            json!({
+                "arrays": [
+                    {"data": [1.0, 2.0], "shape": [2]},
+                    {"data": [3.0], "shape": [1]},
+                    {"data": [4.0, 5.0, 6.0], "shape": [3]},
+                ],
+            }),
+        );
+        let data = v["array"]["data"].as_array().unwrap();
+        let nums: Vec<f64> = data.iter().map(|x| x.as_f64().unwrap()).collect();
+        assert_eq!(nums, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    }
+
+    #[test]
+    fn sum_adler32_known_vector() {
+        // Adler32("Wikipedia") = 0x11E60398 — RFC 1950 test vector.
+        let v = call(polars__sum_adler32, json!({"value": "Wikipedia"}));
+        assert_eq!(v["checksum"].as_u64().unwrap(), 0x11E60398);
+    }
+}
