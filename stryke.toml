@@ -291,6 +291,10 @@ exports = [
     "polars__poly_polysub",
     "polars__linalg_eigvals",
     "polars__arr_percentile",
+    "polars__arr_gradient",
+    "polars__arr_trapezoid",
+    "polars__arr_convolve",
+    "polars__arr_isclose",
 ]
 
 [scripts]

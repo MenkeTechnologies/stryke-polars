@@ -231,4 +231,29 @@ fn Polars::NdArray::percentile ($arr, $q) {
     Polars::_decode("arr_percentile", polars__arr_percentile(to_json({ array => $arr, q => $q })))->{scalar}
 }
 
+## `np.gradient(f)` — central differences (1-D).
+fn Polars::NdArray::gradient ($arr) {
+    Polars::_decode("arr_gradient", polars__arr_gradient(to_json({ array => $arr })))->{array}
+}
+
+## `np.trapezoid(y, dx=1)` — trapezoidal integration scalar.
+fn Polars::NdArray::trapezoid ($arr, $dx) {
+    my %req = (array => $arr)
+    $req{dx} = $dx if defined $dx
+    Polars::_decode("arr_trapezoid", polars__arr_trapezoid(to_json(\%req)))->{scalar}
+}
+
+## `np.convolve(a, v, mode='full')` — 1-D convolution.
+fn Polars::NdArray::convolve ($a, $v) {
+    Polars::_decode("arr_convolve", polars__arr_convolve(to_json({ a => $a, v => $v })))->{array}
+}
+
+## Elementwise approx-equal mask. `$rtol` default 1e-5, `$atol` default 1e-8.
+fn Polars::NdArray::isclose ($a, $b, $rtol, $atol) {
+    my %req = (a => $a, b => $b)
+    $req{rtol} = $rtol if defined $rtol
+    $req{atol} = $atol if defined $atol
+    Polars::_decode("arr_isclose", polars__arr_isclose(to_json(\%req)))->{array}
+}
+
 1

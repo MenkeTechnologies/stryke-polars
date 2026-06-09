@@ -1390,6 +1390,109 @@ pub extern "C" fn polars__arr_percentile(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.gradient(f)` — numerical gradient using central differences.
+/// 1-D only this slice. Output length equals input length.
+#[no_mangle]
+pub extern "C" fn polars__arr_gradient(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("gradient: only 1-D arrays supported");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        if n < 2 {
+            bail!("gradient: need ≥ 2 points");
+        }
+        let mut grad = Vec::with_capacity(n);
+        // Forward at first.
+        grad.push(data[1] - data[0]);
+        // Central in middle.
+        for i in 1..n - 1 {
+            grad.push((data[i + 1] - data[i - 1]) / 2.0);
+        }
+        // Backward at last.
+        grad.push(data[n - 1] - data[n - 2]);
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), grad).context("gradient shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.trapezoid(y, dx)` — trapezoidal integration. Scalar result.
+#[no_mangle]
+pub extern "C" fn polars__arr_trapezoid(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("trapezoid: only 1-D arrays supported");
+        }
+        let dx = args.get("dx").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        if n < 2 {
+            return Ok(json!({"scalar": scalar_to_value(0.0)}));
+        }
+        let mut acc = 0.0;
+        for i in 0..n - 1 {
+            acc += 0.5 * (data[i] + data[i + 1]) * dx;
+        }
+        Ok(json!({"scalar": scalar_to_value(acc)}))
+    })
+}
+
+/// `np.convolve(a, v, mode='full')` — discrete 1-D convolution.
+#[no_mangle]
+pub extern "C" fn polars__arr_convolve(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let v = get_array(&args, "v")?;
+        if a.shape().len() != 1 || v.shape().len() != 1 {
+            bail!("convolve: both inputs must be 1-D");
+        }
+        let a_data: Vec<f64> = a.iter().copied().collect();
+        let v_data: Vec<f64> = v.iter().copied().collect();
+        if a_data.is_empty() || v_data.is_empty() {
+            return Ok(json!({"array": array_to_value(&a)}));
+        }
+        let n = a_data.len() + v_data.len() - 1;
+        let mut out = vec![0.0; n];
+        for (i, &ai) in a_data.iter().enumerate() {
+            for (j, &vj) in v_data.iter().enumerate() {
+                out[i + j] += ai * vj;
+            }
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), out).context("convolve shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Are two arrays elementwise close within tolerance? Returns array of 0.0/1.0.
+#[no_mangle]
+pub extern "C" fn polars__arr_isclose(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() {
+            bail!("isclose: shape mismatch");
+        }
+        let rtol = args.get("rtol").and_then(|v| v.as_f64()).unwrap_or(1e-5);
+        let atol = args.get("atol").and_then(|v| v.as_f64()).unwrap_or(1e-8);
+        let data: Vec<f64> = a
+            .iter()
+            .zip(b.iter())
+            .map(|(&x, &y)| {
+                if (x - y).abs() <= atol + rtol * y.abs() {
+                    1.0
+                } else {
+                    0.0
+                }
+            })
+            .collect();
+        let out = ArrayD::from_shape_vec(IxDyn(a.shape()), data).context("isclose shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
