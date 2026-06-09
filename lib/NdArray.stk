@@ -304,4 +304,22 @@ fn Polars::NdArray::atleast_2d ($arr) {
     Polars::_decode("arr_atleast_2d", polars__arr_atleast_2d(to_json({ array => $arr })))->{array}
 }
 
+## `np.array_equal(a, b)` — same shape AND elementwise exact equality.
+fn Polars::NdArray::array_equal ($a, $b) {
+    Polars::_decode("arr_array_equal", polars__arr_array_equal(to_json({ a => $a, b => $b })))->{bool}
+}
+
+## `np.allclose(a, b, rtol, atol)` — all elements close to within tol.
+fn Polars::NdArray::allclose ($a, $b, $rtol, $atol) {
+    my %req = (a => $a, b => $b)
+    $req{rtol} = $rtol if defined $rtol
+    $req{atol} = $atol if defined $atol
+    Polars::_decode("arr_allclose", polars__arr_allclose(to_json(\%req)))->{bool}
+}
+
+## `np.compress(mask, array)` — keep elements where mask is non-zero.
+fn Polars::NdArray::compress ($arr, $mask) {
+    Polars::_decode("arr_compress", polars__arr_compress(to_json({ array => $arr, mask => $mask })))->{array}
+}
+
 1

@@ -309,6 +309,11 @@ exports = [
     "polars__np_modf",
     "polars__arr_atleast_1d",
     "polars__arr_atleast_2d",
+    "polars__arr_array_equal",
+    "polars__arr_allclose",
+    "polars__np_logaddexp",
+    "polars__np_logaddexp2",
+    "polars__arr_compress",
 ]
 
 [scripts]

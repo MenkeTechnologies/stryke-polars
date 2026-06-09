@@ -1880,6 +1880,92 @@ pub extern "C" fn polars__arr_atleast_2d(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.array_equal(a, b)` — true if same shape AND all elements equal.
+#[no_mangle]
+pub extern "C" fn polars__arr_array_equal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() {
+            return Ok(json!({"bool": false}));
+        }
+        let eq = a
+            .iter()
+            .zip(b.iter())
+            .all(|(&x, &y)| x == y || (x.is_nan() && y.is_nan()));
+        Ok(json!({"bool": eq}))
+    })
+}
+
+/// `np.allclose(a, b, rtol, atol)` — all elementwise close.
+#[no_mangle]
+pub extern "C" fn polars__arr_allclose(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() {
+            return Ok(json!({"bool": false}));
+        }
+        let rtol = args.get("rtol").and_then(|v| v.as_f64()).unwrap_or(1e-5);
+        let atol = args.get("atol").and_then(|v| v.as_f64()).unwrap_or(1e-8);
+        let all = a
+            .iter()
+            .zip(b.iter())
+            .all(|(&x, &y)| (x - y).abs() <= atol + rtol * y.abs());
+        Ok(json!({"bool": all}))
+    })
+}
+
+/// `np.logaddexp(a, b)` — numerically stable log(exp(a) + exp(b)).
+#[no_mangle]
+pub extern "C" fn polars__np_logaddexp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| {
+            let m = a.max(b);
+            if !m.is_finite() {
+                m
+            } else {
+                m + (-(a - b).abs()).exp().ln_1p()
+            }
+        })
+    })
+}
+
+/// `np.logaddexp2(a, b)` — base-2 numerically stable log2(2^a + 2^b).
+#[no_mangle]
+pub extern "C" fn polars__np_logaddexp2(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| {
+            let m = a.max(b);
+            if !m.is_finite() {
+                m
+            } else {
+                m + (1.0 + 2.0_f64.powf(-(a - b).abs())).log2()
+            }
+        })
+    })
+}
+
+/// Compress: keep elements of `array` where `mask` is non-zero.
+#[no_mangle]
+pub extern "C" fn polars__arr_compress(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mask = get_array(&args, "mask")?;
+        if arr.shape() != mask.shape() {
+            bail!("compress: array and mask must share shape");
+        }
+        let data: Vec<f64> = arr
+            .iter()
+            .zip(mask.iter())
+            .filter_map(|(&v, &m)| if m != 0.0 { Some(v) } else { None })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("compress shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
