@@ -270,24 +270,12 @@ pub extern "C" fn polars__df_to_json(args: *const c_char) -> *mut c_char {
     })
 }
 
-// ── P1.1b: describe / drop / rename / sort / filter ────────────────────────
-
-/// pandas `df.describe()` — count/mean/std/min/25%/50%/75%/max per numeric col.
-///
-/// Args:   `{frame, percentiles?: [f64, ...]}`
-/// Result: `{frame}` (describe stats as a DataFrame)
-#[no_mangle]
-pub extern "C" fn polars__df_describe(args: *const c_char) -> *mut c_char {
-    ffi_call(args, |args| {
-        let df = get_frame(&args)?;
-        let pct: Option<Vec<f64>> = args
-            .get("percentiles")
-            .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|x| x.as_f64()).collect());
-        let stats = df.describe(pct.as_deref()).context("DataFrame::describe")?;
-        return_frame(stats)
-    })
-}
+// ── P1.1b: drop / rename / sort / filter ───────────────────────────────────
+//
+// `polars__df_describe` was attempted but polars 0.45 doesn't expose
+// `describe` as a `DataFrame` method (despite the `describe` feature being
+// enabled — the method lives in a different module path or on `LazyFrame`).
+// Deferred to a later slice where it can be hand-rolled from per-stat aggs.
 
 /// Drop one or more columns by name.
 ///
