@@ -27,4 +27,14 @@ fn Polars::FFT::fftfreq ($n, $d) {
     Polars::_decode("fft_fftfreq", polars__fft_fftfreq(to_json(\%req)))->{array}
 }
 
+## Real FFT (positive half of spectrum only). Returns `{ real, imag, shape: [n/2+1] }`.
+fn Polars::FFT::rfft ($arr) {
+    Polars::_decode("fft_rfft", polars__fft_rfft(to_json({ array => $arr })))->{complex}
+}
+
+## `np.fft.fftshift(x)` — swap halves of a 1-D array.
+fn Polars::FFT::fftshift ($arr) {
+    Polars::_decode("fft_fftshift", polars__fft_fftshift(to_json({ array => $arr })))->{array}
+}
+
 1

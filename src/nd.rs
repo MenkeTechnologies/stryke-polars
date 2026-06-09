@@ -511,6 +511,298 @@ pub extern "C" fn polars__np_log1p(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::ln_1p))
 }
 
+#[no_mangle]
+pub extern "C" fn polars__np_arctan2(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::atan2))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_hypot(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::hypot))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_floor_divide(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, |x, y| (x / y).floor()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_copysign(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::copysign))
+}
+
+// ── retroactive: 4 fns whose exports landed in cfa02cc95a but bodies didn't ──
+
+/// Reverse a flat array (preserves shape).
+#[no_mangle]
+pub extern "C" fn polars__arr_reverse(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        data.reverse();
+        let out = ArrayD::from_shape_vec(IxDyn(arr.shape()), data).context("reverse shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Repeat each element `n` times in flat order (1-D).
+#[no_mangle]
+pub extern "C" fn polars__arr_repeat(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("repeat: only 1-D arrays supported");
+        }
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let mut data = Vec::with_capacity(arr.len() * n);
+        for &v in arr.iter() {
+            for _ in 0..n {
+                data.push(v);
+            }
+        }
+        let total = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[total]), data).context("repeat shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.random.geometric(p, n)` — int samples as f64.
+#[no_mangle]
+pub extern "C" fn polars__rand_geometric(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let p = args
+            .get("p")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `p`"))?;
+        if !(0.0..=1.0).contains(&p) || p == 0.0 {
+            bail!("`p` must be in (0, 1]");
+        }
+        let dist = rand_distr::Geometric::new(p).context("Geometric::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng) as f64).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("geometric shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Kronecker product of two matrices.
+#[no_mangle]
+pub extern "C" fn polars__linalg_kron(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = parse_matrix(args.get("a").ok_or_else(|| anyhow!("missing `a`"))?)?;
+        let b = parse_matrix(args.get("b").ok_or_else(|| anyhow!("missing `b`"))?)?;
+        let k = a.kronecker(&b);
+        Ok(json!({"matrix": matrix_to_value(&k)}))
+    })
+}
+
+// ── P4g: cumulative axis ops ───────────────────────────────────────────────
+
+#[no_mangle]
+pub extern "C" fn polars__arr_cumprod(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut acc = 1.0;
+        let data: Vec<f64> = arr
+            .iter()
+            .map(|&x| {
+                acc *= x;
+                acc
+            })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("cumprod shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__arr_cummin(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut acc = f64::INFINITY;
+        let data: Vec<f64> = arr
+            .iter()
+            .map(|&x| {
+                acc = acc.min(x);
+                acc
+            })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("cummin shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__arr_cummax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut acc = f64::NEG_INFINITY;
+        let data: Vec<f64> = arr
+            .iter()
+            .map(|&x| {
+                acc = acc.max(x);
+                acc
+            })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("cummax shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+// ── P5h: fft + random + poly + linalg ──────────────────────────────────────
+
+#[no_mangle]
+pub extern "C" fn polars__fft_rfft(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("rfft: only 1-D arrays supported");
+        }
+        let n = arr.len();
+        let mut buf: Vec<Complex<f64>> = arr.iter().map(|&x| Complex::new(x, 0.0)).collect();
+        let mut planner = FftPlanner::new();
+        let fft = planner.plan_fft_forward(n);
+        fft.process(&mut buf);
+        let m = n / 2 + 1;
+        let real: Vec<Value> = buf[..m].iter().map(|c| scalar_to_value(c.re)).collect();
+        let imag: Vec<Value> = buf[..m].iter().map(|c| scalar_to_value(c.im)).collect();
+        Ok(json!({"complex": {"real": real, "imag": imag, "shape": [m]}}))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__fft_fftshift(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("fftshift: only 1-D arrays supported");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        let mid = n / 2;
+        let mut shifted = Vec::with_capacity(n);
+        shifted.extend_from_slice(&data[mid..]);
+        shifted.extend_from_slice(&data[..mid]);
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), shifted).context("fftshift shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.random.dirichlet(alpha, n)` — Dirichlet samples. Output: 2-D `[n, k]`.
+#[no_mangle]
+pub extern "C" fn polars__rand_dirichlet(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let alpha_arr = args
+            .get("alpha")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `alpha` (array)"))?;
+        let alpha: Vec<f64> = alpha_arr
+            .iter()
+            .map(|v| v.as_f64().unwrap_or(0.0))
+            .collect();
+        let k = alpha.len();
+        if k == 0 {
+            bail!("`alpha` must be non-empty");
+        }
+        if alpha.iter().any(|&a| a <= 0.0) {
+            bail!("`alpha` entries must be > 0");
+        }
+        let mut rng = rng_for(&args);
+        let mut data = Vec::with_capacity(n * k);
+        for _ in 0..n {
+            let mut row = Vec::with_capacity(k);
+            for &a in &alpha {
+                let dist = rand_distr::Gamma::new(a, 1.0).context("Gamma::new")?;
+                row.push(dist.sample(&mut rng));
+            }
+            let sum: f64 = row.iter().sum();
+            for v in row.iter_mut() {
+                *v /= sum;
+            }
+            data.extend(row);
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n, k]), data).context("dirichlet shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Polynomial fit via least squares (Vandermonde + normal equations).
+#[no_mangle]
+pub extern "C" fn polars__poly_polyfit(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let x = get_array(&args, "x")?;
+        let y = get_array(&args, "y")?;
+        if x.shape().len() != 1 || y.shape().len() != 1 {
+            bail!("polyfit: x and y must be 1-D");
+        }
+        if x.len() != y.len() {
+            bail!("polyfit: x and y must have same length");
+        }
+        let deg = args
+            .get("deg")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `deg`"))? as usize;
+        let m = x.len();
+        let k = deg + 1;
+        if m < k {
+            bail!("polyfit: need ≥ deg+1 points");
+        }
+        let mut v_data = Vec::with_capacity(m * k);
+        for &xi in x.iter() {
+            let mut p = 1.0;
+            for _ in 0..k {
+                v_data.push(p);
+                p *= xi;
+            }
+        }
+        let vm = DMatrix::from_row_slice(m, k, &v_data);
+        let yv = nalgebra::DVector::from_iterator(m, y.iter().copied());
+        let vt = vm.transpose();
+        let ata = &vt * &vm;
+        let aty = &vt * yv;
+        let lu = ata.lu();
+        let coeffs = lu
+            .solve(&aty)
+            .ok_or_else(|| anyhow!("polyfit: normal-equations singular"))?;
+        let out: Vec<Value> = coeffs.iter().map(|&v| scalar_to_value(v)).collect();
+        Ok(json!({"coefficients": out}))
+    })
+}
+
+/// Real eigenvalues of a symmetric matrix (descending).
+#[no_mangle]
+pub extern "C" fn polars__linalg_eigvalsh(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        if !m.is_square() {
+            bail!("eigvalsh: matrix must be square");
+        }
+        let sym = nalgebra::SymmetricEigen::new(m);
+        let mut vals: Vec<f64> = sym.eigenvalues.iter().copied().collect();
+        vals.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+        let n = vals.len();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), vals).context("eigvalsh shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 // ── ufuncs (binary) ────────────────────────────────────────────────────────
 
 /// Elementwise a + b. Shapes must match (no broadcasting in this slice).

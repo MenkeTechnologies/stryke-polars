@@ -241,6 +241,18 @@ exports = [
     "polars__arr_repeat",
     "polars__rand_geometric",
     "polars__linalg_kron",
+    "polars__np_arctan2",
+    "polars__np_hypot",
+    "polars__np_floor_divide",
+    "polars__np_copysign",
+    "polars__arr_cumprod",
+    "polars__arr_cummin",
+    "polars__arr_cummax",
+    "polars__fft_rfft",
+    "polars__fft_fftshift",
+    "polars__rand_dirichlet",
+    "polars__poly_polyfit",
+    "polars__linalg_eigvalsh",
 ]
 
 [scripts]

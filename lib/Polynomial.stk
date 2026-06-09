@@ -26,4 +26,10 @@ fn Polars::Polynomial::polyint ($coefficients, $c0) {
     Polars::_decode("poly_polyint", polars__poly_polyint(to_json(\%req)))->{coefficients}
 }
 
+## Least-squares polynomial fit. `$x` and `$y` are 1-D arrays. Returns
+## coefficients ordered low-to-high (c0 + c1*x + c2*x^2 + ...).
+fn Polars::Polynomial::polyfit ($x, $y, $deg) {
+    Polars::_decode("poly_polyfit", polars__poly_polyfit(to_json({ x => $x, y => $y, deg => $deg })))->{coefficients}
+}
+
 1

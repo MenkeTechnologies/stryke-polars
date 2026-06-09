@@ -69,4 +69,9 @@ fn Polars::Ufunc::cbrt       ($arr) { Polars::_decode("np_cbrt",       polars__n
 fn Polars::Ufunc::expm1      ($arr) { Polars::_decode("np_expm1",      polars__np_expm1     (to_json({ array => $arr })))->{array} }
 fn Polars::Ufunc::log1p      ($arr) { Polars::_decode("np_log1p",      polars__np_log1p     (to_json({ array => $arr })))->{array} }
 
+fn Polars::Ufunc::arctan2      ($a, $b) { Polars::_decode("np_arctan2",      polars__np_arctan2     (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::hypot        ($a, $b) { Polars::_decode("np_hypot",        polars__np_hypot       (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::floor_divide ($a, $b) { Polars::_decode("np_floor_divide", polars__np_floor_divide(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::copysign     ($a, $b) { Polars::_decode("np_copysign",     polars__np_copysign    (to_json({ a => $a, b => $b })))->{array} }
+
 1

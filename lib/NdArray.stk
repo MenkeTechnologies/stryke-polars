@@ -159,4 +159,8 @@ fn Polars::NdArray::repeat ($arr, $n) {
     Polars::_decode("arr_repeat", polars__arr_repeat(to_json({ array => $arr, n => $n })))->{array}
 }
 
+fn Polars::NdArray::cumprod ($arr) { Polars::_decode("arr_cumprod", polars__arr_cumprod(to_json({ array => $arr })))->{array} }
+fn Polars::NdArray::cummin  ($arr) { Polars::_decode("arr_cummin",  polars__arr_cummin (to_json({ array => $arr })))->{array} }
+fn Polars::NdArray::cummax  ($arr) { Polars::_decode("arr_cummax",  polars__arr_cummax (to_json({ array => $arr })))->{array} }
+
 1

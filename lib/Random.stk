@@ -107,4 +107,11 @@ fn Polars::Random::geometric ($n, $p, $seed) {
     Polars::_decode("rand_geometric", polars__rand_geometric(to_json(\%req)))->{array}
 }
 
+## `np.random.dirichlet(alpha, n)` — Dirichlet samples. Returns 2-D `[n, k]`.
+fn Polars::Random::dirichlet ($n, $alpha, $seed) {
+    my %req = (n => $n, alpha => $alpha)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_dirichlet", polars__rand_dirichlet(to_json(\%req)))->{array}
+}
+
 1

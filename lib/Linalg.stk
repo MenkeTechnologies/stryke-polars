@@ -87,4 +87,9 @@ fn Polars::Linalg::kron ($a, $b) {
     Polars::_decode("linalg_kron", polars__linalg_kron(to_json({ a => $a, b => $b })))->{matrix}
 }
 
+## Real eigenvalues of a symmetric matrix (descending).
+fn Polars::Linalg::eigvalsh ($m) {
+    Polars::_decode("linalg_eigvalsh", polars__linalg_eigvalsh(to_json({ matrix => $m })))->{array}
+}
+
 1
