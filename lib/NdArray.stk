@@ -478,4 +478,14 @@ fn Polars::NdArray::broadcast_to ($arr, $shape) {
     Polars::_decode("arr_broadcast_to", polars__arr_broadcast_to(to_json({ array => $arr, shape => $shape })))->{array}
 }
 
+## Mean-center: subtract array's mean from every element.
+fn Polars::NdArray::mean_centered ($arr) {
+    Polars::_decode("arr_mean_centered", polars__arr_mean_centered(to_json({ array => $arr })))->{array}
+}
+
+## L2-normalize (divide by 2-norm).
+fn Polars::NdArray::normalize_l2 ($arr) {
+    Polars::_decode("arr_normalize_l2", polars__arr_normalize_l2(to_json({ array => $arr })))->{array}
+}
+
 1

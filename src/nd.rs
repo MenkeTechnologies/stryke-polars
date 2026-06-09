@@ -2734,6 +2734,76 @@ pub extern "C" fn polars__arr_broadcast_to(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P4ab: scalar-broadcast ufuncs ──────────────────────────────────────────
+
+fn scalar_op<F: Fn(f64, f64) -> f64>(args: &Value, f: F) -> Result<Value> {
+    let arr = get_array(args, "array")?;
+    let scalar = args
+        .get("scalar")
+        .and_then(|v| v.as_f64())
+        .ok_or_else(|| anyhow!("missing argument `scalar`"))?;
+    let result = arr.mapv(|x| f(x, scalar));
+    Ok(json!({"array": array_to_value(&result)}))
+}
+
+/// Add a scalar to every element of array.
+#[no_mangle]
+pub extern "C" fn polars__np_add_scalar(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| scalar_op(&args, |x, s| x + s))
+}
+
+/// Subtract a scalar from every element.
+#[no_mangle]
+pub extern "C" fn polars__np_subtract_scalar(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| scalar_op(&args, |x, s| x - s))
+}
+
+/// Multiply every element by a scalar.
+#[no_mangle]
+pub extern "C" fn polars__np_multiply_scalar(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| scalar_op(&args, |x, s| x * s))
+}
+
+/// Divide every element by a scalar.
+#[no_mangle]
+pub extern "C" fn polars__np_divide_scalar(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| scalar_op(&args, |x, s| x / s))
+}
+
+/// Raise every element to a scalar power.
+#[no_mangle]
+pub extern "C" fn polars__np_power_scalar(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| scalar_op(&args, f64::powf))
+}
+
+/// Mean-center: subtract the array's mean from every element.
+#[no_mangle]
+pub extern "C" fn polars__arr_mean_centered(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("mean_centered: empty array");
+        }
+        let mean = arr.iter().sum::<f64>() / arr.len() as f64;
+        let result = arr.mapv(|x| x - mean);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.linalg.normalize_l2(a)` — divide every element by the 2-norm.
+#[no_mangle]
+pub extern "C" fn polars__arr_normalize_l2(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let norm = arr.iter().map(|x| x * x).sum::<f64>().sqrt();
+        if norm == 0.0 {
+            bail!("normalize_l2: zero-norm array");
+        }
+        let result = arr.mapv(|x| x / norm);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

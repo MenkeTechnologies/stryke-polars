@@ -351,6 +351,13 @@ exports = [
     "polars__arr_count_nonzero_axis",
     "polars__arr_flip_axis",
     "polars__arr_broadcast_to",
+    "polars__np_add_scalar",
+    "polars__np_subtract_scalar",
+    "polars__np_multiply_scalar",
+    "polars__np_divide_scalar",
+    "polars__np_power_scalar",
+    "polars__arr_mean_centered",
+    "polars__arr_normalize_l2",
 ]
 
 [scripts]
