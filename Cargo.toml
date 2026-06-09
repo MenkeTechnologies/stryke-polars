@@ -1,0 +1,122 @@
+[package]
+name = "stryke-polars"
+version = "0.1.0"
+edition = "2021"
+description = "Polars + ndarray + linalg + FFT + random distributions cdylib for the stryke `polars` package — pandas/numpy surface dlopened in-process via stryke's FFI bridge"
+authors = ["MenkeTechnologies"]
+license = "MIT"
+repository = "https://github.com/MenkeTechnologies/stryke-polars"
+homepage = "https://menketechnologies.github.io/stryke-polars/"
+publish = false
+
+[lib]
+name = "stryke_polars"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+polars = { version = "0.45", features = [
+    "lazy",
+    "dtype-full",
+    "strings",
+    "temporal",
+    "csv",
+    "parquet",
+    "json",
+    "sql",
+    "fmt",
+    "performant",
+    "rolling_window",
+    "cum_agg",
+    "rank",
+    "diff",
+    "pct_change",
+    "cutqcut",
+    "interpolate",
+    "is_in",
+    "describe",
+    "timezones",
+    "dtype-categorical",
+    "dtype-struct",
+    "dtype-array",
+    "dtype-decimal",
+    "object",
+    "cse",
+    "streaming",
+    "abs",
+    "round_series",
+    "ewma",
+    "log",
+    "trigonometry",
+    "sign",
+    "concat_str",
+    "string_pad",
+    "string_reverse",
+    "string_to_integer",
+    "regex",
+    "extract_jsonpath",
+    "binary_encoding",
+    "list_eval",
+    "list_gather",
+    "list_count",
+    "list_drop_nulls",
+    "list_sample",
+    "list_sets",
+    "list_to_struct",
+    "list_any_all",
+    "array_any_all",
+    "array_count",
+    "array_to_struct",
+    "pivot",
+    "asof_join",
+    "cross_join",
+    "semi_anti_join",
+    "iejoin",
+    "merge_sorted",
+    "unique_counts",
+    "mode",
+    "moment",
+    "approx_unique",
+    "true_div",
+    "search_sorted",
+    "fused",
+    "to_dummies",
+    "replace",
+    "find_many",
+    "repeat_by",
+    "reinterpret",
+    "diagonal_concat",
+    "horizontal_concat",
+    "row_hash",
+    "hash_join",
+    "object",
+] }
+ndarray = { version = "0.16", features = ["rayon", "serde", "approx"] }
+ndarray-linalg = { version = "0.17", default-features = false, features = ["openblas-system"] }
+ndarray-rand = "0.15"
+ndarray-stats = "0.6"
+nalgebra = { version = "0.33", features = ["rayon"] }
+rustfft = "6.2"
+realfft = "3.4"
+rand = "0.8"
+rand_distr = "0.4"
+rand_chacha = "0.3"
+rust_decimal = { version = "1.36", features = ["serde", "maths"] }
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+once_cell = "1"
+rayon = "1.10"
+num-traits = "0.2"
+num-complex = "0.4"
+num-bigint = "0.4"
+itertools = "0.13"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+panic = "abort"

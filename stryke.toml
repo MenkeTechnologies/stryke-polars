@@ -1,0 +1,22 @@
+[package]
+name = "polars"
+version = "0.1.0"
+description = "Polars-backed pandas + numpy surface for stryke. Hand-rolled df_*/sr_*/arr_*/np_*/linalg_*/rand_*/fft_* builtins on top of polars + ndarray, dlopened in-process via stryke's FFI bridge — no helper-binary fork, no NDJSON pipe."
+authors = ["MenkeTechnologies"]
+license = "MIT"
+repository = "https://github.com/MenkeTechnologies/stryke-polars"
+edition = "2026"
+
+[ffi]
+lib-name = "stryke_polars"
+namespace = "Polars"
+exports = [
+    "polars__version",
+]
+
+[scripts]
+build = "cargo build --release"
+build-debug = "cargo build"
+clean = "cargo clean"
+test = "s test t/"
+install = "s pkg install -g ."
