@@ -1,0 +1,13 @@
+## lib/Masked.stk — `use Polars::Masked`
+##
+## `np.ma.*` masked-array surface: `ma_array`, `ma_masked_array`,
+## `ma_masked_where`, `ma_masked_invalid`, `ma_filled`, `ma_compressed`,
+## `ma_mean`, `ma_std`, `ma_var`, … (~80 fns target).
+##
+## Phase status: scaffold only.
+
+package Polars::Masked
+
+use Polars
+
+1

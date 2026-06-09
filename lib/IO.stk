@@ -1,0 +1,17 @@
+## lib/IO.stk — `use Polars::IO`
+##
+## pandas IO surface: `pd_read_csv`, `pd_read_parquet`, `pd_read_json`,
+## `pd_read_sql`, `pd_read_feather`, `pd_to_csv`, `pd_to_parquet`,
+## `pd_to_json`, … (~30 fns target).
+##
+## Parquet / Arrow IO routes through `stryke-arrow` to share a single
+## arrow-rs link in-process; stryke-polars does not link arrow-rs directly
+## to avoid dlsym conflicts.
+##
+## Phase status: scaffold only.
+
+package Polars::IO
+
+use Polars
+
+1

@@ -1,0 +1,44 @@
+# t/test_polars.stk — smoke test against the in-process cdylib.
+#
+# Requires the cdylib to be loaded. Install once with `s pkg install -g .`
+# from the package root so stryke's FFI bridge dlopens
+# lib/libstryke_polars.{dylib,so} on `use Polars`.
+
+use Polars
+
+my $have_cdylib = eval { Polars::version(); 1 }
+unless ($have_cdylib) {
+    p "1..0 # SKIP cdylib not loaded — run `s pkg install -g .` first"
+    exit 0
+}
+
+p "1..3"
+
+my $i = 0
+
+# version: shape
+my $v
+eval { $v = Polars::version() }
+$i++
+if ($@) {
+    p "not ok $i - version call: $@"
+} else {
+    my $ok = ref($v) eq "HASH" && exists $v->{version} && exists $v->{polars} && exists $v->{ndarray}
+    p ($ok ? "ok $i - version returns hash with version + polars + ndarray" : "not ok $i - version shape unexpected")
+}
+
+# version: package version is non-empty
+$i++
+if (!defined $v || !defined $v->{version} || length($v->{version}) == 0) {
+    p "not ok $i - version.version is empty"
+} else {
+    p "ok $i - version.version is non-empty ($v->{version})"
+}
+
+# version: ndarray version present
+$i++
+if (!defined $v || !defined $v->{ndarray} || length($v->{ndarray}) == 0) {
+    p "not ok $i - version.ndarray is empty"
+} else {
+    p "ok $i - version.ndarray is non-empty ($v->{ndarray})"
+}

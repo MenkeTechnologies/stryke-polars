@@ -1,0 +1,16 @@
+## lib/Random.stk — `use Polars::Random`
+##
+## `np.random.*` distributions + sampling: `rand_normal`, `rand_uniform`,
+## `rand_exponential`, `rand_poisson`, `rand_binomial`, `rand_beta`,
+## `rand_gamma`, `rand_chisquare`, `rand_t`, `rand_f`, `rand_choice`,
+## `rand_shuffle`, `rand_permutation`, `rand_seed`, … (~80 fns target).
+##
+## Backed by `rand_distr` + `ndarray-rand` on the cdylib side.
+##
+## Phase status: scaffold only.
+
+package Polars::Random
+
+use Polars
+
+1

@@ -1,0 +1,14 @@
+## lib/Ufunc.stk — `use Polars::Ufunc`
+##
+## numpy ufuncs (elementwise + broadcasting): `np_add`, `np_subtract`,
+## `np_multiply`, `np_divide`, `np_power`, `np_mod`, `np_sin`, `np_cos`,
+## `np_tan`, `np_exp`, `np_log`, `np_log2`, `np_log10`, `np_sqrt`, `np_abs`,
+## `np_sign`, `np_floor`, `np_ceil`, `np_round`, `np_trunc`, … (~70 fns target).
+##
+## Phase status: scaffold only.
+
+package Polars::Ufunc
+
+use Polars
+
+1

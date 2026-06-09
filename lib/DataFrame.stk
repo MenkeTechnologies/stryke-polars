@@ -1,0 +1,14 @@
+## lib/DataFrame.stk — `use Polars::DataFrame`
+##
+## pandas DataFrame surface: `df_head`, `df_tail`, `df_loc`, `df_iloc`,
+## `df_at`, `df_iat`, `df_describe`, `df_groupby`, `df_merge`, `df_join`,
+## `df_pivot`, `df_melt`, `df_rolling`, `df_resample`, … (~280 fns target).
+##
+## Phase status: scaffold only — exports added per phase. See P1 in
+## docs/PHASES.md for the active dispatch list.
+
+package Polars::DataFrame
+
+use Polars
+
+1

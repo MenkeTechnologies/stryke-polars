@@ -1,0 +1,14 @@
+## lib/Polynomial.stk — `use Polars::Polynomial`
+##
+## `np.polynomial.*` surface: Power, Chebyshev, Hermite, HermiteE, Legendre,
+## Laguerre — `poly_polyval`, `poly_polyfit`, `poly_polyroots`,
+## `poly_chebval`, `poly_chebfit`, `poly_chebroots`, `poly_hermval`, …
+## (~40 fns target).
+##
+## Phase status: scaffold only.
+
+package Polars::Polynomial
+
+use Polars
+
+1

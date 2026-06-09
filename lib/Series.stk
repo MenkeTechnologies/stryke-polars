@@ -1,0 +1,13 @@
+## lib/Series.stk — `use Polars::Series`
+##
+## pandas Series surface: `sr_head`, `sr_tail`, `sr_unique`, `sr_value_counts`,
+## `sr_dropna`, `sr_fillna`, `sr_rank`, `sr_shift`, `sr_diff`, `sr_pct_change`,
+## `sr_rolling`, `sr_ewm`, `sr_str`, `sr_dt`, … (~250 fns target).
+##
+## Phase status: scaffold only.
+
+package Polars::Series
+
+use Polars
+
+1

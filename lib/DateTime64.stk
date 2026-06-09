@@ -1,0 +1,16 @@
+## lib/DateTime64.stk — `use Polars::DateTime64`
+##
+## numpy `datetime64` / `timedelta64` ops: `dt64_now`, `dt64_parse`,
+## `dt64_strftime`, `dt64_diff`, `dt64_add`, `dt64_subtract`, `dt64_year`,
+## `dt64_month`, `dt64_day`, `dt64_hour`, `dt64_minute`, `dt64_second`,
+## `dt64_weekday`, `dt64_to_unix`, `dt64_from_unix`, … (~30 fns target).
+##
+## Backed by `chrono` + `chrono-tz` on the cdylib side.
+##
+## Phase status: scaffold only.
+
+package Polars::DateTime64
+
+use Polars
+
+1

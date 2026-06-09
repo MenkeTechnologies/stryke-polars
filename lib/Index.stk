@@ -1,0 +1,13 @@
+## lib/Index.stk — `use Polars::Index`
+##
+## pandas Index family: Index / MultiIndex / DatetimeIndex / PeriodIndex /
+## TimedeltaIndex. `idx_get_loc`, `idx_union`, `idx_intersection`,
+## `idx_difference`, `idx_symmetric_difference`, … (~80 fns target).
+##
+## Phase status: scaffold only.
+
+package Polars::Index
+
+use Polars
+
+1

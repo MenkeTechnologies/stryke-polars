@@ -1,0 +1,16 @@
+## lib/FFT.stk — `use Polars::FFT`
+##
+## `np.fft.*` surface: `fft_fft`, `fft_ifft`, `fft_rfft`, `fft_irfft`,
+## `fft_fft2`, `fft_ifft2`, `fft_fftn`, `fft_ifftn`, `fft_fftshift`,
+## `fft_ifftshift`, `fft_fftfreq`, `fft_rfftfreq`, … (~20 fns target).
+##
+## Backed by `rustfft` (general) + `realfft` (real-input optimization) on the
+## cdylib side.
+##
+## Phase status: scaffold only.
+
+package Polars::FFT
+
+use Polars
+
+1

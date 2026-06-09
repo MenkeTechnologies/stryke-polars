@@ -1,0 +1,16 @@
+## lib/NdArray.stk — `use Polars::NdArray`
+##
+## numpy ndarray surface: `arr_zeros`, `arr_ones`, `arr_arange`, `arr_linspace`,
+## `arr_logspace`, `arr_reshape`, `arr_transpose`, `arr_squeeze`, `arr_take`,
+## `arr_put`, `arr_concatenate`, `arr_stack`, `arr_split`, … (~180 fns target).
+##
+## Backed by `ndarray::ArrayD<f64>` (and i64/bool variants) on the cdylib
+## side. Broadcasting follows numpy semantics.
+##
+## Phase status: scaffold only.
+
+package Polars::NdArray
+
+use Polars
+
+1

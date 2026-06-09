@@ -1,0 +1,17 @@
+## lib/Linalg.stk — `use Polars::Linalg`
+##
+## `np.linalg.*` surface: `linalg_svd`, `linalg_qr`, `linalg_lu`,
+## `linalg_cholesky`, `linalg_eig`, `linalg_eigh`, `linalg_solve`,
+## `linalg_lstsq`, `linalg_inv`, `linalg_pinv`, `linalg_det`,
+## `linalg_slogdet`, `linalg_matrix_rank`, `linalg_norm`, `linalg_cond`,
+## `linalg_matrix_power`, `linalg_kron`, … (~50 fns target).
+##
+## Backed by `ndarray-linalg` (OpenBLAS) on the cdylib side.
+##
+## Phase status: scaffold only.
+
+package Polars::Linalg
+
+use Polars
+
+1

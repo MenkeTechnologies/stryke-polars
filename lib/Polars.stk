@@ -1,0 +1,46 @@
+## lib/Polars.stk — `use Polars`
+##
+## Root wrapper around the `stryke-polars` cdylib's `polars__*` exports. The
+## cdylib is dlopened in-process on first `use Polars` (see stryke's
+## `pkg/commands.rs::try_load_ffi_for`) and registers each export as a
+## stryke-callable function via `rust_ffi::load_cdylib`.
+##
+## Replaces the v1 helper-binary model (fork(2) + exec(2) + NDJSON over a
+## pipe). Stateless package — call-by-call JSON args/returns; no persistent
+## per-process polars/ndarray context.
+##
+## Surfaces are split across companion files:
+##   - Polars::DataFrame  (lib/DataFrame.stk)  → df_* pandas DataFrame
+##   - Polars::Series     (lib/Series.stk)     → sr_* pandas Series
+##   - Polars::Index      (lib/Index.stk)      → idx_* pandas Index family
+##   - Polars::IO         (lib/IO.stk)         → pd_read_*/pd_to_*
+##   - Polars::NdArray    (lib/NdArray.stk)    → arr_* numpy ndarray
+##   - Polars::Ufunc      (lib/Ufunc.stk)      → np_* numpy ufuncs
+##   - Polars::Linalg     (lib/Linalg.stk)     → linalg_*
+##   - Polars::Random     (lib/Random.stk)     → rand_*
+##   - Polars::FFT        (lib/FFT.stk)        → fft_*
+##   - Polars::Polynomial (lib/Polynomial.stk) → poly_*
+##   - Polars::Masked     (lib/Masked.stk)     → ma_*
+##   - Polars::DateTime64 (lib/DateTime64.stk) → dt64_*
+
+package Polars
+
+# ── error dispatch ────────────────────────────────────────────────────
+
+## Decode the cdylib's JSON return; die on `{error}` payload.
+fn Polars::_decode ($name, $json) {
+    my $o = from_json $json
+    if (ref $o eq "HASH" && exists $o->{error}) {
+        die "Polars::$name: $o->{error}"
+    }
+    $o
+}
+
+# ── version ──────────────────────────────────────────────────────────
+
+## Return `{ version, polars, ndarray }` from the cdylib.
+fn Polars::version {
+    Polars::_decode("version", polars__version("{}"))
+}
+
+1
