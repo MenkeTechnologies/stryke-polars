@@ -426,3 +426,587 @@ fn json_to_lit(v: &Value) -> Result<Expr> {
         )),
     }
 }
+
+// ── P1.2: per-column aggregations ──────────────────────────────────────────
+
+fn agg_all<F>(args: &Value, f: F) -> Result<Value>
+where
+    F: FnOnce(LazyFrame) -> LazyFrame,
+{
+    let df = get_frame(args)?;
+    let agged = f(df.lazy()).collect().context("agg")?;
+    return_frame(agged)
+}
+
+/// Sum of every column (string/bool error per polars rules). Result: 1-row frame.
+#[no_mangle]
+pub extern "C" fn polars__df_sum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.sum()))
+}
+
+/// Mean of every column. Result: 1-row frame.
+#[no_mangle]
+pub extern "C" fn polars__df_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.mean()))
+}
+
+/// Median of every column.
+#[no_mangle]
+pub extern "C" fn polars__df_median(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.median()))
+}
+
+/// Min of every column.
+#[no_mangle]
+pub extern "C" fn polars__df_min(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.min()))
+}
+
+/// Max of every column.
+#[no_mangle]
+pub extern "C" fn polars__df_max(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.max()))
+}
+
+/// Standard deviation (ddof=1 by default).
+///
+/// Args:   `{frame, ddof?: u8 (default 1)}`
+#[no_mangle]
+pub extern "C" fn polars__df_std(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let ddof = args.get("ddof").and_then(|v| v.as_u64()).unwrap_or(1) as u8;
+        agg_all(&args, |lf| lf.std(ddof))
+    })
+}
+
+/// Variance (ddof=1 by default).
+#[no_mangle]
+pub extern "C" fn polars__df_var(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let ddof = args.get("ddof").and_then(|v| v.as_u64()).unwrap_or(1) as u8;
+        agg_all(&args, |lf| lf.var(ddof))
+    })
+}
+
+/// Non-null row count per column.
+#[no_mangle]
+pub extern "C" fn polars__df_count(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| agg_all(&args, |lf| lf.count()))
+}
+
+/// Quantile per column. `q` in [0,1]. Default linear interpolation.
+///
+/// Args:   `{frame, q: f64}`
+#[no_mangle]
+pub extern "C" fn polars__df_quantile(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let q = args
+            .get("q")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `q` (f64 in [0,1])"))?;
+        agg_all(&args, |lf| lf.quantile(lit(q), QuantileMethod::Linear))
+    })
+}
+
+/// Per-column distinct-value count.
+///
+/// Args:   `{frame}`
+/// Result: `{counts: {col: n, ...}}`
+#[no_mangle]
+pub extern "C" fn polars__df_nunique(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let mut out = Map::new();
+        for name in df.get_column_names_owned() {
+            let col = df.column(name.as_str())?;
+            let n = col.as_materialized_series().n_unique()?;
+            out.insert(name.to_string(), json!(n));
+        }
+        Ok(json!({"counts": Value::Object(out)}))
+    })
+}
+
+// ── P1.2b: cumulative ──────────────────────────────────────────────────────
+
+#[derive(Clone, Copy)]
+enum CumOp {
+    Sum,
+    Prod,
+    Min,
+    Max,
+}
+
+fn cum_op(args: &Value, op: CumOp) -> Result<Value> {
+    let df = get_frame(args)?;
+    let names: Vec<String> = match args.get("columns").and_then(|v| v.as_array()) {
+        Some(arr) => arr
+            .iter()
+            .filter_map(|x| x.as_str().map(String::from))
+            .collect(),
+        None => df
+            .get_column_names_owned()
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+    };
+    let exprs: Vec<Expr> = names
+        .iter()
+        .map(|name| {
+            let c = col(name.as_str());
+            let e = match op {
+                CumOp::Sum => c.cum_sum(false),
+                CumOp::Prod => c.cum_prod(false),
+                CumOp::Min => c.cum_min(false),
+                CumOp::Max => c.cum_max(false),
+            };
+            e.alias(name.as_str())
+        })
+        .collect();
+    let result = df
+        .lazy()
+        .with_columns(exprs)
+        .collect()
+        .context("cumulative")?;
+    return_frame(result)
+}
+
+/// Cumulative sum per column. `columns` optional (default all).
+#[no_mangle]
+pub extern "C" fn polars__df_cumsum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| cum_op(&args, CumOp::Sum))
+}
+
+/// Cumulative product per column.
+#[no_mangle]
+pub extern "C" fn polars__df_cumprod(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| cum_op(&args, CumOp::Prod))
+}
+
+/// Cumulative min per column.
+#[no_mangle]
+pub extern "C" fn polars__df_cummin(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| cum_op(&args, CumOp::Min))
+}
+
+/// Cumulative max per column.
+#[no_mangle]
+pub extern "C" fn polars__df_cummax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| cum_op(&args, CumOp::Max))
+}
+
+// ── P1.2c: elementwise math ────────────────────────────────────────────────
+
+#[derive(Clone, Copy)]
+enum MathOp {
+    Abs,
+    Sqrt,
+    Exp,
+    Log,
+    Floor,
+    Ceil,
+    Round,
+}
+
+fn math_op(args: &Value, op: MathOp) -> Result<Value> {
+    let df = get_frame(args)?;
+    let names: Vec<String> = match args.get("columns").and_then(|v| v.as_array()) {
+        Some(arr) => arr
+            .iter()
+            .filter_map(|x| x.as_str().map(String::from))
+            .collect(),
+        None => df
+            .get_column_names_owned()
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+    };
+    let decimals = args.get("decimals").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
+    let exprs: Vec<Expr> = names
+        .iter()
+        .map(|name| {
+            let c = col(name.as_str());
+            let e = match op {
+                MathOp::Abs => c.abs(),
+                MathOp::Sqrt => c.sqrt(),
+                MathOp::Exp => c.exp(),
+                MathOp::Log => c.log(std::f64::consts::E),
+                MathOp::Floor => c.floor(),
+                MathOp::Ceil => c.ceil(),
+                MathOp::Round => c.round(decimals),
+            };
+            e.alias(name.as_str())
+        })
+        .collect();
+    let result = df.lazy().with_columns(exprs).collect().context("math")?;
+    return_frame(result)
+}
+
+/// Elementwise abs.
+#[no_mangle]
+pub extern "C" fn polars__df_abs(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Abs))
+}
+
+/// Elementwise sqrt.
+#[no_mangle]
+pub extern "C" fn polars__df_sqrt(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Sqrt))
+}
+
+/// Elementwise exp.
+#[no_mangle]
+pub extern "C" fn polars__df_exp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Exp))
+}
+
+/// Elementwise natural log.
+#[no_mangle]
+pub extern "C" fn polars__df_log(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Log))
+}
+
+/// Elementwise floor.
+#[no_mangle]
+pub extern "C" fn polars__df_floor(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Floor))
+}
+
+/// Elementwise ceil.
+#[no_mangle]
+pub extern "C" fn polars__df_ceil(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Ceil))
+}
+
+/// Round to `decimals` places (default 0).
+#[no_mangle]
+pub extern "C" fn polars__df_round(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| math_op(&args, MathOp::Round))
+}
+
+// ── P1.4: missing / null handling ──────────────────────────────────────────
+
+/// Fill nulls with `value` (numeric / string / bool).
+///
+/// Args:   `{frame, value}`
+#[no_mangle]
+pub extern "C" fn polars__df_fill_null(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let v = args
+            .get("value")
+            .ok_or_else(|| anyhow!("missing argument `value`"))?;
+        let lit_v = json_to_lit(v)?;
+        let result = df.lazy().fill_null(lit_v).collect().context("fill_null")?;
+        return_frame(result)
+    })
+}
+
+/// Drop rows where ANY column is null. Optional `subset` restricts the check.
+///
+/// Args:   `{frame, subset?: [name, ...]}`
+#[no_mangle]
+pub extern "C" fn polars__df_drop_nulls(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let subset: Option<Vec<Expr>> = args
+            .get("subset")
+            .and_then(|v| v.as_array())
+            .map(|arr| arr.iter().filter_map(|x| x.as_str().map(col)).collect());
+        let result = df
+            .lazy()
+            .drop_nulls(subset)
+            .collect()
+            .context("drop_nulls")?;
+        return_frame(result)
+    })
+}
+
+/// Per-column null-mask DataFrame (every cell becomes true/false).
+#[no_mangle]
+pub extern "C" fn polars__df_is_null(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let exprs: Vec<Expr> = df
+            .get_column_names_owned()
+            .iter()
+            .map(|n| col(n.as_str()).is_null().alias(n.as_str()))
+            .collect();
+        let result = df.lazy().select(exprs).collect().context("is_null")?;
+        return_frame(result)
+    })
+}
+
+/// Per-column not-null mask.
+#[no_mangle]
+pub extern "C" fn polars__df_is_not_null(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let exprs: Vec<Expr> = df
+            .get_column_names_owned()
+            .iter()
+            .map(|n| col(n.as_str()).is_not_null().alias(n.as_str()))
+            .collect();
+        let result = df.lazy().select(exprs).collect().context("is_not_null")?;
+        return_frame(result)
+    })
+}
+
+// ── P1.4b: unique / counts ─────────────────────────────────────────────────
+
+/// Distinct rows. Optional `subset` restricts the uniqueness check.
+///
+/// Args:   `{frame, subset?: [name, ...]}`
+#[no_mangle]
+pub extern "C" fn polars__df_unique(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let subset: Option<Vec<String>> =
+            args.get("subset").and_then(|v| v.as_array()).map(|arr| {
+                arr.iter()
+                    .filter_map(|x| x.as_str().map(String::from))
+                    .collect()
+            });
+        // Use LazyFrame::unique — eager DataFrame::unique requires generic
+        // type annotation polars 0.45 won't infer.
+        let result = df
+            .lazy()
+            .unique(subset, UniqueKeepStrategy::First)
+            .collect()
+            .context("unique")?;
+        return_frame(result)
+    })
+}
+
+/// pandas `Series.value_counts` for a single column.
+///
+/// Args:   `{frame, column}`
+/// Result: `{frame}` with `column` + `count` columns
+#[no_mangle]
+pub extern "C" fn polars__df_value_counts(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let s = df.column(col_name)?;
+        let counts = s
+            .as_materialized_series()
+            .value_counts(true, true, "count".into(), false)
+            .context("value_counts")?;
+        return_frame(counts)
+    })
+}
+
+// ── P1.3: joins ────────────────────────────────────────────────────────────
+
+#[derive(Clone, Copy)]
+enum JoinKind {
+    Inner,
+    Left,
+    Full,
+    Cross,
+    Semi,
+    Anti,
+}
+
+fn join_op(args: &Value, kind: JoinKind) -> Result<Value> {
+    let left = get_frame(args)?;
+    let right_v = args
+        .get("right")
+        .ok_or_else(|| anyhow!("missing argument `right` (the right-hand frame)"))?;
+    let right = parse_df(right_v)?;
+
+    let join_type = match kind {
+        JoinKind::Inner => JoinType::Inner,
+        JoinKind::Left => JoinType::Left,
+        JoinKind::Full => JoinType::Full,
+        JoinKind::Cross => JoinType::Cross,
+        JoinKind::Semi => JoinType::Semi,
+        JoinKind::Anti => JoinType::Anti,
+    };
+
+    let lf_left = left.lazy();
+    let lf_right = right.lazy();
+
+    let result = if matches!(kind, JoinKind::Cross) {
+        lf_left
+            .join(lf_right, [], [], JoinArgs::new(join_type))
+            .collect()
+            .context("join")?
+    } else {
+        let left_on = args
+            .get("left_on")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `left_on`"))?;
+        let right_on = args
+            .get("right_on")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `right_on`"))?;
+        let lo: Vec<Expr> = left_on.iter().filter_map(|v| v.as_str().map(col)).collect();
+        let ro: Vec<Expr> = right_on
+            .iter()
+            .filter_map(|v| v.as_str().map(col))
+            .collect();
+        lf_left
+            .join(lf_right, lo, ro, JoinArgs::new(join_type))
+            .collect()
+            .context("join")?
+    };
+    return_frame(result)
+}
+
+/// Inner join. `right` is the RHS frame; `left_on`/`right_on` are key lists.
+#[no_mangle]
+pub extern "C" fn polars__df_inner_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Inner))
+}
+
+/// Left join.
+#[no_mangle]
+pub extern "C" fn polars__df_left_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Left))
+}
+
+/// Full (outer) join.
+#[no_mangle]
+pub extern "C" fn polars__df_full_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Full))
+}
+
+/// Cross (cartesian) join. `left_on`/`right_on` ignored.
+#[no_mangle]
+pub extern "C" fn polars__df_cross_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Cross))
+}
+
+/// Semi join (rows of `left` that have a match on `right`).
+#[no_mangle]
+pub extern "C" fn polars__df_semi_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Semi))
+}
+
+/// Anti join (rows of `left` that do NOT have a match on `right`).
+#[no_mangle]
+pub extern "C" fn polars__df_anti_join(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| join_op(&args, JoinKind::Anti))
+}
+
+/// Vertically stack `left` ⨃ `right` (must share schema).
+///
+/// Args:   `{frame, right}`
+#[no_mangle]
+pub extern "C" fn polars__df_concat(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let left = get_frame(&args)?;
+        let right_v = args
+            .get("right")
+            .ok_or_else(|| anyhow!("missing argument `right`"))?;
+        let right = parse_df(right_v)?;
+        let result = concat([left.lazy(), right.lazy()], UnionArgs::default())
+            .context("concat")?
+            .collect()
+            .context("concat collect")?;
+        return_frame(result)
+    })
+}
+
+// ── P1.5a: window / shift ──────────────────────────────────────────────────
+
+fn shift_like<F>(args: &Value, build: F) -> Result<Value>
+where
+    F: Fn(&str) -> Expr,
+{
+    let df = get_frame(args)?;
+    let names: Vec<String> = match args.get("columns").and_then(|v| v.as_array()) {
+        Some(arr) => arr
+            .iter()
+            .filter_map(|x| x.as_str().map(String::from))
+            .collect(),
+        None => df
+            .get_column_names_owned()
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+    };
+    let exprs: Vec<Expr> = names
+        .iter()
+        .map(|n| build(n.as_str()).alias(n.as_str()))
+        .collect();
+    let result = df.lazy().with_columns(exprs).collect().context("window")?;
+    return_frame(result)
+}
+
+/// Shift each column by `n` rows (default 1, can be negative).
+#[no_mangle]
+pub extern "C" fn polars__df_shift(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args.get("n").and_then(|v| v.as_i64()).unwrap_or(1);
+        shift_like(&args, |c| col(c).shift(lit(n)))
+    })
+}
+
+/// First-order difference per column (current − previous).
+#[no_mangle]
+pub extern "C" fn polars__df_diff(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args.get("n").and_then(|v| v.as_i64()).unwrap_or(1);
+        // Manual diff = current − previous (avoids NullBehavior import issue
+        // since 0.45 doesn't re-export NullBehavior in `polars::prelude`).
+        shift_like(&args, |c| col(c) - col(c).shift(lit(n)))
+    })
+}
+
+/// Per-column percent change (current/previous − 1).
+#[no_mangle]
+pub extern "C" fn polars__df_pct_change(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args.get("n").and_then(|v| v.as_i64()).unwrap_or(1);
+        shift_like(&args, |c| col(c).pct_change(lit(n)))
+    })
+}
+
+/// Per-column rank (default: average, ascending).
+#[no_mangle]
+pub extern "C" fn polars__df_rank(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        shift_like(&args, |c| {
+            col(c).rank(
+                RankOptions {
+                    method: RankMethod::Average,
+                    descending: false,
+                },
+                None,
+            )
+        })
+    })
+}
+
+/// Clip each column into `[lower, upper]`. Both bounds optional but at least
+/// one must be provided.
+///
+/// Args:   `{frame, lower?, upper?, columns?}`
+#[no_mangle]
+pub extern "C" fn polars__df_clip(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let lower = args.get("lower").cloned();
+        let upper = args.get("upper").cloned();
+        if lower.is_none() && upper.is_none() {
+            return Err(anyhow!("must provide at least one of `lower`, `upper`"));
+        }
+        shift_like(&args, |c| {
+            let mut e = col(c);
+            if let Some(ref lv) = lower {
+                if let Ok(lit_lv) = json_to_lit(lv) {
+                    e = e.clip_min(lit_lv);
+                }
+            }
+            if let Some(ref uv) = upper {
+                if let Ok(lit_uv) = json_to_lit(uv) {
+                    e = e.clip_max(lit_uv);
+                }
+            }
+            e
+        })
+    })
+}

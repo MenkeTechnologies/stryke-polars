@@ -104,4 +104,203 @@ fn Polars::DataFrame::filter_eq ($cols, $column, $value) {
     Polars::_decode("df_filter_eq", polars__df_filter_eq(to_json({ frame => $cols, column => $column, value => $value })))->{frame}
 }
 
+# ── P1.2: per-column aggregations ───────────────────────────────────
+
+fn Polars::DataFrame::sum    ($cols) { Polars::_decode("df_sum",    polars__df_sum(to_json({ frame => $cols })))->{frame} }
+fn Polars::DataFrame::mean   ($cols) { Polars::_decode("df_mean",   polars__df_mean(to_json({ frame => $cols })))->{frame} }
+fn Polars::DataFrame::median ($cols) { Polars::_decode("df_median", polars__df_median(to_json({ frame => $cols })))->{frame} }
+fn Polars::DataFrame::min    ($cols) { Polars::_decode("df_min",    polars__df_min(to_json({ frame => $cols })))->{frame} }
+fn Polars::DataFrame::max    ($cols) { Polars::_decode("df_max",    polars__df_max(to_json({ frame => $cols })))->{frame} }
+fn Polars::DataFrame::count  ($cols) { Polars::_decode("df_count",  polars__df_count(to_json({ frame => $cols })))->{frame} }
+
+## Std/Var optional `$ddof` (default 1).
+fn Polars::DataFrame::std ($cols, $ddof) {
+    my %req = (frame => $cols)
+    $req{ddof} = $ddof if defined $ddof
+    Polars::_decode("df_std", polars__df_std(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::var ($cols, $ddof) {
+    my %req = (frame => $cols)
+    $req{ddof} = $ddof if defined $ddof
+    Polars::_decode("df_var", polars__df_var(to_json(\%req)))->{frame}
+}
+
+## Per-column quantile. `$q` in [0, 1].
+fn Polars::DataFrame::quantile ($cols, $q) {
+    Polars::_decode("df_quantile", polars__df_quantile(to_json({ frame => $cols, q => $q })))->{frame}
+}
+
+## Per-column distinct-value count. Returns `{ col => n, ... }`.
+fn Polars::DataFrame::nunique ($cols) {
+    Polars::_decode("df_nunique", polars__df_nunique(to_json({ frame => $cols })))->{counts}
+}
+
+# ── P1.2b: cumulative ───────────────────────────────────────────────
+
+## Cumulative ops. Optional `$columns` arrayref restricts which columns.
+fn Polars::DataFrame::cumsum  ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_cumsum", polars__df_cumsum(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::cumprod ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_cumprod", polars__df_cumprod(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::cummin  ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_cummin", polars__df_cummin(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::cummax  ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_cummax", polars__df_cummax(to_json(\%req)))->{frame}
+}
+
+# ── P1.2c: elementwise math ─────────────────────────────────────────
+
+fn Polars::DataFrame::abs   ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_abs", polars__df_abs(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::sqrt  ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_sqrt", polars__df_sqrt(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::exp   ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_exp", polars__df_exp(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::log   ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_log", polars__df_log(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::floor ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_floor", polars__df_floor(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::ceil  ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_ceil", polars__df_ceil(to_json(\%req)))->{frame}
+}
+## Round each column to `$decimals` places (default 0).
+fn Polars::DataFrame::round ($cols, $decimals, $columns) {
+    my %req = (frame => $cols)
+    $req{decimals} = $decimals if defined $decimals
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_round", polars__df_round(to_json(\%req)))->{frame}
+}
+
+# ── P1.4: missing / null ────────────────────────────────────────────
+
+## Fill all nulls with `$value` (numeric/string/bool).
+fn Polars::DataFrame::fill_null ($cols, $value) {
+    Polars::_decode("df_fill_null", polars__df_fill_null(to_json({ frame => $cols, value => $value })))->{frame}
+}
+
+## Drop rows where any (or `$subset`) column is null.
+fn Polars::DataFrame::drop_nulls ($cols, $subset) {
+    my %req = (frame => $cols)
+    $req{subset} = $subset if defined $subset
+    Polars::_decode("df_drop_nulls", polars__df_drop_nulls(to_json(\%req)))->{frame}
+}
+
+## Per-column null mask (true where null).
+fn Polars::DataFrame::is_null ($cols) {
+    Polars::_decode("df_is_null", polars__df_is_null(to_json({ frame => $cols })))->{frame}
+}
+
+## Per-column not-null mask.
+fn Polars::DataFrame::is_not_null ($cols) {
+    Polars::_decode("df_is_not_null", polars__df_is_not_null(to_json({ frame => $cols })))->{frame}
+}
+
+# ── P1.4b: unique / counts ──────────────────────────────────────────
+
+## Distinct rows. Optional `$subset` restricts which columns determine uniqueness.
+fn Polars::DataFrame::unique ($cols, $subset) {
+    my %req = (frame => $cols)
+    $req{subset} = $subset if defined $subset
+    Polars::_decode("df_unique", polars__df_unique(to_json(\%req)))->{frame}
+}
+
+## pandas `Series.value_counts` for a single `$column`.
+fn Polars::DataFrame::value_counts ($cols, $column) {
+    Polars::_decode("df_value_counts", polars__df_value_counts(to_json({ frame => $cols, column => $column })))->{frame}
+}
+
+# ── P1.3: joins ─────────────────────────────────────────────────────
+
+## Joins. `$right` is the RHS frame; `$lkeys`/`$rkeys` are key-name arrayrefs.
+fn Polars::DataFrame::inner_join ($left, $right, $lkeys, $rkeys) {
+    Polars::_decode("df_inner_join", polars__df_inner_join(to_json({ frame => $left, right => $right, left_on => $lkeys, right_on => $rkeys })))->{frame}
+}
+fn Polars::DataFrame::left_join ($left, $right, $lkeys, $rkeys) {
+    Polars::_decode("df_left_join", polars__df_left_join(to_json({ frame => $left, right => $right, left_on => $lkeys, right_on => $rkeys })))->{frame}
+}
+fn Polars::DataFrame::full_join ($left, $right, $lkeys, $rkeys) {
+    Polars::_decode("df_full_join", polars__df_full_join(to_json({ frame => $left, right => $right, left_on => $lkeys, right_on => $rkeys })))->{frame}
+}
+## Cross join — keys ignored, cartesian product.
+fn Polars::DataFrame::cross_join ($left, $right) {
+    Polars::_decode("df_cross_join", polars__df_cross_join(to_json({ frame => $left, right => $right })))->{frame}
+}
+fn Polars::DataFrame::semi_join ($left, $right, $lkeys, $rkeys) {
+    Polars::_decode("df_semi_join", polars__df_semi_join(to_json({ frame => $left, right => $right, left_on => $lkeys, right_on => $rkeys })))->{frame}
+}
+fn Polars::DataFrame::anti_join ($left, $right, $lkeys, $rkeys) {
+    Polars::_decode("df_anti_join", polars__df_anti_join(to_json({ frame => $left, right => $right, left_on => $lkeys, right_on => $rkeys })))->{frame}
+}
+
+## Vertically stack two frames (must share schema).
+fn Polars::DataFrame::concat ($left, $right) {
+    Polars::_decode("df_concat", polars__df_concat(to_json({ frame => $left, right => $right })))->{frame}
+}
+
+# ── P1.5a: window ───────────────────────────────────────────────────
+
+## Shift every column by `$n` rows (negative = past, positive = future).
+fn Polars::DataFrame::shift ($cols, $n, $columns) {
+    my %req = (frame => $cols)
+    $req{n} = $n if defined $n
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_shift", polars__df_shift(to_json(\%req)))->{frame}
+}
+## First-order difference per column.
+fn Polars::DataFrame::diff ($cols, $n, $columns) {
+    my %req = (frame => $cols)
+    $req{n} = $n if defined $n
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_diff", polars__df_diff(to_json(\%req)))->{frame}
+}
+## Percent change per column.
+fn Polars::DataFrame::pct_change ($cols, $n, $columns) {
+    my %req = (frame => $cols)
+    $req{n} = $n if defined $n
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_pct_change", polars__df_pct_change(to_json(\%req)))->{frame}
+}
+## Per-column rank (average method, ascending).
+fn Polars::DataFrame::rank ($cols, $columns) {
+    my %req = (frame => $cols)
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rank", polars__df_rank(to_json(\%req)))->{frame}
+}
+## Clip into `[lower, upper]`. Provide at least one bound.
+fn Polars::DataFrame::clip ($cols, $lower, $upper, $columns) {
+    my %req = (frame => $cols)
+    $req{lower} = $lower if defined $lower
+    $req{upper} = $upper if defined $upper
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_clip", polars__df_clip(to_json(\%req)))->{frame}
+}
+
 1
