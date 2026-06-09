@@ -1493,6 +1493,202 @@ pub extern "C" fn polars__arr_isclose(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sample Pearson correlation between two 1-D arrays.
+#[no_mangle]
+pub extern "C" fn polars__arr_corrcoef(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() || a.shape().len() != 1 {
+            bail!("corrcoef: both must be 1-D same length");
+        }
+        let n = a.len() as f64;
+        if n < 2.0 {
+            bail!("corrcoef: need ≥ 2 points");
+        }
+        let mean_a = a.iter().sum::<f64>() / n;
+        let mean_b = b.iter().sum::<f64>() / n;
+        let mut num = 0.0;
+        let mut sa = 0.0;
+        let mut sb = 0.0;
+        for (&x, &y) in a.iter().zip(b.iter()) {
+            let dx = x - mean_a;
+            let dy = y - mean_b;
+            num += dx * dy;
+            sa += dx * dx;
+            sb += dy * dy;
+        }
+        let denom = (sa * sb).sqrt();
+        let r = if denom == 0.0 { f64::NAN } else { num / denom };
+        Ok(json!({"scalar": scalar_to_value(r)}))
+    })
+}
+
+/// Sample covariance between two 1-D arrays (ddof=1).
+#[no_mangle]
+pub extern "C" fn polars__arr_cov(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() || a.shape().len() != 1 {
+            bail!("cov: both must be 1-D same length");
+        }
+        let n = a.len() as f64;
+        if n < 2.0 {
+            bail!("cov: need ≥ 2 points");
+        }
+        let mean_a = a.iter().sum::<f64>() / n;
+        let mean_b = b.iter().sum::<f64>() / n;
+        let sum: f64 = a
+            .iter()
+            .zip(b.iter())
+            .map(|(&x, &y)| (x - mean_a) * (y - mean_b))
+            .sum();
+        let c = sum / (n - 1.0);
+        Ok(json!({"scalar": scalar_to_value(c)}))
+    })
+}
+
+/// Histogram. Returns `{counts, edges}` with `n_bins+1` edges.
+#[no_mangle]
+pub extern "C" fn polars__arr_histogram(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("histogram: only 1-D arrays supported");
+        }
+        let n_bins = args
+            .get("n_bins")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n_bins`"))? as usize;
+        if n_bins == 0 {
+            bail!("`n_bins` must be ≥ 1");
+        }
+        let data: Vec<f64> = arr.iter().copied().filter(|x| !x.is_nan()).collect();
+        if data.is_empty() {
+            bail!("histogram of empty array");
+        }
+        let lo = data.iter().copied().fold(f64::INFINITY, |a, b| a.min(b));
+        let hi = data
+            .iter()
+            .copied()
+            .fold(f64::NEG_INFINITY, |a, b| a.max(b));
+        let span = if hi > lo { hi - lo } else { 1.0 };
+        let width = span / n_bins as f64;
+        let mut counts = vec![0u64; n_bins];
+        for &v in &data {
+            let idx = (((v - lo) / width) as usize).min(n_bins - 1);
+            counts[idx] += 1;
+        }
+        let edges: Vec<Value> = (0..=n_bins)
+            .map(|i| scalar_to_value(lo + width * i as f64))
+            .collect();
+        let counts_arr: Vec<Value> = counts.iter().map(|&c| json!(c)).collect();
+        Ok(json!({"counts": counts_arr, "edges": edges}))
+    })
+}
+
+/// `np.searchsorted(a, v)` — index where v would maintain ascending order in a.
+#[no_mangle]
+pub extern "C" fn polars__arr_searchsorted(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "array")?;
+        if a.shape().len() != 1 {
+            bail!("searchsorted: only 1-D arrays supported");
+        }
+        let v = args
+            .get("v")
+            .and_then(|x| x.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `v` (scalar)"))?;
+        let data: Vec<f64> = a.iter().copied().collect();
+        // Binary search returning insertion point.
+        let mut lo = 0usize;
+        let mut hi = data.len();
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if data[mid] < v {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        Ok(json!({"index": lo}))
+    })
+}
+
+/// `np.random.chisquare(df, n)` — n chi-square samples.
+#[no_mangle]
+pub extern "C" fn polars__rand_chisquare(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let df = args
+            .get("df")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `df` (degrees of freedom)"))?;
+        if df <= 0.0 {
+            bail!("`df` must be > 0");
+        }
+        let dist = rand_distr::ChiSquared::new(df).context("ChiSquared::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("chisquare shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.standard_t(df, n)`.
+#[no_mangle]
+pub extern "C" fn polars__rand_t(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let df = args
+            .get("df")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `df`"))?;
+        if df <= 0.0 {
+            bail!("`df` must be > 0");
+        }
+        let dist = rand_distr::StudentT::new(df).context("StudentT::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("t shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.f(dfn, dfd, n)` — F-distribution.
+#[no_mangle]
+pub extern "C" fn polars__rand_f(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let dfn = args
+            .get("dfn")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `dfn`"))?;
+        let dfd = args
+            .get("dfd")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `dfd`"))?;
+        if dfn <= 0.0 || dfd <= 0.0 {
+            bail!("`dfn` and `dfd` must be > 0");
+        }
+        let dist = rand_distr::FisherF::new(dfn, dfd).context("FisherF::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("f shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

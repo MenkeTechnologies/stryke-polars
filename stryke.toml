@@ -295,6 +295,13 @@ exports = [
     "polars__arr_trapezoid",
     "polars__arr_convolve",
     "polars__arr_isclose",
+    "polars__arr_corrcoef",
+    "polars__arr_cov",
+    "polars__arr_histogram",
+    "polars__arr_searchsorted",
+    "polars__rand_chisquare",
+    "polars__rand_t",
+    "polars__rand_f",
 ]
 
 [scripts]

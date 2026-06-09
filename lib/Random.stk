@@ -135,4 +135,25 @@ fn Polars::Random::cauchy ($n, $seed) {
     Polars::_decode("rand_cauchy", polars__rand_cauchy(to_json(\%req)))->{array}
 }
 
+## `np.random.chisquare(df, n)`.
+fn Polars::Random::chisquare ($n, $df, $seed) {
+    my %req = (n => $n, df => $df)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_chisquare", polars__rand_chisquare(to_json(\%req)))->{array}
+}
+
+## `np.random.standard_t(df, n)`.
+fn Polars::Random::t ($n, $df, $seed) {
+    my %req = (n => $n, df => $df)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_t", polars__rand_t(to_json(\%req)))->{array}
+}
+
+## `np.random.f(dfn, dfd, n)`.
+fn Polars::Random::f ($n, $dfn, $dfd, $seed) {
+    my %req = (n => $n, dfn => $dfn, dfd => $dfd)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_f", polars__rand_f(to_json(\%req)))->{array}
+}
+
 1

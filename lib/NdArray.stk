@@ -256,4 +256,24 @@ fn Polars::NdArray::isclose ($a, $b, $rtol, $atol) {
     Polars::_decode("arr_isclose", polars__arr_isclose(to_json(\%req)))->{array}
 }
 
+## Pearson correlation between two 1-D arrays.
+fn Polars::NdArray::corrcoef ($a, $b) {
+    Polars::_decode("arr_corrcoef", polars__arr_corrcoef(to_json({ a => $a, b => $b })))->{scalar}
+}
+
+## Sample covariance (ddof=1).
+fn Polars::NdArray::cov ($a, $b) {
+    Polars::_decode("arr_cov", polars__arr_cov(to_json({ a => $a, b => $b })))->{scalar}
+}
+
+## Histogram. Returns `{ counts, edges }`. `$n_bins` bins of uniform width.
+fn Polars::NdArray::histogram ($arr, $n_bins) {
+    Polars::_decode("arr_histogram", polars__arr_histogram(to_json({ array => $arr, n_bins => $n_bins })))
+}
+
+## `np.searchsorted(a, v)`. Binary search returning insertion index.
+fn Polars::NdArray::searchsorted ($arr, $v) {
+    Polars::_decode("arr_searchsorted", polars__arr_searchsorted(to_json({ array => $arr, v => $v })))->{index}
+}
+
 1
