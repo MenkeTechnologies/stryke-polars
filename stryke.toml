@@ -193,6 +193,17 @@ exports = [
     "polars__rand_randint",
     "polars__fft_fftfreq",
     "polars__poly_polyval",
+    "polars__np_isnan",
+    "polars__np_isinf",
+    "polars__np_isfinite",
+    "polars__np_rint",
+    "polars__np_logical_and",
+    "polars__np_logical_or",
+    "polars__np_logical_not",
+    "polars__np_logical_xor",
+    "polars__rand_poisson",
+    "polars__rand_binomial",
+    "polars__linalg_outer",
 ]
 
 [scripts]

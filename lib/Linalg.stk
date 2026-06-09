@@ -62,4 +62,9 @@ fn Polars::Linalg::matrix_power ($m, $k) {
     Polars::_decode("linalg_matrix_power", polars__linalg_matrix_power(to_json({ matrix => $m, k => $k })))->{matrix}
 }
 
+## Outer product `a ⊗ b` of two 1-D vectors → 2-D matrix.
+fn Polars::Linalg::outer ($a, $b) {
+    Polars::_decode("linalg_outer", polars__linalg_outer(to_json({ a => $a, b => $b })))->{array}
+}
+
 1

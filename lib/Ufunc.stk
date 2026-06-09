@@ -46,4 +46,15 @@ fn Polars::Ufunc::mod     ($a, $b) { Polars::_decode("np_mod",     polars__np_mo
 fn Polars::Ufunc::maximum ($a, $b) { Polars::_decode("np_maximum", polars__np_maximum(to_json({ a => $a, b => $b })))->{array} }
 fn Polars::Ufunc::minimum ($a, $b) { Polars::_decode("np_minimum", polars__np_minimum(to_json({ a => $a, b => $b })))->{array} }
 
+# ── predicates ──────────────────────────────────────────────────────
+
+fn Polars::Ufunc::isnan       ($arr)    { Polars::_decode("np_isnan",       polars__np_isnan      (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::isinf       ($arr)    { Polars::_decode("np_isinf",       polars__np_isinf      (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::isfinite    ($arr)    { Polars::_decode("np_isfinite",    polars__np_isfinite   (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::rint        ($arr)    { Polars::_decode("np_rint",        polars__np_rint       (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::logical_not ($arr)    { Polars::_decode("np_logical_not", polars__np_logical_not(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::logical_and ($a, $b)  { Polars::_decode("np_logical_and", polars__np_logical_and(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::logical_or  ($a, $b)  { Polars::_decode("np_logical_or",  polars__np_logical_or (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::logical_xor ($a, $b)  { Polars::_decode("np_logical_xor", polars__np_logical_xor(to_json({ a => $a, b => $b })))->{array} }
+
 1

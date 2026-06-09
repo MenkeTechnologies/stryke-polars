@@ -69,4 +69,19 @@ fn Polars::Random::randint ($n, $low, $high, $seed) {
     Polars::_decode("rand_randint", polars__rand_randint(to_json(\%req)))->{array}
 }
 
+## `np.random.poisson(lambda, n)`. Integer values as f64.
+fn Polars::Random::poisson ($n, $lambda, $seed) {
+    my %req = (n => $n)
+    $req{lambda} = $lambda if defined $lambda
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_poisson", polars__rand_poisson(to_json(\%req)))->{array}
+}
+
+## `np.random.binomial(n_trials, p, n)`.
+fn Polars::Random::binomial ($n, $n_trials, $p, $seed) {
+    my %req = (n => $n, n_trials => $n_trials, p => $p)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_binomial", polars__rand_binomial(to_json(\%req)))->{array}
+}
+
 1

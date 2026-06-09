@@ -391,6 +391,79 @@ pub extern "C" fn polars__np_minimum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, f64::min))
 }
 
+// ── P4e: predicate ufuncs ──────────────────────────────────────────────────
+
+/// Elementwise isnan (1.0/0.0 result).
+#[no_mangle]
+pub extern "C" fn polars__np_isnan(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| if x.is_nan() { 1.0 } else { 0.0 })
+    })
+}
+
+/// Elementwise isinf.
+#[no_mangle]
+pub extern "C" fn polars__np_isinf(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| if x.is_infinite() { 1.0 } else { 0.0 })
+    })
+}
+
+/// Elementwise isfinite.
+#[no_mangle]
+pub extern "C" fn polars__np_isfinite(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| if x.is_finite() { 1.0 } else { 0.0 })
+    })
+}
+
+/// Round to nearest integer (banker's rounding via f64::round_ties_even).
+#[no_mangle]
+pub extern "C" fn polars__np_rint(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::round_ties_even))
+}
+
+/// Logical AND (treats non-zero as true). Output 1.0/0.0.
+#[no_mangle]
+pub extern "C" fn polars__np_logical_and(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| if a != 0.0 && b != 0.0 { 1.0 } else { 0.0 })
+    })
+}
+
+/// Logical OR.
+#[no_mangle]
+pub extern "C" fn polars__np_logical_or(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| if a != 0.0 || b != 0.0 { 1.0 } else { 0.0 })
+    })
+}
+
+/// Logical NOT.
+#[no_mangle]
+pub extern "C" fn polars__np_logical_not(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| if x == 0.0 { 1.0 } else { 0.0 })
+    })
+}
+
+/// Logical XOR.
+#[no_mangle]
+pub extern "C" fn polars__np_logical_xor(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(
+            &args,
+            |a, b| {
+                if (a != 0.0) ^ (b != 0.0) {
+                    1.0
+                } else {
+                    0.0
+                }
+            },
+        )
+    })
+}
+
 // ── ufuncs (binary) ────────────────────────────────────────────────────────
 
 /// Elementwise a + b. Shapes must match (no broadcasting in this slice).
@@ -1254,6 +1327,77 @@ pub extern "C" fn polars__fft_fftfreq(args: *const c_char) -> *mut c_char {
 }
 
 // ── P5d: polynomial ────────────────────────────────────────────────────────
+
+// ── P5e: more random / linalg ──────────────────────────────────────────────
+
+/// `np.random.poisson(lambda, n)` — n Poisson samples (integer values as f64).
+#[no_mangle]
+pub extern "C" fn polars__rand_poisson(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let lambda = args.get("lambda").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if lambda <= 0.0 {
+            bail!("`lambda` must be > 0");
+        }
+        let dist = rand_distr::Poisson::new(lambda).context("Poisson::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("poisson shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.binomial(n_trials, p, n)` — n Binomial samples.
+#[no_mangle]
+pub extern "C" fn polars__rand_binomial(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let trials = args
+            .get("n_trials")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n_trials`"))?;
+        let p = args
+            .get("p")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `p`"))?;
+        if !(0.0..=1.0).contains(&p) {
+            bail!("`p` must be in [0, 1]");
+        }
+        let dist = rand_distr::Binomial::new(trials, p).context("Binomial::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng) as f64).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("binomial shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Outer product of two 1-D vectors → 2-D matrix `len(a) × len(b)`.
+#[no_mangle]
+pub extern "C" fn polars__linalg_outer(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("outer: both inputs must be 1-D");
+        }
+        let m = a.len();
+        let n = b.len();
+        let mut data = Vec::with_capacity(m * n);
+        for &x in a.iter() {
+            for &y in b.iter() {
+                data.push(x * y);
+            }
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[m, n]), data).context("outer shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
 
 /// Evaluate polynomial: `c0 + c1*x + c2*x^2 + ...` at each point in `x_array`.
 ///
