@@ -1,14 +1,27 @@
 ## lib/Ufunc.stk — `use Polars::Ufunc`
 ##
-## numpy ufuncs (elementwise + broadcasting): `np_add`, `np_subtract`,
-## `np_multiply`, `np_divide`, `np_power`, `np_mod`, `np_sin`, `np_cos`,
-## `np_tan`, `np_exp`, `np_log`, `np_log2`, `np_log10`, `np_sqrt`, `np_abs`,
-## `np_sign`, `np_floor`, `np_ceil`, `np_round`, `np_trunc`, … (~70 fns target).
-##
-## Phase status: scaffold only.
+## numpy ufuncs (elementwise) on `{ data, shape }` arrays.
+## Binary ops require matching shapes (no broadcasting in this slice).
 
 package Polars::Ufunc
 
 use Polars
+
+# ── unary ───────────────────────────────────────────────────────────
+
+fn Polars::Ufunc::sin  ($arr) { Polars::_decode("np_sin",  polars__np_sin (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::cos  ($arr) { Polars::_decode("np_cos",  polars__np_cos (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::tan  ($arr) { Polars::_decode("np_tan",  polars__np_tan (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::exp  ($arr) { Polars::_decode("np_exp",  polars__np_exp (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::log  ($arr) { Polars::_decode("np_log",  polars__np_log (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::sqrt ($arr) { Polars::_decode("np_sqrt", polars__np_sqrt(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::abs  ($arr) { Polars::_decode("np_abs",  polars__np_abs (to_json({ array => $arr })))->{array} }
+
+# ── binary ──────────────────────────────────────────────────────────
+
+fn Polars::Ufunc::add      ($a, $b) { Polars::_decode("np_add",      polars__np_add     (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::subtract ($a, $b) { Polars::_decode("np_subtract", polars__np_subtract(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::multiply ($a, $b) { Polars::_decode("np_multiply", polars__np_multiply(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::divide   ($a, $b) { Polars::_decode("np_divide",   polars__np_divide  (to_json({ a => $a, b => $b })))->{array} }
 
 1

@@ -1,16 +1,23 @@
 ## lib/FFT.stk — `use Polars::FFT`
 ##
-## `np.fft.*` surface: `fft_fft`, `fft_ifft`, `fft_rfft`, `fft_irfft`,
-## `fft_fft2`, `fft_ifft2`, `fft_fftn`, `fft_ifftn`, `fft_fftshift`,
-## `fft_ifftshift`, `fft_fftfreq`, `fft_rfftfreq`, … (~20 fns target).
+## `np.fft.*` surface (P5 slice). Backed by `rustfft` on the cdylib side.
 ##
-## Backed by `rustfft` (general) + `realfft` (real-input optimization) on the
-## cdylib side.
-##
-## Phase status: scaffold only.
+## Forward FFT: real 1-D array → complex `{ real, imag, shape }`.
+## Inverse FFT: complex `{ real, imag, shape }` → real 1-D array
+## (drops imag part; rustfft does not normalize so the cdylib divides by n).
 
 package Polars::FFT
 
 use Polars
+
+## Forward FFT (1-D).
+fn Polars::FFT::fft ($arr) {
+    Polars::_decode("fft_fft", polars__fft_fft(to_json({ array => $arr })))->{complex}
+}
+
+## Inverse FFT (1-D).
+fn Polars::FFT::ifft ($cplx) {
+    Polars::_decode("fft_ifft", polars__fft_ifft(to_json({ complex => $cplx })))->{array}
+}
 
 1

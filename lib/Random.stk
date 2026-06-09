@@ -1,16 +1,28 @@
 ## lib/Random.stk — `use Polars::Random`
 ##
-## `np.random.*` distributions + sampling: `rand_normal`, `rand_uniform`,
-## `rand_exponential`, `rand_poisson`, `rand_binomial`, `rand_beta`,
-## `rand_gamma`, `rand_chisquare`, `rand_t`, `rand_f`, `rand_choice`,
-## `rand_shuffle`, `rand_permutation`, `rand_seed`, … (~80 fns target).
-##
-## Backed by `rand_distr` + `ndarray-rand` on the cdylib side.
-##
-## Phase status: scaffold only.
+## Random sampling (P5 slice). Backed by `rand_distr` + `rand_chacha`
+## (seeded ChaCha8) on the cdylib side. Output: 1-D `{ data, shape }`.
 
 package Polars::Random
 
 use Polars
+
+## `np.random.normal(mean, std, n)` — n samples from Normal(mean, std).
+fn Polars::Random::normal ($n, $mean, $std, $seed) {
+    my %req = (n => $n)
+    $req{mean} = $mean if defined $mean
+    $req{std} = $std if defined $std
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_normal", polars__rand_normal(to_json(\%req)))->{array}
+}
+
+## `np.random.uniform(low, high, n)`.
+fn Polars::Random::uniform ($n, $low, $high, $seed) {
+    my %req = (n => $n)
+    $req{low} = $low if defined $low
+    $req{high} = $high if defined $high
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_uniform", polars__rand_uniform(to_json(\%req)))->{array}
+}
 
 1

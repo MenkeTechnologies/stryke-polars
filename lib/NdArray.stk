@@ -1,16 +1,66 @@
 ## lib/NdArray.stk — `use Polars::NdArray`
 ##
-## numpy ndarray surface: `arr_zeros`, `arr_ones`, `arr_arange`, `arr_linspace`,
-## `arr_logspace`, `arr_reshape`, `arr_transpose`, `arr_squeeze`, `arr_take`,
-## `arr_put`, `arr_concatenate`, `arr_stack`, `arr_split`, … (~180 fns target).
+## numpy ndarray surface (P4 slice). Wire format:
+##   { data => [v1, v2, ...], shape => [d1, d2, ...] }   # row-major f64
 ##
-## Backed by `ndarray::ArrayD<f64>` (and i64/bool variants) on the cdylib
-## side. Broadcasting follows numpy semantics.
-##
-## Phase status: scaffold only.
+## Constructors return `{ array => {...} }`; the wrappers below unwrap.
 
 package Polars::NdArray
 
 use Polars
+
+## Build a zero-filled array of given shape arrayref.
+fn Polars::NdArray::zeros ($shape) {
+    Polars::_decode("arr_zeros", polars__arr_zeros(to_json({ shape => $shape })))->{array}
+}
+
+## Build a one-filled array.
+fn Polars::NdArray::ones ($shape) {
+    Polars::_decode("arr_ones", polars__arr_ones(to_json({ shape => $shape })))->{array}
+}
+
+## `numpy.arange(start, stop, step)` — 1-D.
+fn Polars::NdArray::arange ($start, $stop, $step) {
+    my %req = (stop => $stop)
+    $req{start} = $start if defined $start
+    $req{step} = $step if defined $step
+    Polars::_decode("arr_arange", polars__arr_arange(to_json(\%req)))->{array}
+}
+
+## `numpy.linspace(start, stop, n)` — n evenly spaced incl. endpoints.
+fn Polars::NdArray::linspace ($start, $stop, $n) {
+    Polars::_decode("arr_linspace", polars__arr_linspace(to_json({ start => $start, stop => $stop, n => $n })))->{array}
+}
+
+## Reshape to new shape (must preserve total length).
+fn Polars::NdArray::reshape ($arr, $shape) {
+    Polars::_decode("arr_reshape", polars__arr_reshape(to_json({ array => $arr, shape => $shape })))->{array}
+}
+
+## Transpose (2-D only in this slice).
+fn Polars::NdArray::transpose ($arr) {
+    Polars::_decode("arr_transpose", polars__arr_transpose(to_json({ array => $arr })))->{array}
+}
+
+## Sum of all elements (scalar).
+fn Polars::NdArray::sum  ($arr) { Polars::_decode("arr_sum",  polars__arr_sum (to_json({ array => $arr })))->{scalar} }
+## Mean of all elements.
+fn Polars::NdArray::mean ($arr) { Polars::_decode("arr_mean", polars__arr_mean(to_json({ array => $arr })))->{scalar} }
+## Min of all elements.
+fn Polars::NdArray::min  ($arr) { Polars::_decode("arr_min",  polars__arr_min (to_json({ array => $arr })))->{scalar} }
+## Max of all elements.
+fn Polars::NdArray::max  ($arr) { Polars::_decode("arr_max",  polars__arr_max (to_json({ array => $arr })))->{scalar} }
+
+## Dot product (1-D arrays of equal length). Returns scalar.
+fn Polars::NdArray::dot ($a, $b) {
+    Polars::_decode("arr_dot", polars__arr_dot(to_json({ a => $a, b => $b })))->{scalar}
+}
+
+## Concatenate two arrays along `$axis` (default 0).
+fn Polars::NdArray::concatenate ($a, $b, $axis) {
+    my %req = (a => $a, b => $b)
+    $req{axis} = $axis if defined $axis
+    Polars::_decode("arr_concatenate", polars__arr_concatenate(to_json(\%req)))->{array}
+}
 
 1

@@ -26,6 +26,7 @@
 //!   - `polars__dt64_*`   — datetime64 / timedelta64
 
 mod df;
+mod nd;
 
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;

@@ -1,17 +1,32 @@
 ## lib/Linalg.stk — `use Polars::Linalg`
 ##
-## `np.linalg.*` surface: `linalg_svd`, `linalg_qr`, `linalg_lu`,
-## `linalg_cholesky`, `linalg_eig`, `linalg_eigh`, `linalg_solve`,
-## `linalg_lstsq`, `linalg_inv`, `linalg_pinv`, `linalg_det`,
-## `linalg_slogdet`, `linalg_matrix_rank`, `linalg_norm`, `linalg_cond`,
-## `linalg_matrix_power`, `linalg_kron`, … (~50 fns target).
+## `np.linalg.*` surface (P5 slice). Backed by `nalgebra` on the cdylib side
+## (pure-Rust, no BLAS link).
 ##
-## Backed by `ndarray-linalg` (OpenBLAS) on the cdylib side.
-##
-## Phase status: scaffold only.
+## Matrix wire format: 2-D `{ data, shape: [rows, cols] }` row-major.
 
 package Polars::Linalg
 
 use Polars
+
+## Matrix inverse. Errors if singular.
+fn Polars::Linalg::inv ($m) {
+    Polars::_decode("linalg_inv", polars__linalg_inv(to_json({ matrix => $m })))->{matrix}
+}
+
+## Matrix determinant (scalar).
+fn Polars::Linalg::det ($m) {
+    Polars::_decode("linalg_det", polars__linalg_det(to_json({ matrix => $m })))->{scalar}
+}
+
+## Solve `A x = b` for x (returns 1-D array).
+fn Polars::Linalg::solve ($A, $b) {
+    Polars::_decode("linalg_solve", polars__linalg_solve(to_json({ matrix => $A, b => $b })))->{array}
+}
+
+## Frobenius / 2-norm (scalar).
+fn Polars::Linalg::norm ($arr) {
+    Polars::_decode("linalg_norm", polars__linalg_norm(to_json({ array => $arr })))->{scalar}
+}
 
 1
