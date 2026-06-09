@@ -86,7 +86,6 @@ polars = { version = "0.45", features = [
     "repeat_by",
     "reinterpret",
     "diagonal_concat",
-    "horizontal_concat",
     "row_hash",
 ] }
 ndarray = { version = "0.16", features = ["rayon", "serde", "approx"] }
