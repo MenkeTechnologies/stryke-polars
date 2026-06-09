@@ -1,14 +1,16 @@
 ## lib/Polynomial.stk — `use Polars::Polynomial`
 ##
-## `np.polynomial.*` surface: Power, Chebyshev, Hermite, HermiteE, Legendre,
-## Laguerre — `poly_polyval`, `poly_polyfit`, `poly_polyroots`,
-## `poly_chebval`, `poly_chebfit`, `poly_chebroots`, `poly_hermval`, …
-## (~40 fns target).
-##
-## Phase status: scaffold only.
+## `np.polynomial.*` surface (P5 slice). Hand-rolled on `ndarray` (recurrence
+## formulas). Wire format: coefficient list + 1-D x-array.
 
 package Polars::Polynomial
 
 use Polars
+
+## Evaluate polynomial `c0 + c1*x + c2*x^2 + ...` at each point in `$x`
+## (an ndarray `{data, shape}`). Uses Horner's method on the cdylib side.
+fn Polars::Polynomial::polyval ($coefficients, $x) {
+    Polars::_decode("poly_polyval", polars__poly_polyval(to_json({ coefficients => $coefficients, x => $x })))->{array}
+}
 
 1

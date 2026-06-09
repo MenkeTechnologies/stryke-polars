@@ -1068,6 +1068,224 @@ pub extern "C" fn polars__rand_gamma(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P4d: more ndarray (stack/tile/repeat/unique) ───────────────────────────
+
+/// Horizontal stack — concatenate along axis 1 (or last axis for 1-D).
+#[no_mangle]
+pub extern "C" fn polars__arr_hstack(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        let axis = if a.shape().len() == 1 { 0 } else { 1 };
+        let result = ndarray::concatenate(Axis(axis), &[a.view(), b.view()]).context("hstack")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// Vertical stack — concatenate along axis 0.
+#[no_mangle]
+pub extern "C" fn polars__arr_vstack(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        let result = ndarray::concatenate(Axis(0), &[a.view(), b.view()]).context("vstack")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// Tile (repeat the whole array `n` times along axis 0).
+#[no_mangle]
+pub extern "C" fn polars__arr_tile(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let views: Vec<_> = std::iter::repeat_n(arr.view(), n).collect();
+        let result = ndarray::concatenate(Axis(0), &views).context("tile")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// Unique elements (1-D, sorted ascending).
+#[no_mangle]
+pub extern "C" fn polars__arr_unique(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        data.dedup_by(|a, b| (*a - *b).abs() < 1e-15);
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("unique shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+// ── P5b: more linalg (lu / qr / matrix_power) ──────────────────────────────
+
+/// LU decomposition. Returns `{l: <L>, u: <U>}` (no permutation in this slice).
+#[no_mangle]
+pub extern "C" fn polars__linalg_lu(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let lu = m.lu();
+        let l = lu.l();
+        let u = lu.u();
+        Ok(json!({"l": matrix_to_value(&l), "u": matrix_to_value(&u)}))
+    })
+}
+
+/// QR decomposition. Returns `{q, r}`.
+#[no_mangle]
+pub extern "C" fn polars__linalg_qr(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let qr = m.qr();
+        let q = qr.q();
+        let r = qr.r();
+        Ok(json!({"q": matrix_to_value(&q), "r": matrix_to_value(&r)}))
+    })
+}
+
+/// Matrix power `A^k` (k ≥ 0).
+#[no_mangle]
+pub extern "C" fn polars__linalg_matrix_power(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        if !m.is_square() {
+            bail!("matrix_power: matrix must be square");
+        }
+        let k = args
+            .get("k")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `k`"))? as u32;
+        let n = m.nrows();
+        let mut result = DMatrix::<f64>::identity(n, n);
+        for _ in 0..k {
+            result = &result * &m;
+        }
+        Ok(json!({"matrix": matrix_to_value(&result)}))
+    })
+}
+
+// ── P5c: more random / fft ─────────────────────────────────────────────────
+
+/// Random permutation of `0..n` (1-D u64 array as f64).
+#[no_mangle]
+pub extern "C" fn polars__rand_permutation(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        use rand::seq::SliceRandom;
+        let mut rng = rng_for(&args);
+        let mut data: Vec<f64> = (0..n).map(|i| i as f64).collect();
+        data.shuffle(&mut rng);
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("permutation shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.randint(low, high, n)` — n uniform ints in `[low, high)`.
+#[no_mangle]
+pub extern "C" fn polars__rand_randint(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let low = args
+            .get("low")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `low`"))?;
+        let high = args
+            .get("high")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `high`"))?;
+        if high <= low {
+            bail!("`high` must be > `low`");
+        }
+        use rand::Rng;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| rng.gen_range(low..high) as f64).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("randint shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.fft.fftfreq(n, d=1.0)` — DFT sample frequencies for a length-n signal.
+#[no_mangle]
+pub extern "C" fn polars__fft_fftfreq(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let d = args.get("d").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let n_f = n as f64;
+        let half = n.div_ceil(2);
+        let mut data = Vec::with_capacity(n);
+        for k in 0..half {
+            data.push(k as f64 / (n_f * d));
+        }
+        for k in half..n {
+            data.push((k as f64 - n_f) / (n_f * d));
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("fftfreq shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+// ── P5d: polynomial ────────────────────────────────────────────────────────
+
+/// Evaluate polynomial: `c0 + c1*x + c2*x^2 + ...` at each point in `x_array`.
+///
+/// Args:   `{coefficients: [c0, c1, ...], x: <array>}`
+#[no_mangle]
+pub extern "C" fn polars__poly_polyval(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let coeffs_arr = args
+            .get("coefficients")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `coefficients` (array)"))?;
+        let coeffs: Vec<f64> = coeffs_arr
+            .iter()
+            .map(|v| v.as_f64().unwrap_or(0.0))
+            .collect();
+        let x = get_array(&args, "x")?;
+        // Horner's method.
+        let out: Vec<f64> = x
+            .iter()
+            .map(|&xi| {
+                let mut acc = 0.0;
+                for &c in coeffs.iter().rev() {
+                    acc = acc * xi + c;
+                }
+                acc
+            })
+            .collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(x.shape()), out).context("polyval shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// Sample without replacement: `k` distinct values from `array`.
 ///
 /// Args:   `{array, k: u64, seed?: u64}`

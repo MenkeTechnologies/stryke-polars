@@ -124,4 +124,21 @@ fn Polars::NdArray::mean_axis ($arr, $axis) {
     Polars::_decode("arr_mean_axis", polars__arr_mean_axis(to_json({ array => $arr, axis => $axis })))->{array}
 }
 
+## Horizontal stack (axis 0 for 1-D, axis 1 for 2-D).
+fn Polars::NdArray::hstack ($a, $b) {
+    Polars::_decode("arr_hstack", polars__arr_hstack(to_json({ a => $a, b => $b })))->{array}
+}
+## Vertical stack (axis 0).
+fn Polars::NdArray::vstack ($a, $b) {
+    Polars::_decode("arr_vstack", polars__arr_vstack(to_json({ a => $a, b => $b })))->{array}
+}
+## Tile (repeat whole array `$n` times along axis 0).
+fn Polars::NdArray::tile ($arr, $n) {
+    Polars::_decode("arr_tile", polars__arr_tile(to_json({ array => $arr, n => $n })))->{array}
+}
+## Unique sorted values (1-D).
+fn Polars::NdArray::unique ($arr) {
+    Polars::_decode("arr_unique", polars__arr_unique(to_json({ array => $arr })))->{array}
+}
+
 1

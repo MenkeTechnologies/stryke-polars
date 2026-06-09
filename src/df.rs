@@ -1686,6 +1686,70 @@ pub extern "C" fn polars__dt_weekday(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| str_op(&args, "weekday", |e| e.dt().weekday()))
 }
 
+#[no_mangle]
+pub extern "C" fn polars__dt_quarter(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "quarter", |e| e.dt().quarter()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_dayofyear(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "dayofyear", |e| e.dt().ordinal_day())
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_weekofyear(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "weekofyear", |e| e.dt().week()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_pad_start(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let len_to = args
+            .get("length")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `length`"))? as usize;
+        let fill = args
+            .get("fill")
+            .and_then(|v| v.as_str())
+            .and_then(|s| s.chars().next())
+            .unwrap_or(' ');
+        str_op(&args, "pad_start", |e| e.str().pad_start(len_to, fill))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_pad_end(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let len_to = args
+            .get("length")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `length`"))? as usize;
+        let fill = args
+            .get("fill")
+            .and_then(|v| v.as_str())
+            .and_then(|s| s.chars().next())
+            .unwrap_or(' ');
+        str_op(&args, "pad_end", |e| e.str().pad_end(len_to, fill))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_slice(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let start = args.get("start").and_then(|v| v.as_i64()).unwrap_or(0);
+        let length = args.get("length").and_then(|v| v.as_u64());
+        let len_lit = match length {
+            Some(n) => lit(n),
+            None => lit(NULL),
+        };
+        str_op(&args, "slice", |e| {
+            e.str().slice(lit(start), len_lit.clone())
+        })
+    })
+}
+
 /// Replace literal `from` with literal `to` in `column`.
 ///
 /// Args:   `{frame, column: name, from, to}`

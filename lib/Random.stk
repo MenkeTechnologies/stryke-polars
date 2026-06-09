@@ -55,4 +55,18 @@ fn Polars::Random::choice ($arr, $k, $seed) {
     Polars::_decode("rand_choice", polars__rand_choice(to_json(\%req)))->{array}
 }
 
+## Random permutation of `0..$n` (1-D u64 → f64).
+fn Polars::Random::permutation ($n, $seed) {
+    my %req = (n => $n)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_permutation", polars__rand_permutation(to_json(\%req)))->{array}
+}
+
+## `np.random.randint(low, high, n)` — uniform ints in `[low, high)` (as f64).
+fn Polars::Random::randint ($n, $low, $high, $seed) {
+    my %req = (n => $n, low => $low, high => $high)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_randint", polars__rand_randint(to_json(\%req)))->{array}
+}
+
 1

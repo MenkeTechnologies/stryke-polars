@@ -49,4 +49,17 @@ fn Polars::Linalg::singular_values ($m) {
     Polars::_decode("linalg_singular_values", polars__linalg_singular_values(to_json({ matrix => $m })))->{array}
 }
 
+## LU decomposition. Returns `{ l, u }` (no permutation tracking).
+fn Polars::Linalg::lu ($m) {
+    Polars::_decode("linalg_lu", polars__linalg_lu(to_json({ matrix => $m })))
+}
+## QR decomposition. Returns `{ q, r }`.
+fn Polars::Linalg::qr ($m) {
+    Polars::_decode("linalg_qr", polars__linalg_qr(to_json({ matrix => $m })))
+}
+## Matrix power `A^k` (k ≥ 0).
+fn Polars::Linalg::matrix_power ($m, $k) {
+    Polars::_decode("linalg_matrix_power", polars__linalg_matrix_power(to_json({ matrix => $m, k => $k })))->{matrix}
+}
+
 1

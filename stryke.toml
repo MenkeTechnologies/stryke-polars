@@ -176,6 +176,23 @@ exports = [
     "polars__rand_beta",
     "polars__rand_gamma",
     "polars__rand_choice",
+    "polars__dt_quarter",
+    "polars__dt_dayofyear",
+    "polars__dt_weekofyear",
+    "polars__str_pad_start",
+    "polars__str_pad_end",
+    "polars__str_slice",
+    "polars__arr_hstack",
+    "polars__arr_vstack",
+    "polars__arr_tile",
+    "polars__arr_unique",
+    "polars__linalg_lu",
+    "polars__linalg_qr",
+    "polars__linalg_matrix_power",
+    "polars__rand_permutation",
+    "polars__rand_randint",
+    "polars__fft_fftfreq",
+    "polars__poly_polyval",
 ]
 
 [scripts]

@@ -20,4 +20,11 @@ fn Polars::FFT::ifft ($cplx) {
     Polars::_decode("fft_ifft", polars__fft_ifft(to_json({ complex => $cplx })))->{array}
 }
 
+## DFT sample frequencies (`np.fft.fftfreq(n, d=1.0)`). Returns 1-D array.
+fn Polars::FFT::fftfreq ($n, $d) {
+    my %req = (n => $n)
+    $req{d} = $d if defined $d
+    Polars::_decode("fft_fftfreq", polars__fft_fftfreq(to_json(\%req)))->{array}
+}
+
 1

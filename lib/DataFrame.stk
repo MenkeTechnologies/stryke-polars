@@ -404,7 +404,26 @@ fn Polars::DataFrame::dt_day     ($cols, $column) { Polars::_decode("dt_day",   
 fn Polars::DataFrame::dt_hour    ($cols, $column) { Polars::_decode("dt_hour",    polars__dt_hour   (to_json({ frame => $cols, column => $column })))->{frame} }
 fn Polars::DataFrame::dt_minute  ($cols, $column) { Polars::_decode("dt_minute",  polars__dt_minute (to_json({ frame => $cols, column => $column })))->{frame} }
 fn Polars::DataFrame::dt_second  ($cols, $column) { Polars::_decode("dt_second",  polars__dt_second (to_json({ frame => $cols, column => $column })))->{frame} }
-fn Polars::DataFrame::dt_weekday ($cols, $column) { Polars::_decode("dt_weekday", polars__dt_weekday(to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_weekday    ($cols, $column) { Polars::_decode("dt_weekday",    polars__dt_weekday   (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_quarter    ($cols, $column) { Polars::_decode("dt_quarter",    polars__dt_quarter   (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_dayofyear  ($cols, $column) { Polars::_decode("dt_dayofyear",  polars__dt_dayofyear (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_weekofyear ($cols, $column) { Polars::_decode("dt_weekofyear", polars__dt_weekofyear(to_json({ frame => $cols, column => $column })))->{frame} }
+
+fn Polars::DataFrame::str_pad_start ($cols, $column, $length, $fill) {
+    my %req = (frame => $cols, column => $column, length => $length)
+    $req{fill} = $fill if defined $fill
+    Polars::_decode("str_pad_start", polars__str_pad_start(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::str_pad_end ($cols, $column, $length, $fill) {
+    my %req = (frame => $cols, column => $column, length => $length)
+    $req{fill} = $fill if defined $fill
+    Polars::_decode("str_pad_end", polars__str_pad_end(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::str_slice ($cols, $column, $start, $length) {
+    my %req = (frame => $cols, column => $column, start => $start)
+    $req{length} = $length if defined $length
+    Polars::_decode("str_slice", polars__str_slice(to_json(\%req)))->{frame}
+}
 
 ## Exponentially weighted moving mean. `$alpha` defaults to 0.5.
 fn Polars::DataFrame::ewm_mean ($cols, $alpha, $columns) {
