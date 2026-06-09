@@ -347,6 +347,10 @@ exports = [
     "polars__arr_iscomplex",
     "polars__arr_isreal",
     "polars__arr_flip",
+    "polars__arr_ptp",
+    "polars__arr_count_nonzero_axis",
+    "polars__arr_flip_axis",
+    "polars__arr_broadcast_to",
 ]
 
 [scripts]

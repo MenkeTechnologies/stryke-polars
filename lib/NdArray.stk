@@ -458,4 +458,24 @@ fn Polars::NdArray::flip ($arr) {
     Polars::_decode("arr_flip", polars__arr_flip(to_json({ array => $arr })))->{array}
 }
 
+## `np.ptp(a)` — max − min scalar.
+fn Polars::NdArray::ptp ($arr) {
+    Polars::_decode("arr_ptp", polars__arr_ptp(to_json({ array => $arr })))->{scalar}
+}
+
+## `np.count_nonzero(a, axis)` — non-zero count along an axis.
+fn Polars::NdArray::count_nonzero_axis ($arr, $axis) {
+    Polars::_decode("arr_count_nonzero_axis", polars__arr_count_nonzero_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## `np.flip(a, axis)` — reverse along an axis.
+fn Polars::NdArray::flip_axis ($arr, $axis) {
+    Polars::_decode("arr_flip_axis", polars__arr_flip_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## `np.broadcast_to(a, shape)` — duplicate to fit. `len(a)` must divide target size.
+fn Polars::NdArray::broadcast_to ($arr, $shape) {
+    Polars::_decode("arr_broadcast_to", polars__arr_broadcast_to(to_json({ array => $arr, shape => $shape })))->{array}
+}
+
 1

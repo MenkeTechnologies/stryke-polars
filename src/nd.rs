@@ -2652,6 +2652,88 @@ pub extern "C" fn polars__arr_flip(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.ptp(a)` — peak-to-peak (max − min).
+#[no_mangle]
+pub extern "C" fn polars__arr_ptp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("ptp: empty array");
+        }
+        let lo = arr.iter().copied().fold(f64::INFINITY, |a, b| a.min(b));
+        let hi = arr.iter().copied().fold(f64::NEG_INFINITY, |a, b| a.max(b));
+        Ok(json!({"scalar": scalar_to_value(hi - lo)}))
+    })
+}
+
+/// `np.count_nonzero(a, axis)` along axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_count_nonzero_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            row.iter().filter(|&&x| x != 0.0).count() as f64
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.flip` along an axis (2-D supported).
+#[no_mangle]
+pub extern "C" fn polars__arr_flip_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let mut flipped = arr.clone();
+        flipped.invert_axis(Axis(axis));
+        let owned: ArrayD<f64> = flipped.to_owned();
+        Ok(json!({"array": array_to_value(&owned)}))
+    })
+}
+
+/// `np.broadcast_to(a, shape)` — for 1-D inputs duplicated to fit a new shape.
+/// Restricted: input length must be 1 or equal to last dim of new shape.
+#[no_mangle]
+pub extern "C" fn polars__arr_broadcast_to(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let new_shape = shape_arg(&args)?;
+        let target: usize = new_shape.iter().product();
+        let src_len = arr.len();
+        if src_len == 1 {
+            let v = arr.iter().next().copied().unwrap_or(0.0);
+            let data = vec![v; target];
+            let out = ArrayD::from_shape_vec(IxDyn(&new_shape), data).context("broadcast shape")?;
+            return Ok(json!({"array": array_to_value(&out)}));
+        }
+        if !target.is_multiple_of(src_len) {
+            bail!("broadcast_to: target size {target} not divisible by source len {src_len}");
+        }
+        let reps = target / src_len;
+        let mut data = Vec::with_capacity(target);
+        for _ in 0..reps {
+            for &v in arr.iter() {
+                data.push(v);
+            }
+        }
+        let out = ArrayD::from_shape_vec(IxDyn(&new_shape), data).context("broadcast shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
