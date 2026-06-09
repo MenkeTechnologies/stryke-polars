@@ -391,6 +391,60 @@ pub extern "C" fn polars__np_minimum(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| binary_op(&args, f64::min))
 }
 
+/// Elementwise `a % b` matching numpy (sign follows divisor).
+#[no_mangle]
+pub extern "C" fn polars__np_remainder(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::rem_euclid))
+}
+
+/// Elementwise NaN-aware max (NaN treated as missing).
+#[no_mangle]
+pub extern "C" fn polars__np_fmax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| {
+            if a.is_nan() {
+                b
+            } else if b.is_nan() {
+                a
+            } else {
+                a.max(b)
+            }
+        })
+    })
+}
+
+/// Elementwise NaN-aware min.
+#[no_mangle]
+pub extern "C" fn polars__np_fmin(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |a, b| {
+            if a.is_nan() {
+                b
+            } else if b.is_nan() {
+                a
+            } else {
+                a.min(b)
+            }
+        })
+    })
+}
+
+/// Heaviside step: x<0 ⇒ 0, x>0 ⇒ 1, x=0 ⇒ `h0`.
+#[no_mangle]
+pub extern "C" fn polars__np_heaviside(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        binary_op(&args, |x, h0| {
+            if x < 0.0 {
+                0.0
+            } else if x > 0.0 {
+                1.0
+            } else {
+                h0
+            }
+        })
+    })
+}
+
 // ── P4e: predicate ufuncs ──────────────────────────────────────────────────
 
 /// Elementwise isnan (1.0/0.0 result).

@@ -274,6 +274,10 @@ exports = [
     "polars__np_clip",
     "polars__np_where",
     "polars__fft_rfftfreq",
+    "polars__np_remainder",
+    "polars__np_fmax",
+    "polars__np_fmin",
+    "polars__np_heaviside",
 ]
 
 [scripts]

@@ -87,4 +87,9 @@ fn Polars::Ufunc::where ($cond, $a, $b) {
     Polars::_decode("np_where", polars__np_where(to_json({ cond => $cond, a => $a, b => $b })))->{array}
 }
 
+fn Polars::Ufunc::remainder ($a, $b) { Polars::_decode("np_remainder", polars__np_remainder(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::fmax      ($a, $b) { Polars::_decode("np_fmax",      polars__np_fmax     (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::fmin      ($a, $b) { Polars::_decode("np_fmin",      polars__np_fmin     (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::heaviside ($x, $h0) { Polars::_decode("np_heaviside", polars__np_heaviside(to_json({ a => $x, b => $h0 })))->{array} }
+
 1
