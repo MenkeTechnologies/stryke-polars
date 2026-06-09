@@ -141,4 +141,12 @@ fn Polars::NdArray::unique ($arr) {
     Polars::_decode("arr_unique", polars__arr_unique(to_json({ array => $arr })))->{array}
 }
 
+fn Polars::NdArray::prod     ($arr) { Polars::_decode("arr_prod",     polars__arr_prod    (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::var      ($arr) { Polars::_decode("arr_var",      polars__arr_var     (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::std      ($arr) { Polars::_decode("arr_std",      polars__arr_std     (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::median   ($arr) { Polars::_decode("arr_median",   polars__arr_median  (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::quantile ($arr, $q) { Polars::_decode("arr_quantile", polars__arr_quantile(to_json({ array => $arr, q => $q })))->{scalar} }
+fn Polars::NdArray::max_axis ($arr, $axis) { Polars::_decode("arr_max_axis", polars__arr_max_axis(to_json({ array => $arr, axis => $axis })))->{array} }
+fn Polars::NdArray::min_axis ($arr, $axis) { Polars::_decode("arr_min_axis", polars__arr_min_axis(to_json({ array => $arr, axis => $axis })))->{array} }
+
 1

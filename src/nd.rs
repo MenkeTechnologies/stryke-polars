@@ -464,6 +464,53 @@ pub extern "C" fn polars__np_logical_xor(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P4f: more unary ufuncs ─────────────────────────────────────────────────
+
+#[no_mangle]
+pub extern "C" fn polars__np_trunc(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::trunc))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_radians(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::to_radians))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_degrees(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::to_degrees))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_negative(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, |x| -x))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_reciprocal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, |x| 1.0 / x))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_square(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, |x| x * x))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_cbrt(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::cbrt))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_expm1(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::exp_m1))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__np_log1p(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::ln_1p))
+}
+
 // ── ufuncs (binary) ────────────────────────────────────────────────────────
 
 /// Elementwise a + b. Shapes must match (no broadcasting in this slice).
@@ -1002,6 +1049,141 @@ pub extern "C" fn polars__arr_mean_axis(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Product of all elements.
+#[no_mangle]
+pub extern "C" fn polars__arr_prod(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let p = arr.iter().product::<f64>();
+        Ok(json!({"scalar": scalar_to_value(p)}))
+    })
+}
+
+/// Variance (population, ddof=0).
+#[no_mangle]
+pub extern "C" fn polars__arr_var(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n == 0.0 {
+            bail!("var of empty array");
+        }
+        let mean = arr.iter().sum::<f64>() / n;
+        let v = arr.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        Ok(json!({"scalar": scalar_to_value(v)}))
+    })
+}
+
+/// Standard deviation (population, ddof=0).
+#[no_mangle]
+pub extern "C" fn polars__arr_std(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n == 0.0 {
+            bail!("std of empty array");
+        }
+        let mean = arr.iter().sum::<f64>() / n;
+        let v = arr.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        Ok(json!({"scalar": scalar_to_value(v.sqrt())}))
+    })
+}
+
+/// Median (1-D only).
+#[no_mangle]
+pub extern "C" fn polars__arr_median(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("median: only 1-D arrays supported");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        if data.is_empty() {
+            bail!("median of empty array");
+        }
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = data.len();
+        let m = if n % 2 == 1 {
+            data[n / 2]
+        } else {
+            (data[n / 2 - 1] + data[n / 2]) / 2.0
+        };
+        Ok(json!({"scalar": scalar_to_value(m)}))
+    })
+}
+
+/// Quantile via linear interpolation. q ∈ [0, 1]. 1-D only.
+#[no_mangle]
+pub extern "C" fn polars__arr_quantile(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("quantile: only 1-D arrays supported");
+        }
+        let q = args
+            .get("q")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `q`"))?;
+        if !(0.0..=1.0).contains(&q) {
+            bail!("`q` must be in [0, 1]");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        if data.is_empty() {
+            bail!("quantile of empty array");
+        }
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = data.len();
+        let pos = q * (n as f64 - 1.0);
+        let lo = pos.floor() as usize;
+        let hi = pos.ceil() as usize;
+        let frac = pos - lo as f64;
+        let val = if lo == hi {
+            data[lo]
+        } else {
+            data[lo] + frac * (data[hi] - data[lo])
+        };
+        Ok(json!({"scalar": scalar_to_value(val)}))
+    })
+}
+
+/// Max along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_max_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis {} out of range", axis);
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            row.iter().copied().fold(f64::NEG_INFINITY, |a, b| a.max(b))
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Min along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_min_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis {} out of range", axis);
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            row.iter().copied().fold(f64::INFINITY, |a, b| a.min(b))
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 // ── P5b: more linalg ───────────────────────────────────────────────────────
 
 /// Matrix trace (sum of diagonal). Square matrix required.
@@ -1374,6 +1556,144 @@ pub extern "C" fn polars__rand_binomial(args: *const c_char) -> *mut c_char {
         let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng) as f64).collect();
         let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("binomial shape")?;
         Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Random log-normal samples.
+#[no_mangle]
+pub extern "C" fn polars__rand_lognormal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let mu = args.get("mu").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let sigma = args.get("sigma").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if sigma <= 0.0 {
+            bail!("`sigma` must be > 0");
+        }
+        let dist = rand_distr::LogNormal::new(mu, sigma).context("LogNormal::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("lognormal shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// In-place shuffle of an existing array (1-D); returns shuffled copy.
+#[no_mangle]
+pub extern "C" fn polars__rand_shuffle(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("shuffle: only 1-D arrays supported");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        use rand::seq::SliceRandom;
+        let mut rng = rng_for(&args);
+        data.shuffle(&mut rng);
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("shuffle shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Diagonal vector of a square matrix.
+#[no_mangle]
+pub extern "C" fn polars__linalg_diag(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let n = m.nrows().min(m.ncols());
+        let data: Vec<f64> = (0..n).map(|i| m[(i, i)]).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("diag shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Cholesky decomposition (lower-triangular L such that L * L^T = A).
+/// Requires symmetric positive-definite A.
+#[no_mangle]
+pub extern "C" fn polars__linalg_cholesky(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let ch = m
+            .cholesky()
+            .ok_or_else(|| anyhow!("Cholesky failed (matrix not symmetric PD)"))?;
+        let l = ch.l();
+        Ok(json!({"matrix": matrix_to_value(&l)}))
+    })
+}
+
+/// Pseudo-inverse (Moore-Penrose) via SVD.
+#[no_mangle]
+pub extern "C" fn polars__linalg_pinv(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let svd = m.svd(true, true);
+        let pinv = svd
+            .pseudo_inverse(1e-10)
+            .map_err(|e| anyhow!("pinv: {e}"))?;
+        Ok(json!({"matrix": matrix_to_value(&pinv)}))
+    })
+}
+
+/// Polynomial derivative: returns coefficients of the derivative polynomial.
+///
+/// Args:   `{coefficients: [c0, c1, ...]}`
+/// Result: `{coefficients: [c1, 2*c2, 3*c3, ...]}`
+#[no_mangle]
+pub extern "C" fn polars__poly_polyder(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let coeffs_arr = args
+            .get("coefficients")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `coefficients`"))?;
+        let coeffs: Vec<f64> = coeffs_arr
+            .iter()
+            .map(|v| v.as_f64().unwrap_or(0.0))
+            .collect();
+        let der: Vec<Value> = coeffs
+            .iter()
+            .enumerate()
+            .skip(1)
+            .map(|(i, &c)| scalar_to_value(c * i as f64))
+            .collect();
+        Ok(json!({"coefficients": der}))
+    })
+}
+
+/// Polynomial integral (returns coefficients; constant of integration defaults to 0).
+///
+/// Args:   `{coefficients, c0?: f64 (default 0)}`
+/// Result: `{coefficients}`
+#[no_mangle]
+pub extern "C" fn polars__poly_polyint(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let coeffs_arr = args
+            .get("coefficients")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `coefficients`"))?;
+        let c0 = args.get("c0").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let coeffs: Vec<f64> = coeffs_arr
+            .iter()
+            .map(|v| v.as_f64().unwrap_or(0.0))
+            .collect();
+        let mut out = Vec::with_capacity(coeffs.len() + 1);
+        out.push(c0);
+        for (i, &c) in coeffs.iter().enumerate() {
+            out.push(c / (i + 1) as f64);
+        }
+        let result: Vec<Value> = out.iter().map(|&x| scalar_to_value(x)).collect();
+        Ok(json!({"coefficients": result}))
     })
 }
 

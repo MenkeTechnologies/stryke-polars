@@ -84,4 +84,20 @@ fn Polars::Random::binomial ($n, $n_trials, $p, $seed) {
     Polars::_decode("rand_binomial", polars__rand_binomial(to_json(\%req)))->{array}
 }
 
+## `np.random.lognormal(mu, sigma, n)`.
+fn Polars::Random::lognormal ($n, $mu, $sigma, $seed) {
+    my %req = (n => $n)
+    $req{mu} = $mu if defined $mu
+    $req{sigma} = $sigma if defined $sigma
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_lognormal", polars__rand_lognormal(to_json(\%req)))->{array}
+}
+
+## In-place shuffle of `$arr` (1-D). Returns shuffled copy.
+fn Polars::Random::shuffle ($arr, $seed) {
+    my %req = (array => $arr)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_shuffle", polars__rand_shuffle(to_json(\%req)))->{array}
+}
+
 1

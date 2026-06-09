@@ -67,4 +67,19 @@ fn Polars::Linalg::outer ($a, $b) {
     Polars::_decode("linalg_outer", polars__linalg_outer(to_json({ a => $a, b => $b })))->{array}
 }
 
+## Diagonal vector of a square matrix.
+fn Polars::Linalg::diag ($m) {
+    Polars::_decode("linalg_diag", polars__linalg_diag(to_json({ matrix => $m })))->{array}
+}
+
+## Cholesky decomposition (lower-triangular L). Requires SPD matrix.
+fn Polars::Linalg::cholesky ($m) {
+    Polars::_decode("linalg_cholesky", polars__linalg_cholesky(to_json({ matrix => $m })))->{matrix}
+}
+
+## Moore-Penrose pseudoinverse (SVD-based).
+fn Polars::Linalg::pinv ($m) {
+    Polars::_decode("linalg_pinv", polars__linalg_pinv(to_json({ matrix => $m })))->{matrix}
+}
+
 1

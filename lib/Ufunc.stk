@@ -57,4 +57,16 @@ fn Polars::Ufunc::logical_and ($a, $b)  { Polars::_decode("np_logical_and", pola
 fn Polars::Ufunc::logical_or  ($a, $b)  { Polars::_decode("np_logical_or",  polars__np_logical_or (to_json({ a => $a, b => $b })))->{array} }
 fn Polars::Ufunc::logical_xor ($a, $b)  { Polars::_decode("np_logical_xor", polars__np_logical_xor(to_json({ a => $a, b => $b })))->{array} }
 
+# ── more unary ──────────────────────────────────────────────────────
+
+fn Polars::Ufunc::trunc      ($arr) { Polars::_decode("np_trunc",      polars__np_trunc     (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::radians    ($arr) { Polars::_decode("np_radians",    polars__np_radians   (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::degrees    ($arr) { Polars::_decode("np_degrees",    polars__np_degrees   (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::negative   ($arr) { Polars::_decode("np_negative",   polars__np_negative  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::reciprocal ($arr) { Polars::_decode("np_reciprocal", polars__np_reciprocal(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::square     ($arr) { Polars::_decode("np_square",     polars__np_square    (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::cbrt       ($arr) { Polars::_decode("np_cbrt",       polars__np_cbrt      (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::expm1      ($arr) { Polars::_decode("np_expm1",      polars__np_expm1     (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::log1p      ($arr) { Polars::_decode("np_log1p",      polars__np_log1p     (to_json({ array => $arr })))->{array} }
+
 1
