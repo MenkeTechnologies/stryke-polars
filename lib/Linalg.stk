@@ -82,4 +82,9 @@ fn Polars::Linalg::pinv ($m) {
     Polars::_decode("linalg_pinv", polars__linalg_pinv(to_json({ matrix => $m })))->{matrix}
 }
 
+## Kronecker product of two matrices.
+fn Polars::Linalg::kron ($a, $b) {
+    Polars::_decode("linalg_kron", polars__linalg_kron(to_json({ a => $a, b => $b })))->{matrix}
+}
+
 1

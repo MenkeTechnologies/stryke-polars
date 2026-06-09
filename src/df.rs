@@ -1736,6 +1736,114 @@ pub extern "C" fn polars__str_pad_end(args: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
+pub extern "C" fn polars__str_count_matches(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let pat = args
+            .get("pattern")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `pattern`"))?
+            .to_string();
+        let literal = args
+            .get("literal")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        str_op(&args, "count_matches", |e| {
+            e.str().count_matches(lit(pat.clone()), literal)
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_reverse(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "reverse", |e| e.str().reverse()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_head(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))?;
+        str_op(&args, "head", |e| e.str().head(lit(n)))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_tail(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))?;
+        str_op(&args, "tail", |e| e.str().tail(lit(n)))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_timestamp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "timestamp", |e| {
+            e.dt().timestamp(TimeUnit::Milliseconds)
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_iso_year(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "iso_year", |e| e.dt().iso_year())
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_with_row_index(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let name = args.get("name").and_then(|v| v.as_str()).unwrap_or("index");
+        let offset = args.get("offset").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
+        let name_pl: PlSmallStr = name.into();
+        let result = df
+            .lazy()
+            .with_row_index(name_pl, Some(offset))
+            .collect()
+            .context("with_row_index")?;
+        return_frame(result)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_reverse(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let result = df.reverse();
+        return_frame(result)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_n_unique(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let n = df.column(col_name)?.as_materialized_series().n_unique()?;
+        Ok(json!({"n_unique": n}))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__df_null_count(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let nulls = df.null_count();
+        return_frame(nulls)
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn polars__str_slice(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
         let start = args.get("start").and_then(|v| v.as_i64()).unwrap_or(0);

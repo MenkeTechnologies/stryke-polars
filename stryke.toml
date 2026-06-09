@@ -227,6 +227,20 @@ exports = [
     "polars__linalg_pinv",
     "polars__poly_polyder",
     "polars__poly_polyint",
+    "polars__str_count_matches",
+    "polars__str_reverse",
+    "polars__str_head",
+    "polars__str_tail",
+    "polars__dt_timestamp",
+    "polars__dt_iso_year",
+    "polars__df_with_row_index",
+    "polars__df_reverse",
+    "polars__df_n_unique",
+    "polars__df_null_count",
+    "polars__arr_reverse",
+    "polars__arr_repeat",
+    "polars__rand_geometric",
+    "polars__linalg_kron",
 ]
 
 [scripts]

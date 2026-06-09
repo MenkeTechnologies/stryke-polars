@@ -100,4 +100,11 @@ fn Polars::Random::shuffle ($arr, $seed) {
     Polars::_decode("rand_shuffle", polars__rand_shuffle(to_json(\%req)))->{array}
 }
 
+## `np.random.geometric(p, n)`. Integer samples as f64.
+fn Polars::Random::geometric ($n, $p, $seed) {
+    my %req = (n => $n, p => $p)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_geometric", polars__rand_geometric(to_json(\%req)))->{array}
+}
+
 1

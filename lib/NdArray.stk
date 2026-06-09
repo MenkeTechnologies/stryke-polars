@@ -149,4 +149,14 @@ fn Polars::NdArray::quantile ($arr, $q) { Polars::_decode("arr_quantile", polars
 fn Polars::NdArray::max_axis ($arr, $axis) { Polars::_decode("arr_max_axis", polars__arr_max_axis(to_json({ array => $arr, axis => $axis })))->{array} }
 fn Polars::NdArray::min_axis ($arr, $axis) { Polars::_decode("arr_min_axis", polars__arr_min_axis(to_json({ array => $arr, axis => $axis })))->{array} }
 
+## Reverse the flat order (preserves shape).
+fn Polars::NdArray::reverse ($arr) {
+    Polars::_decode("arr_reverse", polars__arr_reverse(to_json({ array => $arr })))->{array}
+}
+
+## Repeat each element `$n` times in place (1-D).
+fn Polars::NdArray::repeat ($arr, $n) {
+    Polars::_decode("arr_repeat", polars__arr_repeat(to_json({ array => $arr, n => $n })))->{array}
+}
+
 1

@@ -425,6 +425,50 @@ fn Polars::DataFrame::str_slice ($cols, $column, $start, $length) {
     Polars::_decode("str_slice", polars__str_slice(to_json(\%req)))->{frame}
 }
 
+fn Polars::DataFrame::str_reverse ($cols, $column) {
+    Polars::_decode("str_reverse", polars__str_reverse(to_json({ frame => $cols, column => $column })))->{frame}
+}
+fn Polars::DataFrame::str_head ($cols, $column, $n) {
+    Polars::_decode("str_head", polars__str_head(to_json({ frame => $cols, column => $column, n => $n })))->{frame}
+}
+fn Polars::DataFrame::str_tail ($cols, $column, $n) {
+    Polars::_decode("str_tail", polars__str_tail(to_json({ frame => $cols, column => $column, n => $n })))->{frame}
+}
+fn Polars::DataFrame::str_count_matches ($cols, $column, $pattern, $literal) {
+    my %req = (frame => $cols, column => $column, pattern => $pattern)
+    $req{literal} = $literal if defined $literal
+    Polars::_decode("str_count_matches", polars__str_count_matches(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::dt_timestamp ($cols, $column) {
+    Polars::_decode("dt_timestamp", polars__dt_timestamp(to_json({ frame => $cols, column => $column })))->{frame}
+}
+fn Polars::DataFrame::dt_iso_year ($cols, $column) {
+    Polars::_decode("dt_iso_year", polars__dt_iso_year(to_json({ frame => $cols, column => $column })))->{frame}
+}
+
+## Add a 0-based (or `$offset`-based) row index as column `$name` (default "index").
+fn Polars::DataFrame::with_row_index ($cols, $name, $offset) {
+    my %req = (frame => $cols)
+    $req{name} = $name if defined $name
+    $req{offset} = $offset if defined $offset
+    Polars::_decode("df_with_row_index", polars__df_with_row_index(to_json(\%req)))->{frame}
+}
+
+## Reverse the row order.
+fn Polars::DataFrame::reverse ($cols) {
+    Polars::_decode("df_reverse", polars__df_reverse(to_json({ frame => $cols })))->{frame}
+}
+
+## Distinct-value count for a single column.
+fn Polars::DataFrame::n_unique ($cols, $column) {
+    Polars::_decode("df_n_unique", polars__df_n_unique(to_json({ frame => $cols, column => $column })))->{n_unique}
+}
+
+## Null count per column (returns 1-row frame).
+fn Polars::DataFrame::null_count ($cols) {
+    Polars::_decode("df_null_count", polars__df_null_count(to_json({ frame => $cols })))->{frame}
+}
+
 ## Exponentially weighted moving mean. `$alpha` defaults to 0.5.
 fn Polars::DataFrame::ewm_mean ($cols, $alpha, $columns) {
     my %req = (frame => $cols)
