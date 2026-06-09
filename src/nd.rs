@@ -2302,6 +2302,141 @@ pub extern "C" fn polars__arr_setdiff1d(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sorted intersection of two 1-D arrays (unique elements only).
+#[no_mangle]
+pub extern "C" fn polars__arr_intersect1d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("intersect1d: 1-D inputs required");
+        }
+        let mut b_set: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        for &v in b.iter() {
+            b_set.insert(v.to_bits() as i64);
+        }
+        let mut result: Vec<f64> = Vec::new();
+        let mut seen: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        for &v in a.iter() {
+            let bits = v.to_bits() as i64;
+            if b_set.contains(&bits) && seen.insert(bits) {
+                result.push(v);
+            }
+        }
+        result.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = result.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), result).context("intersect1d shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Sorted union of two 1-D arrays (unique elements).
+#[no_mangle]
+pub extern "C" fn polars__arr_union1d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("union1d: 1-D inputs required");
+        }
+        let mut seen: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        let mut result: Vec<f64> = Vec::new();
+        for &v in a.iter().chain(b.iter()) {
+            let bits = v.to_bits() as i64;
+            if seen.insert(bits) {
+                result.push(v);
+            }
+        }
+        result.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = result.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), result).context("union1d shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.in1d(a, b)` — boolean (1.0/0.0) array: is each element of a in b?
+#[no_mangle]
+pub extern "C" fn polars__arr_in1d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("in1d: 1-D inputs required");
+        }
+        let mut b_set: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        for &v in b.iter() {
+            b_set.insert(v.to_bits() as i64);
+        }
+        let data: Vec<f64> = a
+            .iter()
+            .map(|&v| {
+                if b_set.contains(&(v.to_bits() as i64)) {
+                    1.0
+                } else {
+                    0.0
+                }
+            })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("in1d shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.cumtrapz(y, dx)` — cumulative trapezoidal integration. 1-D, output length n-1.
+#[no_mangle]
+pub extern "C" fn polars__arr_cumtrapz(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("cumtrapz: 1-D required");
+        }
+        let dx = args.get("dx").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        let data: Vec<f64> = arr.iter().copied().collect();
+        if data.len() < 2 {
+            return Ok(json!({
+                "array": array_to_value(&ArrayD::from_shape_vec(IxDyn(&[0]), Vec::<f64>::new()).unwrap())
+            }));
+        }
+        let mut acc = 0.0;
+        let mut out = Vec::with_capacity(data.len() - 1);
+        for i in 0..data.len() - 1 {
+            acc += 0.5 * (data[i] + data[i + 1]) * dx;
+            out.push(acc);
+        }
+        let n = out.len();
+        let result = ArrayD::from_shape_vec(IxDyn(&[n]), out).context("cumtrapz shape")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.pad(a, pad_width, constant_value)` — constant-pad 1-D array.
+#[no_mangle]
+pub extern "C" fn polars__arr_pad(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("pad: 1-D required");
+        }
+        let before = args.get("before").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+        let after = args.get("after").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+        let value = args.get("value").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let mut data: Vec<f64> = Vec::with_capacity(before + arr.len() + after);
+        for _ in 0..before {
+            data.push(value);
+        }
+        for &v in arr.iter() {
+            data.push(v);
+        }
+        for _ in 0..after {
+            data.push(value);
+        }
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("pad shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

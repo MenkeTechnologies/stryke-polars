@@ -328,6 +328,11 @@ exports = [
     "polars__arr_argmin_axis",
     "polars__np_select",
     "polars__arr_setdiff1d",
+    "polars__arr_intersect1d",
+    "polars__arr_union1d",
+    "polars__arr_in1d",
+    "polars__arr_cumtrapz",
+    "polars__arr_pad",
 ]
 
 [scripts]

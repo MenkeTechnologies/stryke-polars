@@ -385,5 +385,31 @@ fn Polars::NdArray::argmin_axis ($arr, $axis) {
 fn Polars::NdArray::setdiff1d ($a, $b) {
     Polars::_decode("arr_setdiff1d", polars__arr_setdiff1d(to_json({ a => $a, b => $b })))->{array}
 }
+## `np.intersect1d(a, b)` — sorted unique intersection.
+fn Polars::NdArray::intersect1d ($a, $b) {
+    Polars::_decode("arr_intersect1d", polars__arr_intersect1d(to_json({ a => $a, b => $b })))->{array}
+}
+## `np.union1d(a, b)` — sorted unique union.
+fn Polars::NdArray::union1d ($a, $b) {
+    Polars::_decode("arr_union1d", polars__arr_union1d(to_json({ a => $a, b => $b })))->{array}
+}
+## `np.in1d(a, b)` — boolean mask: each element of a present in b?
+fn Polars::NdArray::in1d ($a, $b) {
+    Polars::_decode("arr_in1d", polars__arr_in1d(to_json({ a => $a, b => $b })))->{array}
+}
+## Cumulative trapezoidal integration (1-D). Output length n-1.
+fn Polars::NdArray::cumtrapz ($arr, $dx) {
+    my %req = (array => $arr)
+    $req{dx} = $dx if defined $dx
+    Polars::_decode("arr_cumtrapz", polars__arr_cumtrapz(to_json(\%req)))->{array}
+}
+## `np.pad(a, before, after, value)` — constant-pad 1-D array.
+fn Polars::NdArray::pad ($arr, $before, $after, $value) {
+    my %req = (array => $arr)
+    $req{before} = $before if defined $before
+    $req{after} = $after if defined $after
+    $req{value} = $value if defined $value
+    Polars::_decode("arr_pad", polars__arr_pad(to_json(\%req)))->{array}
+}
 
 1
