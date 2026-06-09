@@ -2804,6 +2804,115 @@ pub extern "C" fn polars__arr_normalize_l2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.geomspace(start, stop, n)` — geometric (multiplicative) progression.
+#[no_mangle]
+pub extern "C" fn polars__arr_geomspace(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let start = args
+            .get("start")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `start`"))?;
+        let stop = args
+            .get("stop")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `stop`"))?;
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        if start <= 0.0 || stop <= 0.0 {
+            bail!("geomspace: start and stop must be positive");
+        }
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let ratio = if n == 1 {
+            1.0
+        } else {
+            (stop / start).powf(1.0 / (n as f64 - 1.0))
+        };
+        let data: Vec<f64> = (0..n).map(|i| start * ratio.powi(i as i32)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("geomspace shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.partition(a, kth)` — partial-sort: `kth` element in its final position.
+/// 1-D only. Returns the rearranged array.
+#[no_mangle]
+pub extern "C" fn polars__arr_partition(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("partition: 1-D required");
+        }
+        let kth = args
+            .get("kth")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `kth`"))? as usize;
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        if kth >= data.len() {
+            bail!("partition: kth out of range");
+        }
+        data.select_nth_unstable_by(kth, |a, b| {
+            a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)
+        });
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("partition shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.kth_smallest(a, k)` — k-th smallest element (0-indexed). 1-D.
+#[no_mangle]
+pub extern "C" fn polars__arr_kth_smallest(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("kth_smallest: 1-D required");
+        }
+        let k = args
+            .get("k")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `k`"))? as usize;
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        if k >= data.len() {
+            bail!("kth_smallest: k out of range");
+        }
+        let (_, &mut v, _) = data.select_nth_unstable_by(k, |a, b| {
+            a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)
+        });
+        Ok(json!({"scalar": scalar_to_value(v)}))
+    })
+}
+
+/// `np.linspace_endpoint(start, stop, n, endpoint=False)` — exclusive variant.
+#[no_mangle]
+pub extern "C" fn polars__arr_linspace_no_endpoint(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let start = args
+            .get("start")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `start`"))?;
+        let stop = args
+            .get("stop")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `stop`"))?;
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let step = (stop - start) / n as f64;
+        let data: Vec<f64> = (0..n).map(|i| start + step * i as f64).collect();
+        let arr =
+            ArrayD::from_shape_vec(IxDyn(&[n]), data).context("linspace_no_endpoint shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

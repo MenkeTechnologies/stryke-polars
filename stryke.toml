@@ -358,6 +358,10 @@ exports = [
     "polars__np_power_scalar",
     "polars__arr_mean_centered",
     "polars__arr_normalize_l2",
+    "polars__arr_geomspace",
+    "polars__arr_partition",
+    "polars__arr_kth_smallest",
+    "polars__arr_linspace_no_endpoint",
 ]
 
 [scripts]

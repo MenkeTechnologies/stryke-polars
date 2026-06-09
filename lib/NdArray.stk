@@ -488,4 +488,24 @@ fn Polars::NdArray::normalize_l2 ($arr) {
     Polars::_decode("arr_normalize_l2", polars__arr_normalize_l2(to_json({ array => $arr })))->{array}
 }
 
+## `np.geomspace(start, stop, n)` — geometric progression.
+fn Polars::NdArray::geomspace ($start, $stop, $n) {
+    Polars::_decode("arr_geomspace", polars__arr_geomspace(to_json({ start => $start, stop => $stop, n => $n })))->{array}
+}
+
+## `np.partition(a, kth)` — partial sort placing `$kth` in its final position.
+fn Polars::NdArray::partition ($arr, $kth) {
+    Polars::_decode("arr_partition", polars__arr_partition(to_json({ array => $arr, kth => $kth })))->{array}
+}
+
+## `np.kth_smallest(a, k)` — k-th smallest element (0-indexed).
+fn Polars::NdArray::kth_smallest ($arr, $k) {
+    Polars::_decode("arr_kth_smallest", polars__arr_kth_smallest(to_json({ array => $arr, k => $k })))->{scalar}
+}
+
+## `np.linspace(start, stop, n, endpoint=False)` — exclusive-endpoint variant.
+fn Polars::NdArray::linspace_no_endpoint ($start, $stop, $n) {
+    Polars::_decode("arr_linspace_no_endpoint", polars__arr_linspace_no_endpoint(to_json({ start => $start, stop => $stop, n => $n })))->{array}
+}
+
 1
