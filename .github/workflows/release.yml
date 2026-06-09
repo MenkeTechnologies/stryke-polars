@@ -59,14 +59,6 @@ jobs:
         with:
           key: ${{ matrix.target }}
 
-      - name: Install OpenBLAS (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev pkg-config
-
-      - name: Install OpenBLAS (macOS)
-        if: runner.os == 'macOS'
-        run: brew install openblas pkg-config
-
       - name: Build cdylib
         run: cargo build --release --locked --target ${{ matrix.target }}
 

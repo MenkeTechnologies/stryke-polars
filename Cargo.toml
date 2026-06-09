@@ -89,7 +89,9 @@ polars = { version = "0.45", features = [
     "row_hash",
 ] }
 ndarray = { version = "0.16", features = ["rayon", "serde", "approx"] }
-ndarray-linalg = { version = "0.17", default-features = false, features = ["openblas-system"] }
+# linalg: nalgebra ships pure-Rust SVD/QR/LU/Cholesky/Eigen/solve/inv/det,
+# avoiding ndarray-linalg → openblas-src → openblas-build → broken ureq 3 TLS
+# chain. Swap back to ndarray-linalg + openblas-system once upstream is fixed.
 ndarray-rand = "0.15"
 ndarray-stats = "0.6"
 nalgebra = { version = "0.33", features = ["rayon"] }
