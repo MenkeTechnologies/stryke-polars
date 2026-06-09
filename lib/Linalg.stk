@@ -39,4 +39,14 @@ fn Polars::Linalg::rank ($m) {
     Polars::_decode("linalg_rank", polars__linalg_rank(to_json({ matrix => $m })))->{rank}
 }
 
+## Matrix multiplication `A @ B` (both 2-D).
+fn Polars::Linalg::matmul ($A, $B) {
+    Polars::_decode("linalg_matmul", polars__linalg_matmul(to_json({ a => $A, b => $B })))->{matrix}
+}
+
+## Singular values (descending, 1-D array).
+fn Polars::Linalg::singular_values ($m) {
+    Polars::_decode("linalg_singular_values", polars__linalg_singular_values(to_json({ matrix => $m })))->{array}
+}
+
 1

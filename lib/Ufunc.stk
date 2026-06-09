@@ -24,4 +24,26 @@ fn Polars::Ufunc::subtract ($a, $b) { Polars::_decode("np_subtract", polars__np_
 fn Polars::Ufunc::multiply ($a, $b) { Polars::_decode("np_multiply", polars__np_multiply(to_json({ a => $a, b => $b })))->{array} }
 fn Polars::Ufunc::divide   ($a, $b) { Polars::_decode("np_divide",   polars__np_divide  (to_json({ a => $a, b => $b })))->{array} }
 
+# ── more unary ──────────────────────────────────────────────────────
+
+fn Polars::Ufunc::tanh   ($arr) { Polars::_decode("np_tanh",   polars__np_tanh  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::sinh   ($arr) { Polars::_decode("np_sinh",   polars__np_sinh  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::cosh   ($arr) { Polars::_decode("np_cosh",   polars__np_cosh  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::arctan ($arr) { Polars::_decode("np_arctan", polars__np_arctan(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::arcsin ($arr) { Polars::_decode("np_arcsin", polars__np_arcsin(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::arccos ($arr) { Polars::_decode("np_arccos", polars__np_arccos(to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::log2   ($arr) { Polars::_decode("np_log2",   polars__np_log2  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::log10  ($arr) { Polars::_decode("np_log10",  polars__np_log10 (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::exp2   ($arr) { Polars::_decode("np_exp2",   polars__np_exp2  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::floor  ($arr) { Polars::_decode("np_floor",  polars__np_floor (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::ceil   ($arr) { Polars::_decode("np_ceil",   polars__np_ceil  (to_json({ array => $arr })))->{array} }
+fn Polars::Ufunc::sign   ($arr) { Polars::_decode("np_sign",   polars__np_sign  (to_json({ array => $arr })))->{array} }
+
+# ── more binary ─────────────────────────────────────────────────────
+
+fn Polars::Ufunc::power   ($a, $b) { Polars::_decode("np_power",   polars__np_power  (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::mod     ($a, $b) { Polars::_decode("np_mod",     polars__np_mod    (to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::maximum ($a, $b) { Polars::_decode("np_maximum", polars__np_maximum(to_json({ a => $a, b => $b })))->{array} }
+fn Polars::Ufunc::minimum ($a, $b) { Polars::_decode("np_minimum", polars__np_minimum(to_json({ a => $a, b => $b })))->{array} }
+
 1

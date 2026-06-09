@@ -80,4 +80,48 @@ fn Polars::NdArray::argmax ($arr) {
     Polars::_decode("arr_argmax", polars__arr_argmax(to_json({ array => $arr })))->{index}
 }
 
+## Any element non-zero?
+fn Polars::NdArray::any ($arr) {
+    Polars::_decode("arr_any", polars__arr_any(to_json({ array => $arr })))->{bool}
+}
+## All elements non-zero?
+fn Polars::NdArray::all ($arr) {
+    Polars::_decode("arr_all", polars__arr_all(to_json({ array => $arr })))->{bool}
+}
+## Count of non-zero elements.
+fn Polars::NdArray::count_nonzero ($arr) {
+    Polars::_decode("arr_count_nonzero", polars__arr_count_nonzero(to_json({ array => $arr })))->{count}
+}
+## Cumulative sum (1-D).
+fn Polars::NdArray::cumsum ($arr) {
+    Polars::_decode("arr_cumsum", polars__arr_cumsum(to_json({ array => $arr })))->{array}
+}
+## Sort ascending (1-D).
+fn Polars::NdArray::sort ($arr) {
+    Polars::_decode("arr_sort", polars__arr_sort(to_json({ array => $arr })))->{array}
+}
+## Indices that would sort (1-D). Returns array of indices.
+fn Polars::NdArray::argsort ($arr) {
+    Polars::_decode("arr_argsort", polars__arr_argsort(to_json({ array => $arr })))->{indices}
+}
+## Clip to `[$lower, $upper]`. Either bound optional.
+fn Polars::NdArray::clip ($arr, $lower, $upper) {
+    my %req = (array => $arr)
+    $req{lower} = $lower if defined $lower
+    $req{upper} = $upper if defined $upper
+    Polars::_decode("arr_clip", polars__arr_clip(to_json(\%req)))->{array}
+}
+## First-order difference (1-D; output shorter by 1).
+fn Polars::NdArray::diff ($arr) {
+    Polars::_decode("arr_diff", polars__arr_diff(to_json({ array => $arr })))->{array}
+}
+## Sum along an axis (returns collapsed array).
+fn Polars::NdArray::sum_axis ($arr, $axis) {
+    Polars::_decode("arr_sum_axis", polars__arr_sum_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+## Mean along an axis.
+fn Polars::NdArray::mean_axis ($arr, $axis) {
+    Polars::_decode("arr_mean_axis", polars__arr_mean_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
 1

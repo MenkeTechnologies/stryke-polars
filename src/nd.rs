@@ -285,6 +285,112 @@ pub extern "C" fn polars__np_abs(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::abs))
 }
 
+/// Elementwise tanh.
+#[no_mangle]
+pub extern "C" fn polars__np_tanh(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::tanh))
+}
+
+/// Elementwise sinh.
+#[no_mangle]
+pub extern "C" fn polars__np_sinh(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::sinh))
+}
+
+/// Elementwise cosh.
+#[no_mangle]
+pub extern "C" fn polars__np_cosh(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::cosh))
+}
+
+/// Elementwise arctan.
+#[no_mangle]
+pub extern "C" fn polars__np_arctan(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::atan))
+}
+
+/// Elementwise arcsin.
+#[no_mangle]
+pub extern "C" fn polars__np_arcsin(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::asin))
+}
+
+/// Elementwise arccos.
+#[no_mangle]
+pub extern "C" fn polars__np_arccos(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::acos))
+}
+
+/// Elementwise log2.
+#[no_mangle]
+pub extern "C" fn polars__np_log2(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::log2))
+}
+
+/// Elementwise log10.
+#[no_mangle]
+pub extern "C" fn polars__np_log10(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::log10))
+}
+
+/// Elementwise exp2 (2^x).
+#[no_mangle]
+pub extern "C" fn polars__np_exp2(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::exp2))
+}
+
+/// Elementwise floor (re-exposed at np_ prefix matching numpy convention).
+#[no_mangle]
+pub extern "C" fn polars__np_floor(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::floor))
+}
+
+/// Elementwise ceil.
+#[no_mangle]
+pub extern "C" fn polars__np_ceil(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::ceil))
+}
+
+/// Elementwise sign (-1 / 0 / +1).
+#[no_mangle]
+pub extern "C" fn polars__np_sign(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| {
+            if x > 0.0 {
+                1.0
+            } else if x < 0.0 {
+                -1.0
+            } else {
+                0.0
+            }
+        })
+    })
+}
+
+/// Elementwise power: `a^b` per element. Shapes must match.
+#[no_mangle]
+pub extern "C" fn polars__np_power(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::powf))
+}
+
+/// Elementwise mod (`a % b`). Shapes must match.
+#[no_mangle]
+pub extern "C" fn polars__np_mod(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, |x, y| x.rem_euclid(y)))
+}
+
+/// Elementwise max (per-pair). Shapes must match.
+#[no_mangle]
+pub extern "C" fn polars__np_maximum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::max))
+}
+
+/// Elementwise min.
+#[no_mangle]
+pub extern "C" fn polars__np_minimum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| binary_op(&args, f64::min))
+}
+
 // ── ufuncs (binary) ────────────────────────────────────────────────────────
 
 /// Elementwise a + b. Shapes must match (no broadcasting in this slice).
@@ -652,6 +758,177 @@ pub extern "C" fn polars__arr_argmax(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P4c: more ndarray reductions / shape ops ───────────────────────────────
+
+/// Any element non-zero?
+#[no_mangle]
+pub extern "C" fn polars__arr_any(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let v = arr.iter().any(|&x| x != 0.0);
+        Ok(json!({"bool": v}))
+    })
+}
+
+/// All elements non-zero?
+#[no_mangle]
+pub extern "C" fn polars__arr_all(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let v = arr.iter().all(|&x| x != 0.0);
+        Ok(json!({"bool": v}))
+    })
+}
+
+/// Count of non-zero elements.
+#[no_mangle]
+pub extern "C" fn polars__arr_count_nonzero(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.iter().filter(|&&x| x != 0.0).count();
+        Ok(json!({"count": n}))
+    })
+}
+
+/// Cumulative sum along flat order (output: 1-D array of same total length).
+#[no_mangle]
+pub extern "C" fn polars__arr_cumsum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let mut acc = 0.0;
+        let data: Vec<f64> = arr
+            .iter()
+            .map(|&x| {
+                acc += x;
+                acc
+            })
+            .collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("cumsum shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Sort (ascending). 1-D only this slice.
+#[no_mangle]
+pub extern "C" fn polars__arr_sort(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("sort: only 1-D arrays supported in this slice");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("sort shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Indices that would sort the array (1-D only).
+#[no_mangle]
+pub extern "C" fn polars__arr_argsort(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("argsort: only 1-D arrays supported in this slice");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let mut idx: Vec<usize> = (0..data.len()).collect();
+        idx.sort_by(|&a, &b| {
+            data[a]
+                .partial_cmp(&data[b])
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        let indices: Vec<Value> = idx.iter().map(|&i| json!(i)).collect();
+        Ok(json!({"indices": indices}))
+    })
+}
+
+/// Clip every element to `[lo, hi]`.
+#[no_mangle]
+pub extern "C" fn polars__arr_clip(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let lo = args.get("lower").and_then(|v| v.as_f64());
+        let hi = args.get("upper").and_then(|v| v.as_f64());
+        if lo.is_none() && hi.is_none() {
+            bail!("must provide at least one of `lower`, `upper`");
+        }
+        let out = arr.mapv(|x| {
+            let mut v = x;
+            if let Some(l) = lo {
+                if v < l {
+                    v = l;
+                }
+            }
+            if let Some(h) = hi {
+                if v > h {
+                    v = h;
+                }
+            }
+            v
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// First-order difference (1-D, output is shorter by 1).
+#[no_mangle]
+pub extern "C" fn polars__arr_diff(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("diff: only 1-D arrays supported in this slice");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        if data.len() < 2 {
+            let empty = ArrayD::from_shape_vec(IxDyn(&[0]), vec![]).unwrap();
+            return Ok(json!({"array": array_to_value(&empty)}));
+        }
+        let diffs: Vec<f64> = data.windows(2).map(|w| w[1] - w[0]).collect();
+        let n = diffs.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), diffs).context("diff shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Sum along an axis (output shape: shape without `axis`).
+#[no_mangle]
+pub extern "C" fn polars__arr_sum_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis {} out of range for shape {:?}", axis, arr.shape());
+        }
+        let summed = arr.sum_axis(Axis(axis));
+        Ok(json!({"array": array_to_value(&summed)}))
+    })
+}
+
+/// Mean along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_mean_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis {} out of range", axis);
+        }
+        let meaned = arr
+            .mean_axis(Axis(axis))
+            .ok_or_else(|| anyhow!("mean_axis returned None"))?;
+        Ok(json!({"array": array_to_value(&meaned)}))
+    })
+}
+
 // ── P5b: more linalg ───────────────────────────────────────────────────────
 
 /// Matrix trace (sum of diagonal). Square matrix required.
@@ -679,6 +956,138 @@ pub extern "C" fn polars__linalg_rank(args: *const c_char) -> *mut c_char {
         )?;
         let r = m.rank(1e-10);
         Ok(json!({"rank": r}))
+    })
+}
+
+/// Matrix multiplication `A @ B`.
+///
+/// Args:   `{a: <A>, b: <B>}` both 2-D
+/// Result: `{matrix: ...}`
+#[no_mangle]
+pub extern "C" fn polars__linalg_matmul(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = parse_matrix(args.get("a").ok_or_else(|| anyhow!("missing `a`"))?)?;
+        let b = parse_matrix(args.get("b").ok_or_else(|| anyhow!("missing `b`"))?)?;
+        if a.ncols() != b.nrows() {
+            bail!("matmul: A.cols ({}) ≠ B.rows ({})", a.ncols(), b.nrows());
+        }
+        let c = a * b;
+        Ok(json!({"matrix": matrix_to_value(&c)}))
+    })
+}
+
+/// Singular values (1-D array, descending).
+#[no_mangle]
+pub extern "C" fn polars__linalg_singular_values(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let svd = m.svd(false, false);
+        let sv = svd.singular_values;
+        let data: Vec<f64> = sv.iter().copied().collect();
+        let n = data.len();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("svd shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+// ── P5c: more random distributions ─────────────────────────────────────────
+
+/// `np.random.exponential(scale, n)` — n samples from Exp(λ=1/scale).
+///
+/// Args:   `{n: u64, scale?: f64 (default 1), seed?: u64}`
+#[no_mangle]
+pub extern "C" fn polars__rand_exponential(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let scale = args.get("scale").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if scale <= 0.0 {
+            bail!("`scale` must be > 0");
+        }
+        let dist = rand_distr::Exp::new(1.0 / scale).context("Exp::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("exp shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.beta(alpha, beta, n)`.
+#[no_mangle]
+pub extern "C" fn polars__rand_beta(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let a = args
+            .get("alpha")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `alpha`"))?;
+        let b = args
+            .get("beta")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `beta`"))?;
+        if a <= 0.0 || b <= 0.0 {
+            bail!("alpha and beta must be > 0");
+        }
+        let dist = rand_distr::Beta::new(a, b).context("Beta::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("beta shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.gamma(shape, scale, n)`.
+#[no_mangle]
+pub extern "C" fn polars__rand_gamma(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let shape = args
+            .get("shape")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `shape`"))?;
+        let scale = args.get("scale").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        if shape <= 0.0 || scale <= 0.0 {
+            bail!("shape and scale must be > 0");
+        }
+        let dist = rand_distr::Gamma::new(shape, scale).context("Gamma::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("gamma shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Sample without replacement: `k` distinct values from `array`.
+///
+/// Args:   `{array, k: u64, seed?: u64}`
+#[no_mangle]
+pub extern "C" fn polars__rand_choice(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let k = args
+            .get("k")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `k`"))? as usize;
+        let data: Vec<f64> = arr.iter().copied().collect();
+        if k > data.len() {
+            bail!("k ({}) must be ≤ array length ({})", k, data.len());
+        }
+        use rand::seq::SliceRandom;
+        let mut rng = rng_for(&args);
+        let picked: Vec<f64> = data.choose_multiple(&mut rng, k).copied().collect();
+        let arr_out = ArrayD::from_shape_vec(IxDyn(&[k]), picked).context("choice shape")?;
+        Ok(json!({"array": array_to_value(&arr_out)}))
     })
 }
 

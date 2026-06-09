@@ -25,4 +25,34 @@ fn Polars::Random::uniform ($n, $low, $high, $seed) {
     Polars::_decode("rand_uniform", polars__rand_uniform(to_json(\%req)))->{array}
 }
 
+## `np.random.exponential(scale, n)`.
+fn Polars::Random::exponential ($n, $scale, $seed) {
+    my %req = (n => $n)
+    $req{scale} = $scale if defined $scale
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_exponential", polars__rand_exponential(to_json(\%req)))->{array}
+}
+
+## `np.random.beta(alpha, beta, n)`.
+fn Polars::Random::beta ($n, $alpha, $beta, $seed) {
+    my %req = (n => $n, alpha => $alpha, beta => $beta)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_beta", polars__rand_beta(to_json(\%req)))->{array}
+}
+
+## `np.random.gamma(shape, scale, n)`.
+fn Polars::Random::gamma ($n, $shape, $scale, $seed) {
+    my %req = (n => $n, shape => $shape)
+    $req{scale} = $scale if defined $scale
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_gamma", polars__rand_gamma(to_json(\%req)))->{array}
+}
+
+## Sample without replacement: `$k` distinct values from `$arr`.
+fn Polars::Random::choice ($arr, $k, $seed) {
+    my %req = (array => $arr, k => $k)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_choice", polars__rand_choice(to_json(\%req)))->{array}
+}
+
 1
