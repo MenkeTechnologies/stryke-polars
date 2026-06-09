@@ -196,4 +196,19 @@ fn Polars::NdArray::logspace ($start, $stop, $n, $base) {
     Polars::_decode("arr_logspace", polars__arr_logspace(to_json(\%req)))->{array}
 }
 
+## Extract diagonal of a 2-D array (1-D array, length min(rows, cols)).
+fn Polars::NdArray::diagonal ($arr) {
+    Polars::_decode("arr_diagonal", polars__arr_diagonal(to_json({ array => $arr })))->{array}
+}
+
+## `np.trace(a)` — sum of the diagonal of a 2-D array.
+fn Polars::NdArray::trace ($arr) {
+    Polars::_decode("arr_trace", polars__arr_trace(to_json({ array => $arr })))->{scalar}
+}
+
+## Roll elements of a 1-D array by `$shift` positions (positive = right).
+fn Polars::NdArray::roll ($arr, $shift) {
+    Polars::_decode("arr_roll", polars__arr_roll(to_json({ array => $arr, shift => $shift })))->{array}
+}
+
 1

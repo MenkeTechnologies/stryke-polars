@@ -1164,6 +1164,65 @@ pub extern "C" fn polars__arr_logspace(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Extract diagonal of a 2-D array (1-D output of length `min(rows, cols)`).
+#[no_mangle]
+pub extern "C" fn polars__arr_diagonal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 2 {
+            bail!("diagonal: 2-D array required");
+        }
+        let rows = arr.shape()[0];
+        let cols = arr.shape()[1];
+        let n = rows.min(cols);
+        let data: Vec<f64> = (0..n).map(|i| arr[[i, i]]).collect();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("diagonal shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Sum of diagonal (`np.trace`) — 2-D array required.
+#[no_mangle]
+pub extern "C" fn polars__arr_trace(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 2 {
+            bail!("trace: 2-D array required");
+        }
+        let rows = arr.shape()[0];
+        let cols = arr.shape()[1];
+        let n = rows.min(cols);
+        let s: f64 = (0..n).map(|i| arr[[i, i]]).sum();
+        Ok(json!({"scalar": scalar_to_value(s)}))
+    })
+}
+
+/// Roll elements of a 1-D array by `shift` positions (positive = right).
+#[no_mangle]
+pub extern "C" fn polars__arr_roll(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("roll: only 1-D arrays supported");
+        }
+        let shift = args
+            .get("shift")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `shift`"))?;
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        if n == 0 {
+            return Ok(json!({"array": array_to_value(&arr)}));
+        }
+        let s = ((shift % n as i64) + n as i64) as usize % n;
+        let mut out = Vec::with_capacity(n);
+        out.extend_from_slice(&data[n - s..]);
+        out.extend_from_slice(&data[..n - s]);
+        let result = ArrayD::from_shape_vec(IxDyn(&[n]), out).context("roll shape")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

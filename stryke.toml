@@ -278,6 +278,9 @@ exports = [
     "polars__np_fmax",
     "polars__np_fmin",
     "polars__np_heaviside",
+    "polars__arr_diagonal",
+    "polars__arr_trace",
+    "polars__arr_roll",
 ]
 
 [scripts]
