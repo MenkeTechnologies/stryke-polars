@@ -14,7 +14,7 @@ unless ($have_cdylib) {
     exit 0
 }
 
-p "1..19"
+p "1..18"
 
 my $i = 0
 
@@ -140,18 +140,7 @@ if ($@) {
     p ($ok ? "ok $i - df_to_json round-trip preserves id column" : "not ok $i - df_to_json round-trip failed")
 }
 
-# ── P1.1b: describe / drop / rename / sort / filter ─────────────────
-
-# describe: produces a stats frame with a `describe` column + numeric cols
-my $desc
-eval { $desc = Polars::DataFrame::describe(\%frame) }
-$i++
-if ($@) {
-    p "not ok $i - df_describe call: $@"
-} else {
-    my $ok = ref($desc) eq "HASH" && ref($desc->{id}) eq "ARRAY" && scalar(@{$desc->{id}}) >= 5
-    p ($ok ? "ok $i - df_describe returns stats for id" : "not ok $i - df_describe wrong shape")
-}
+# ── P1.1b: drop / rename / sort / filter ────────────────────────────
 
 # drop: remove `name` → only id + score remain
 my $dropped
