@@ -318,6 +318,12 @@ exports = [
     "polars__arr_ndim",
     "polars__arr_shape",
     "polars__arr_fill_diagonal",
+    "polars__arr_take",
+    "polars__arr_put",
+    "polars__arr_var_axis",
+    "polars__arr_std_axis",
+    "polars__arr_prod_axis",
+    "polars__arr_unique_counts",
 ]
 
 [scripts]

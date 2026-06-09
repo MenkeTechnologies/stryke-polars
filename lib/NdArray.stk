@@ -342,4 +342,34 @@ fn Polars::NdArray::fill_diagonal ($arr, $value) {
     Polars::_decode("arr_fill_diagonal", polars__arr_fill_diagonal(to_json({ array => $arr, value => $value })))->{array}
 }
 
+## `np.take(a, indices)` — gather values by flat indices.
+fn Polars::NdArray::take ($arr, $indices) {
+    Polars::_decode("arr_take", polars__arr_take(to_json({ array => $arr, indices => $indices })))->{array}
+}
+
+## `np.put(a, indices, values)` — scatter values; returns modified copy.
+fn Polars::NdArray::put ($arr, $indices, $values) {
+    Polars::_decode("arr_put", polars__arr_put(to_json({ array => $arr, indices => $indices, values => $values })))->{array}
+}
+
+## Variance along an axis (population).
+fn Polars::NdArray::var_axis ($arr, $axis) {
+    Polars::_decode("arr_var_axis", polars__arr_var_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## Std along an axis (population).
+fn Polars::NdArray::std_axis ($arr, $axis) {
+    Polars::_decode("arr_std_axis", polars__arr_std_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## Product along an axis.
+fn Polars::NdArray::prod_axis ($arr, $axis) {
+    Polars::_decode("arr_prod_axis", polars__arr_prod_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## Unique values + counts (1-D). Returns `{ values, counts }`.
+fn Polars::NdArray::unique_counts ($arr) {
+    Polars::_decode("arr_unique_counts", polars__arr_unique_counts(to_json({ array => $arr })))
+}
+
 1

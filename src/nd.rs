@@ -2020,6 +2020,157 @@ pub extern "C" fn polars__arr_fill_diagonal(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// `np.take(a, indices)` — gather values by 1-D indices (flat order).
+#[no_mangle]
+pub extern "C" fn polars__arr_take(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let idx_arr = args
+            .get("indices")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `indices`"))?;
+        let flat: Vec<f64> = arr.iter().copied().collect();
+        let n = flat.len();
+        let mut out = Vec::with_capacity(idx_arr.len());
+        for v in idx_arr {
+            let i = v.as_u64().ok_or_else(|| anyhow!("non-int index"))? as usize;
+            if i >= n {
+                bail!("take: index {i} out of range ({n})");
+            }
+            out.push(flat[i]);
+        }
+        let m = out.len();
+        let result = ArrayD::from_shape_vec(IxDyn(&[m]), out).context("take shape")?;
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.put(a, indices, values)` — scatter values into a (returns modified copy).
+#[no_mangle]
+pub extern "C" fn polars__arr_put(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let idx_arr = args
+            .get("indices")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `indices`"))?;
+        let val_arr = args
+            .get("values")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `values`"))?;
+        if idx_arr.len() != val_arr.len() {
+            bail!("put: indices/values length mismatch");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        for (iv, vv) in idx_arr.iter().zip(val_arr.iter()) {
+            let i = iv.as_u64().ok_or_else(|| anyhow!("non-int index"))? as usize;
+            let v = vv.as_f64().ok_or_else(|| anyhow!("non-numeric value"))?;
+            if i >= n {
+                bail!("put: index {i} out of range ({n})");
+            }
+            data[i] = v;
+        }
+        let out = ArrayD::from_shape_vec(IxDyn(arr.shape()), data).context("put shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Variance along an axis (population, ddof=0).
+#[no_mangle]
+pub extern "C" fn polars__arr_var_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            let n = row.len() as f64;
+            if n == 0.0 {
+                return f64::NAN;
+            }
+            let mean = row.iter().sum::<f64>() / n;
+            row.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Std along an axis (population, ddof=0).
+#[no_mangle]
+pub extern "C" fn polars__arr_std_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            let n = row.len() as f64;
+            if n == 0.0 {
+                return f64::NAN;
+            }
+            let mean = row.iter().sum::<f64>() / n;
+            (row.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n).sqrt()
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.prod_axis(a, axis)` — product along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_prod_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| row.iter().product::<f64>());
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.unique_with_counts(a)` — sorted unique values + per-value counts.
+/// 1-D only.
+#[no_mangle]
+pub extern "C" fn polars__arr_unique_counts(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("unique_counts: 1-D required");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let mut values: Vec<f64> = Vec::new();
+        let mut counts: Vec<u64> = Vec::new();
+        for v in data {
+            if let Some(&last) = values.last() {
+                if (v - last).abs() < 1e-15 {
+                    *counts.last_mut().unwrap() += 1;
+                    continue;
+                }
+            }
+            values.push(v);
+            counts.push(1);
+        }
+        let n = values.len();
+        let val_arr = ArrayD::from_shape_vec(IxDyn(&[n]), values).context("unique values")?;
+        let count_vals: Vec<Value> = counts.iter().map(|&c| json!(c)).collect();
+        Ok(json!({"values": array_to_value(&val_arr), "counts": count_vals}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
