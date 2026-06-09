@@ -63,4 +63,21 @@ fn Polars::NdArray::concatenate ($a, $b, $axis) {
     Polars::_decode("arr_concatenate", polars__arr_concatenate(to_json(\%req)))->{array}
 }
 
+## Identity matrix `n×n`.
+fn Polars::NdArray::eye ($n) {
+    Polars::_decode("arr_eye", polars__arr_eye(to_json({ n => $n })))->{array}
+}
+## Constant-fill array of given shape.
+fn Polars::NdArray::full ($shape, $value) {
+    Polars::_decode("arr_full", polars__arr_full(to_json({ shape => $shape, value => $value })))->{array}
+}
+## Index of minimum element (flat).
+fn Polars::NdArray::argmin ($arr) {
+    Polars::_decode("arr_argmin", polars__arr_argmin(to_json({ array => $arr })))->{index}
+}
+## Index of maximum element (flat).
+fn Polars::NdArray::argmax ($arr) {
+    Polars::_decode("arr_argmax", polars__arr_argmax(to_json({ array => $arr })))->{index}
+}
+
 1

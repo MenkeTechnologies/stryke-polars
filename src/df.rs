@@ -1466,6 +1466,226 @@ pub extern "C" fn polars__df_sample(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P1.5d: between / coalesce / explode ───────────────────────────────────
+
+/// Filter rows where `column` value is between `lower` and `upper` (both bounds inclusive).
+#[no_mangle]
+pub extern "C" fn polars__df_filter_between(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let lo = json_to_lit(
+            args.get("lower")
+                .ok_or_else(|| anyhow!("missing argument `lower`"))?,
+        )?;
+        let hi = json_to_lit(
+            args.get("upper")
+                .ok_or_else(|| anyhow!("missing argument `upper`"))?,
+        )?;
+        let result = df
+            .lazy()
+            .filter(col(col_name).is_between(lo, hi, ClosedInterval::Both))
+            .collect()
+            .context("filter_between")?;
+        return_frame(result)
+    })
+}
+
+/// Coalesce — first non-null across the listed columns.
+#[no_mangle]
+pub extern "C" fn polars__df_coalesce(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let names = args
+            .get("columns")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `columns`"))?;
+        let exprs: Vec<Expr> = names.iter().filter_map(|v| v.as_str().map(col)).collect();
+        if exprs.is_empty() {
+            return Err(anyhow!("`columns` must list at least one name"));
+        }
+        let as_name = args
+            .get("as_name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("coalesced");
+        let result = df
+            .lazy()
+            .with_columns([coalesce(&exprs).alias(as_name)])
+            .collect()
+            .context("coalesce")?;
+        return_frame(result)
+    })
+}
+
+/// Explode list-typed columns into one row per element.
+#[no_mangle]
+pub extern "C" fn polars__df_explode(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let names = args
+            .get("columns")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `columns`"))?;
+        let cols: Vec<Expr> = names.iter().filter_map(|v| v.as_str().map(col)).collect();
+        if cols.is_empty() {
+            return Err(anyhow!("`columns` must list at least one name"));
+        }
+        let result = df.lazy().explode(cols).collect().context("explode")?;
+        return_frame(result)
+    })
+}
+
+// ── P3: string accessor (`.str.*`) ─────────────────────────────────────────
+
+fn str_op(args: &Value, op_name: &str, build: impl Fn(Expr) -> Expr) -> Result<Value> {
+    let df = get_frame(args)?;
+    let col_name = args
+        .get("column")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| anyhow!("missing argument `column`"))?;
+    let result = df
+        .lazy()
+        .with_columns([build(col(col_name)).alias(col_name)])
+        .collect()
+        .with_context(|| format!("str op `{op_name}`"))?;
+    return_frame(result)
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_to_upper(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "to_upper", |e| e.str().to_uppercase())
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_to_lower(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "to_lower", |e| e.str().to_lowercase())
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_len(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "len", |e| e.str().len_chars()))
+}
+
+/// `Series.str.contains(pat, literal=false)`.
+#[no_mangle]
+pub extern "C" fn polars__str_contains(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let pattern = args
+            .get("pattern")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `pattern`"))?
+            .to_string();
+        let literal = args
+            .get("literal")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        str_op(&args, "contains", |e| {
+            e.str().contains(lit(pattern.clone()), literal)
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_starts_with(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let pat = args
+            .get("pattern")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `pattern`"))?
+            .to_string();
+        str_op(&args, "starts_with", |e| {
+            e.str().starts_with(lit(pat.clone()))
+        })
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_ends_with(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let pat = args
+            .get("pattern")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `pattern`"))?
+            .to_string();
+        str_op(&args, "ends_with", |e| e.str().ends_with(lit(pat.clone())))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_strip(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        str_op(&args, "strip", |e| e.str().strip_chars(lit(NULL)))
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn polars__str_replace_all(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let pat = args
+            .get("pattern")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `pattern`"))?
+            .to_string();
+        let repl = args
+            .get("replacement")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `replacement`"))?
+            .to_string();
+        let literal = args
+            .get("literal")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        str_op(&args, "replace_all", |e| {
+            e.str()
+                .replace_all(lit(pat.clone()), lit(repl.clone()), literal)
+        })
+    })
+}
+
+// ── P3: datetime accessor (`.dt.*`) ────────────────────────────────────────
+
+#[no_mangle]
+pub extern "C" fn polars__dt_year(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "year", |e| e.dt().year()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_month(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "month", |e| e.dt().month()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_day(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "day", |e| e.dt().day()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_hour(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "hour", |e| e.dt().hour()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_minute(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "minute", |e| e.dt().minute()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_second(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "second", |e| e.dt().second()))
+}
+
+#[no_mangle]
+pub extern "C" fn polars__dt_weekday(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| str_op(&args, "weekday", |e| e.dt().weekday()))
+}
+
 /// Replace literal `from` with literal `to` in `column`.
 ///
 /// Args:   `{frame, column: name, from, to}`

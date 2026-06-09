@@ -566,6 +566,122 @@ pub extern "C" fn polars__fft_fft(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P4b: more ndarray ──────────────────────────────────────────────────────
+
+/// Identity matrix `n×n`.
+///
+/// Args:   `{n: u64}`
+#[no_mangle]
+pub extern "C" fn polars__arr_eye(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let mut data = vec![0.0f64; n * n];
+        for i in 0..n {
+            data[i * n + i] = 1.0;
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n, n]), data).context("eye shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Constant-fill array.
+///
+/// Args:   `{shape, value: f64}`
+#[no_mangle]
+pub extern "C" fn polars__arr_full(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let shape = shape_arg(&args)?;
+        let value = args
+            .get("value")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `value` (f64)"))?;
+        let total: usize = shape.iter().product();
+        let data = vec![value; total];
+        let arr = ArrayD::from_shape_vec(IxDyn(&shape), data).context("full shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Index of minimum element across the flat iter.
+#[no_mangle]
+pub extern "C" fn polars__arr_argmin(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("argmin of empty array");
+        }
+        let (idx, _) = arr
+            .iter()
+            .enumerate()
+            .fold((0usize, f64::INFINITY), |(bi, bv), (i, &v)| {
+                if v < bv {
+                    (i, v)
+                } else {
+                    (bi, bv)
+                }
+            });
+        Ok(json!({"index": idx}))
+    })
+}
+
+/// Index of maximum element across the flat iter.
+#[no_mangle]
+pub extern "C" fn polars__arr_argmax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("argmax of empty array");
+        }
+        let (idx, _) =
+            arr.iter()
+                .enumerate()
+                .fold((0usize, f64::NEG_INFINITY), |(bi, bv), (i, &v)| {
+                    if v > bv {
+                        (i, v)
+                    } else {
+                        (bi, bv)
+                    }
+                });
+        Ok(json!({"index": idx}))
+    })
+}
+
+// ── P5b: more linalg ───────────────────────────────────────────────────────
+
+/// Matrix trace (sum of diagonal). Square matrix required.
+#[no_mangle]
+pub extern "C" fn polars__linalg_trace(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        if !m.is_square() {
+            bail!("trace: matrix must be square");
+        }
+        Ok(json!({"scalar": scalar_to_value(m.trace())}))
+    })
+}
+
+/// Matrix rank (numerical rank via SVD singular-value count > 1e-10).
+#[no_mangle]
+pub extern "C" fn polars__linalg_rank(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        let r = m.rank(1e-10);
+        Ok(json!({"rank": r}))
+    })
+}
+
 /// Inverse FFT. Input is complex (real + imag arrays); output is real-part
 /// 1-D array (drops imag).
 ///

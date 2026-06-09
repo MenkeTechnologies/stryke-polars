@@ -359,6 +359,53 @@ fn Polars::DataFrame::rolling_var  ($cols, $window, $min_periods, $columns) {
 
 # ── P1.5b: ewm ──────────────────────────────────────────────────────
 
+# ── P1.5d: between / coalesce / explode ─────────────────────────────
+
+fn Polars::DataFrame::filter_between ($cols, $column, $lower, $upper) {
+    Polars::_decode("df_filter_between", polars__df_filter_between(to_json({ frame => $cols, column => $column, lower => $lower, upper => $upper })))->{frame}
+}
+fn Polars::DataFrame::coalesce ($cols, $columns, $as_name) {
+    my %req = (frame => $cols, columns => $columns)
+    $req{as_name} = $as_name if defined $as_name
+    Polars::_decode("df_coalesce", polars__df_coalesce(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::explode ($cols, $columns) {
+    Polars::_decode("df_explode", polars__df_explode(to_json({ frame => $cols, columns => $columns })))->{frame}
+}
+
+# ── P3: string accessor ─────────────────────────────────────────────
+
+fn Polars::DataFrame::str_to_upper  ($cols, $column) { Polars::_decode("str_to_upper",  polars__str_to_upper (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::str_to_lower  ($cols, $column) { Polars::_decode("str_to_lower",  polars__str_to_lower (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::str_len       ($cols, $column) { Polars::_decode("str_len",       polars__str_len      (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::str_strip     ($cols, $column) { Polars::_decode("str_strip",     polars__str_strip    (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::str_contains  ($cols, $column, $pattern, $literal) {
+    my %req = (frame => $cols, column => $column, pattern => $pattern)
+    $req{literal} = $literal if defined $literal
+    Polars::_decode("str_contains", polars__str_contains(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::str_starts_with ($cols, $column, $pattern) {
+    Polars::_decode("str_starts_with", polars__str_starts_with(to_json({ frame => $cols, column => $column, pattern => $pattern })))->{frame}
+}
+fn Polars::DataFrame::str_ends_with ($cols, $column, $pattern) {
+    Polars::_decode("str_ends_with", polars__str_ends_with(to_json({ frame => $cols, column => $column, pattern => $pattern })))->{frame}
+}
+fn Polars::DataFrame::str_replace_all ($cols, $column, $pattern, $replacement, $literal) {
+    my %req = (frame => $cols, column => $column, pattern => $pattern, replacement => $replacement)
+    $req{literal} = $literal if defined $literal
+    Polars::_decode("str_replace_all", polars__str_replace_all(to_json(\%req)))->{frame}
+}
+
+# ── P3: datetime accessor ───────────────────────────────────────────
+
+fn Polars::DataFrame::dt_year    ($cols, $column) { Polars::_decode("dt_year",    polars__dt_year   (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_month   ($cols, $column) { Polars::_decode("dt_month",   polars__dt_month  (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_day     ($cols, $column) { Polars::_decode("dt_day",     polars__dt_day    (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_hour    ($cols, $column) { Polars::_decode("dt_hour",    polars__dt_hour   (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_minute  ($cols, $column) { Polars::_decode("dt_minute",  polars__dt_minute (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_second  ($cols, $column) { Polars::_decode("dt_second",  polars__dt_second (to_json({ frame => $cols, column => $column })))->{frame} }
+fn Polars::DataFrame::dt_weekday ($cols, $column) { Polars::_decode("dt_weekday", polars__dt_weekday(to_json({ frame => $cols, column => $column })))->{frame} }
+
 ## Exponentially weighted moving mean. `$alpha` defaults to 0.5.
 fn Polars::DataFrame::ewm_mean ($cols, $alpha, $columns) {
     my %req = (frame => $cols)

@@ -29,4 +29,14 @@ fn Polars::Linalg::norm ($arr) {
     Polars::_decode("linalg_norm", polars__linalg_norm(to_json({ array => $arr })))->{scalar}
 }
 
+## Matrix trace (sum of diagonal). Square required.
+fn Polars::Linalg::trace ($m) {
+    Polars::_decode("linalg_trace", polars__linalg_trace(to_json({ matrix => $m })))->{scalar}
+}
+
+## Numerical rank (SVD with tol=1e-10).
+fn Polars::Linalg::rank ($m) {
+    Polars::_decode("linalg_rank", polars__linalg_rank(to_json({ matrix => $m })))->{rank}
+}
+
 1
