@@ -1010,6 +1010,106 @@ pub extern "C" fn polars__rand_cauchy(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.zeros_like(array)`.
+#[no_mangle]
+pub extern "C" fn polars__arr_zeros_like(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let zeros = ArrayD::<f64>::zeros(IxDyn(arr.shape()));
+        Ok(json!({"array": array_to_value(&zeros)}))
+    })
+}
+
+/// `np.ones_like(array)`.
+#[no_mangle]
+pub extern "C" fn polars__arr_ones_like(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let ones = ArrayD::<f64>::ones(IxDyn(arr.shape()));
+        Ok(json!({"array": array_to_value(&ones)}))
+    })
+}
+
+/// `np.full_like(array, value)`.
+#[no_mangle]
+pub extern "C" fn polars__arr_full_like(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let value = args
+            .get("value")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `value`"))?;
+        let n = arr.len();
+        let data = vec![value; n];
+        let out = ArrayD::from_shape_vec(IxDyn(arr.shape()), data).context("full_like shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.fft.ifftshift(x)`.
+#[no_mangle]
+pub extern "C" fn polars__fft_ifftshift(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("ifftshift: only 1-D arrays supported");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        let mid = n - n / 2;
+        let mut shifted = Vec::with_capacity(n);
+        shifted.extend_from_slice(&data[mid..]);
+        shifted.extend_from_slice(&data[..mid]);
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), shifted).context("ifftshift shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.sum_along_axis` for a wider axis count — sum keeping reduced axis as 1.
+#[no_mangle]
+pub extern "C" fn polars__arr_normalize(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let s: f64 = arr.iter().sum();
+        if s == 0.0 {
+            bail!("normalize: array sums to 0");
+        }
+        let result = arr.mapv(|x| x / s);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// `np.linspace` style for log scale: n geometrically-spaced points.
+#[no_mangle]
+pub extern "C" fn polars__arr_logspace(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let start = args
+            .get("start")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `start` (exponent)"))?;
+        let stop = args
+            .get("stop")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `stop` (exponent)"))?;
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let base = args.get("base").and_then(|v| v.as_f64()).unwrap_or(10.0);
+        if n == 0 {
+            bail!("`n` must be ≥ 1");
+        }
+        let step = if n == 1 {
+            0.0
+        } else {
+            (stop - start) / (n as f64 - 1.0)
+        };
+        let data: Vec<f64> = (0..n).map(|i| base.powf(start + step * i as f64)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("logspace shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// Real eigenvalues of a symmetric matrix (descending).
 #[no_mangle]
 pub extern "C" fn polars__linalg_eigvalsh(args: *const c_char) -> *mut c_char {

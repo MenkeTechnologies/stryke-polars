@@ -173,4 +173,27 @@ fn Polars::NdArray::meshgrid ($x, $y) {
     Polars::_decode("arr_meshgrid", polars__arr_meshgrid(to_json({ x => $x, y => $y })))
 }
 
+## `np.zeros_like(array)`.
+fn Polars::NdArray::zeros_like ($arr) {
+    Polars::_decode("arr_zeros_like", polars__arr_zeros_like(to_json({ array => $arr })))->{array}
+}
+## `np.ones_like(array)`.
+fn Polars::NdArray::ones_like ($arr) {
+    Polars::_decode("arr_ones_like", polars__arr_ones_like(to_json({ array => $arr })))->{array}
+}
+## `np.full_like(array, value)`.
+fn Polars::NdArray::full_like ($arr, $value) {
+    Polars::_decode("arr_full_like", polars__arr_full_like(to_json({ array => $arr, value => $value })))->{array}
+}
+## Normalize so elements sum to 1.
+fn Polars::NdArray::normalize ($arr) {
+    Polars::_decode("arr_normalize", polars__arr_normalize(to_json({ array => $arr })))->{array}
+}
+## `np.logspace(start, stop, n, base=10)` — log-spaced 1-D array.
+fn Polars::NdArray::logspace ($start, $stop, $n, $base) {
+    my %req = (start => $start, stop => $stop, n => $n)
+    $req{base} = $base if defined $base
+    Polars::_decode("arr_logspace", polars__arr_logspace(to_json(\%req)))->{array}
+}
+
 1

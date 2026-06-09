@@ -43,4 +43,9 @@ fn Polars::FFT::irfft ($cplx, $n) {
     Polars::_decode("fft_irfft", polars__fft_irfft(to_json({ complex => $cplx, n => $n })))->{array}
 }
 
+## Inverse of `fftshift` (coincides for even-n arrays, differs for odd).
+fn Polars::FFT::ifftshift ($arr) {
+    Polars::_decode("fft_ifftshift", polars__fft_ifftshift(to_json({ array => $arr })))->{array}
+}
+
 1

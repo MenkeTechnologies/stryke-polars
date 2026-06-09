@@ -261,6 +261,12 @@ exports = [
     "polars__rand_pareto",
     "polars__rand_weibull",
     "polars__rand_cauchy",
+    "polars__arr_zeros_like",
+    "polars__arr_ones_like",
+    "polars__arr_full_like",
+    "polars__arr_normalize",
+    "polars__arr_logspace",
+    "polars__fft_ifftshift",
 ]
 
 [scripts]
