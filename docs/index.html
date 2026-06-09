@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="stryke-polars — POLARS + NDARRAY + LINALG + FFT + RANDOM // STRYKE PACKAGE. Full pandas + numpy surface (DataFrame, Series, Index, IO, ndarray, ufuncs, linalg, random, fft, polynomial, masked arrays, datetime64) in a single cdylib, dlopen'd in-process by stryke on `use Polars`.">
+  <title>stryke-polars — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="hud-static.css">
+  <link rel="stylesheet" href="tutorial.css">
+  <style>
+    .tutorial-main { max-width: 68rem; }
+    .docs-build-line {
+      margin: 0.35rem 0 0;
+      font-family: 'Share Tech Mono', ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+      max-width: 42rem;
+      opacity: 0.75;
+    }
+    .hub-scheme-strip {
+      border-bottom: 1px dashed var(--border);
+      background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+      padding: 0.55rem 1.5rem 0.65rem;
+      position: relative;
+    }
+    .hub-scheme-strip-inner {
+      max-width: 68rem;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .hub-scheme-strip .hud-scheme-label {
+      flex: 0 0 auto;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-align: left;
+    }
+    .hub-scheme-strip .scheme-grid {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+    }
+    @media (max-width: 720px) {
+      .hub-scheme-strip-inner { flex-direction: column; align-items: stretch; }
+      .hub-scheme-strip .scheme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .example-tbl { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 12.5px; }
+    .example-tbl th {
+      background: var(--bg-secondary);
+      color: var(--cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+    }
+    .example-tbl td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-dim);
+    }
+    .example-tbl td:first-child { width: 38%; color: var(--cyan); font-family: 'Share Tech Mono', monospace; }
+    .example-tbl td code { color: var(--accent-light); background: var(--bg); padding: 1px 5px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="app tutorial-app" id="docsApp">
+    <div class="crt-scanline" id="crtH" aria-hidden="true"></div>
+    <div class="crt-scanline-v" id="crtV" aria-hidden="true"></div>
+
+    <header class="tutorial-header">
+      <div class="tutorial-header-inner">
+        <div>
+          <h1 class="tutorial-brand">// STRYKE-POLARS &mdash; POLARS + NDARRAY + LINALG + FFT + RANDOM // STRYKE PACKAGE</h1>
+          <nav class="tutorial-crumbs" aria-label="Breadcrumb">
+            <span class="current">Docs</span>
+            <span class="sep">/</span>
+            <a href="report.html">Engineering report</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/stryke-polars" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/strykelang" target="_blank" rel="noopener noreferrer">strykelang</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/MenkeTechnologiesMeta" target="_blank" rel="noopener noreferrer">Meta</a>
+          </nav>
+          <p class="docs-build-line">stryke package &middot; cdylib <code>libstryke_polars.{dylib,so}</code> &middot; <code>dlopen</code>'d in-process on <code>use Polars</code> &middot; opt-in (kept out of stryke core)</p>
+        </div>
+        <div class="tutorial-toolbar">
+          <button type="button" class="btn btn-secondary" id="btnTheme" title="Toggle light/dark">Theme</button>
+          <button type="button" class="btn btn-secondary active" id="btnCrt" title="CRT scanline overlay">CRT</button>
+          <button type="button" class="btn btn-secondary active" id="btnNeon" title="Neon border pulse">Neon</button>
+          <a class="btn btn-secondary" href="report.html">Report</a>
+          <a class="btn btn-secondary" href="https://github.com/MenkeTechnologies/stryke-polars" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="btn btn-secondary" href="https://github.com/MenkeTechnologies/stryke-polars/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="hub-scheme-strip">
+      <div class="hub-scheme-strip-inner">
+        <span class="hud-scheme-label">// Color scheme</span>
+        <div class="scheme-grid" id="hudSchemeGrid"></div>
+      </div>
+    </div>
+
+    <main class="tutorial-main">
+      <h2 class="tutorial-title"><span class="step-hash">&gt;_</span>STRYKE-POLARS</h2>
+      <p class="tutorial-subtitle"><strong>The full pandas + numpy surface in one cdylib. No core bloat.</strong> pandas DataFrame + Series + Index + IO, numpy ndarray + ufuncs + linalg + random + fft + polynomial + masked arrays + datetime64 &mdash; all in a single cdylib, <code>dlopen</code>'d in-process by stryke via <code>use Polars</code>.</p>
+
+      <section class="tutorial-section">
+        <h2>Install</h2>
+<pre># build the cdylib + install as a stryke package
+git clone https://github.com/MenkeTechnologies/stryke-polars
+cd stryke-polars
+make install        # cargo build --release &amp;&amp; s pkg install -g .
+
+# or from a published GitHub release
+s pkg install -g github:MenkeTechnologies/stryke-polars
+
+# verify
+echo 'use Polars; say Polars::version()->{version}' | stryke</pre>
+        <p>The cdylib (<code>libstryke_polars.dylib</code> on macOS, <code>.so</code> on Linux) lands under <code>~/.stryke/pkg/Polars/</code>. <code>use Polars</code> resolves the path, <code>dlopen</code>'s it once per stryke session, and binds the FFI entry points lazily. Core stryke never links against polars/ndarray/openblas/rustfft.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Quick start</h2>
+<pre>use Polars
+
+my $v = Polars::version()
+say "stryke-polars $v-&gt;{version} (polars $v-&gt;{polars}, ndarray $v-&gt;{ndarray})"
+
+# DataFrame from a hash of columns
+my $df = df_new({ ticker =&gt; [qw(AAPL MSFT NVDA)], px =&gt; [231.4, 422.1, 138.9] })
+df_head($df, 2)
+df_shape($df)         # =&gt; [3, 2]
+df_columns($df)       # =&gt; [qw(ticker px)]
+
+# numpy-style array math
+my $a = arr_arange(0, 12)
+my $b = arr_reshape($a, [3, 4])
+np_mean($b, { axis =&gt; 0 })</pre>
+        <p>Real per-family examples land per phase &mdash; see the <a href="https://github.com/MenkeTechnologies/stryke-polars#0x08-phases">Phases</a> section of the README and the runnable scripts in <code>examples/</code>.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Surface</h2>
+        <table class="example-tbl">
+          <thead><tr><th>Family</th><th>Stryke prefix</th><th>cdylib prefix</th><th>Target fns</th></tr></thead>
+          <tbody>
+            <tr><td>pandas DataFrame</td><td><code>df_*</code></td><td><code>polars__df_*</code></td><td>~280</td></tr>
+            <tr><td>pandas Series</td><td><code>sr_*</code></td><td><code>polars__sr_*</code></td><td>~250</td></tr>
+            <tr><td>pandas Index family</td><td><code>idx_*</code></td><td><code>polars__idx_*</code></td><td>~80</td></tr>
+            <tr><td>pandas IO</td><td><code>pd_read_*</code> / <code>pd_to_*</code></td><td><code>polars__pd_*</code></td><td>~30</td></tr>
+            <tr><td>pandas groupby / rolling / resample / EWM</td><td><code>df_*</code></td><td><code>polars__df_*</code></td><td>~150</td></tr>
+            <tr><td>pandas <code>.str.*</code></td><td><code>sr_str_*</code></td><td><code>polars__sr_str_*</code></td><td>~50</td></tr>
+            <tr><td>pandas <code>.dt.*</code></td><td><code>sr_dt_*</code></td><td><code>polars__sr_dt_*</code></td><td>~50</td></tr>
+            <tr><td>pandas Categorical</td><td><code>cat_*</code></td><td><code>polars__cat_*</code></td><td>~30</td></tr>
+            <tr><td>numpy ndarray</td><td><code>arr_*</code></td><td><code>polars__arr_*</code></td><td>~180</td></tr>
+            <tr><td>numpy ufuncs</td><td><code>np_*</code></td><td><code>polars__np_*</code></td><td>~70</td></tr>
+            <tr><td>numpy linalg</td><td><code>linalg_*</code></td><td><code>polars__linalg_*</code></td><td>~50</td></tr>
+            <tr><td>numpy random</td><td><code>rand_*</code></td><td><code>polars__rand_*</code></td><td>~80</td></tr>
+            <tr><td>numpy fft</td><td><code>fft_*</code></td><td><code>polars__fft_*</code></td><td>~20</td></tr>
+            <tr><td>numpy polynomial</td><td><code>poly_*</code></td><td><code>polars__poly_*</code></td><td>~40</td></tr>
+            <tr><td>numpy masked</td><td><code>ma_*</code></td><td><code>polars__ma_*</code></td><td>~80</td></tr>
+            <tr><td>numpy datetime64 / timedelta64</td><td><code>dt64_*</code></td><td><code>polars__dt64_*</code></td><td>~30</td></tr>
+            <tr><td><strong>Total target surface</strong></td><td></td><td></td><td><strong>~1470</strong></td></tr>
+          </tbody>
+        </table>
+        <p>The full surface lands in numbered phases (P0&ndash;P5). Phase status, per-family <code>.stk</code> wrapper paths, and per-phase commits are in the README <a href="https://github.com/MenkeTechnologies/stryke-polars#0x04-api-reference">API Reference</a> and <a href="https://github.com/MenkeTechnologies/stryke-polars#0x08-phases">Phases</a> sections.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Why a package, not a builtin</h2>
+        <p>stryke's core stays small on purpose &mdash; most one-liner / awk-replacement work doesn't need 200+ transitive crates of pandas + numpy machinery. The full DataFrame + ndarray + linalg + FFT surface hits a different scale: heavy deps, narrow use cases. The opt-in package tier exists precisely for this shape of code.</p>
+        <p>Parquet / Arrow IO routes through <a href="https://github.com/MenkeTechnologies/stryke-arrow"><code>stryke-arrow</code></a> to share a single arrow-rs link in-process &mdash; <code>stryke-polars</code> does not link <code>arrow-rs</code> directly to avoid <code>dlsym</code> conflicts.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>FFI layer</h2>
+        <p>Each <code>polars__*</code> export takes a single <code>*const c_char</code> (NUL-terminated JSON args) and returns a <code>*mut c_char</code> (NUL-terminated JSON result). The cdylib owns the returned allocation; the stryke side <strong>must</strong> release it via the cdylib-exported <code>stryke_free_cstring</code>. stryke's <code>rust_ffi::load_cdylib</code> wires this automatically.</p>
+        <p>JSON envelope on success is the per-fn shape. JSON envelope on error is <code>{"error": "&lt;message&gt;"}</code>. Panics inside the cdylib are caught via <code>catch_unwind</code> and surfaced as errors &mdash; the stryke runtime never crashes on a cdylib bug.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Layout</h2>
+<pre>stryke-polars/
+&#9500;&#9472;&#9472; Cargo.toml             # crate-type = ["cdylib"]
+&#9500;&#9472;&#9472; src/
+&#9474;   &#9500;&#9472;&#9472; lib.rs            # FFI plumbing + polars__version
+&#9474;   &#9492;&#9472;&#9472; df.rs / sr.rs / nd.rs / linalg.rs / ...  # per-family modules
+&#9500;&#9472;&#9472; lib/                   # stryke .stk wrappers (one per family)
+&#9500;&#9472;&#9472; stryke.toml            # stryke package manifest
+&#9500;&#9472;&#9472; t/                     # stryke-side integration tests (s test t/)
+&#9500;&#9472;&#9472; tests/                 # Rust-side cargo tests + contract gates
+&#9500;&#9472;&#9472; examples/              # runnable .stk examples
+&#9500;&#9472;&#9472; Makefile               # `make install` builds + installs
+&#9492;&#9472;&#9472; docs/                  # this site (GitHub Pages)</pre>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Sibling packages</h2>
+        <p>Part of the stryke connector family. Browse the others via the <a href="https://github.com/MenkeTechnologies/MenkeTechnologiesMeta">MenkeTechnologiesMeta</a> umbrella repo (Tier 2):</p>
+        <ul>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-arrow">stryke-arrow</a> &mdash; Apache Arrow / Parquet / Feather / arrow-CSV/JSON</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-aws">stryke-aws</a> &mdash; S3, DynamoDB, SQS, Lambda, STS</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-docker">stryke-docker</a> &mdash; Docker daemon API</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-duckdb">stryke-duckdb</a> &mdash; embedded DuckDB</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-gcp">stryke-gcp</a> &mdash; Cloud Storage + Pub/Sub</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-grpc">stryke-grpc</a> &mdash; reflection-based gRPC client</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-k8s">stryke-k8s</a> &mdash; Kubernetes</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-kafka">stryke-kafka</a> &mdash; Apache Kafka</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-mongo">stryke-mongo</a> &mdash; MongoDB</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-mysql">stryke-mysql</a> &mdash; MySQL / MariaDB</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-parquet">stryke-parquet</a> &mdash; Parquet file inspector</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-postgres">stryke-postgres</a> &mdash; PostgreSQL</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-redis">stryke-redis</a> &mdash; Redis / Valkey</li>
+          <li><a href="https://github.com/MenkeTechnologies/stryke-spark">stryke-spark</a> &mdash; Spark Connect (no JVM)</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+  <script src="hud-theme.js"></script>
+</body>
+</html>

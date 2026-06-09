@@ -2,7 +2,7 @@
 name = "stryke-polars"
 version = "0.1.0"
 edition = "2021"
-description = "Polars + ndarray + linalg + FFT + random distributions cdylib for the stryke `polars` package — pandas/numpy surface dlopened in-process via stryke's FFI bridge"
+description = "pandas + numpy surface (DataFrame, ndarray, linalg, FFT, random) cdylib for the stryke `Polars` package — dlopened in-process via stryke FFI"
 authors = ["MenkeTechnologies"]
 license = "MIT"
 repository = "https://github.com/MenkeTechnologies/stryke-polars"
