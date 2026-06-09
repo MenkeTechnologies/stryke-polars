@@ -433,5 +433,29 @@ fn Polars::NdArray::diff_n ($arr, $n) {
 fn Polars::NdArray::column_stack ($a, $b) {
     Polars::_decode("arr_column_stack", polars__arr_column_stack(to_json({ a => $a, b => $b })))->{array}
 }
+## `np.row_stack(a, b)` — stack two 1-D arrays as rows of 2-D.
+fn Polars::NdArray::row_stack ($a, $b) {
+    Polars::_decode("arr_row_stack", polars__arr_row_stack(to_json({ a => $a, b => $b })))->{array}
+}
+## `np.real(a)` — identity (real-only layer).
+fn Polars::NdArray::real ($arr) {
+    Polars::_decode("arr_real", polars__arr_real(to_json({ array => $arr })))->{array}
+}
+## `np.imag(a)` — zeros_like (real-only layer).
+fn Polars::NdArray::imag ($arr) {
+    Polars::_decode("arr_imag", polars__arr_imag(to_json({ array => $arr })))->{array}
+}
+## `np.iscomplex(a)` — all zeros (real-only).
+fn Polars::NdArray::iscomplex ($arr) {
+    Polars::_decode("arr_iscomplex", polars__arr_iscomplex(to_json({ array => $arr })))->{array}
+}
+## `np.isreal(a)` — all ones (real-only).
+fn Polars::NdArray::isreal ($arr) {
+    Polars::_decode("arr_isreal", polars__arr_isreal(to_json({ array => $arr })))->{array}
+}
+## `np.flip(a)` — reverse 1-D.
+fn Polars::NdArray::flip ($arr) {
+    Polars::_decode("arr_flip", polars__arr_flip(to_json({ array => $arr })))->{array}
+}
 
 1

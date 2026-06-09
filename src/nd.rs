@@ -2566,6 +2566,92 @@ pub extern "C" fn polars__arr_column_stack(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.row_stack(a, b)` — stack two 1-D arrays as rows of a 2-D array.
+#[no_mangle]
+pub extern "C" fn polars__arr_row_stack(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("row_stack: 1-D inputs required");
+        }
+        if a.len() != b.len() {
+            bail!("row_stack: length mismatch");
+        }
+        let n = a.len();
+        let mut data = Vec::with_capacity(2 * n);
+        for &v in a.iter() {
+            data.push(v);
+        }
+        for &v in b.iter() {
+            data.push(v);
+        }
+        let out = ArrayD::from_shape_vec(IxDyn(&[2, n]), data).context("row_stack shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.real(a)` — identity since this layer is real-only.
+#[no_mangle]
+pub extern "C" fn polars__arr_real(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.imag(a)` — zeros_like since this layer is real-only.
+#[no_mangle]
+pub extern "C" fn polars__arr_imag(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let zeros = ArrayD::<f64>::zeros(IxDyn(arr.shape()));
+        Ok(json!({"array": array_to_value(&zeros)}))
+    })
+}
+
+/// `np.positive(a)` — identity. Mirrors `np.negative`.
+#[no_mangle]
+pub extern "C" fn polars__np_positive(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, |x| x))
+}
+
+/// `np.iscomplex(a)` — false for every element (this layer is real-only).
+#[no_mangle]
+pub extern "C" fn polars__arr_iscomplex(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let zeros = ArrayD::<f64>::zeros(IxDyn(arr.shape()));
+        Ok(json!({"array": array_to_value(&zeros)}))
+    })
+}
+
+/// `np.isreal(a)` — true for every element.
+#[no_mangle]
+pub extern "C" fn polars__arr_isreal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let ones = ArrayD::<f64>::ones(IxDyn(arr.shape()));
+        Ok(json!({"array": array_to_value(&ones)}))
+    })
+}
+
+/// `np.flip(a)` — reverse along an axis (1-D only this slice).
+#[no_mangle]
+pub extern "C" fn polars__arr_flip(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("flip: 1-D only in this slice");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        data.reverse();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("flip shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

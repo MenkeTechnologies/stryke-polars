@@ -340,6 +340,13 @@ exports = [
     "polars__linalg_lstsq",
     "polars__arr_diff_n",
     "polars__arr_column_stack",
+    "polars__arr_row_stack",
+    "polars__arr_real",
+    "polars__arr_imag",
+    "polars__np_positive",
+    "polars__arr_iscomplex",
+    "polars__arr_isreal",
+    "polars__arr_flip",
 ]
 
 [scripts]

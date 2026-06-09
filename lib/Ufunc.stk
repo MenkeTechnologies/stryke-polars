@@ -126,4 +126,9 @@ fn Polars::Ufunc::around ($arr, $decimals) {
     Polars::_decode("np_around", polars__np_around(to_json(\%req)))->{array}
 }
 
+## `np.positive(a)` — identity (mirror of np.negative).
+fn Polars::Ufunc::positive ($arr) {
+    Polars::_decode("np_positive", polars__np_positive(to_json({ array => $arr })))->{array}
+}
+
 1
