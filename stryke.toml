@@ -324,6 +324,10 @@ exports = [
     "polars__arr_std_axis",
     "polars__arr_prod_axis",
     "polars__arr_unique_counts",
+    "polars__arr_argmax_axis",
+    "polars__arr_argmin_axis",
+    "polars__np_select",
+    "polars__arr_setdiff1d",
 ]
 
 [scripts]

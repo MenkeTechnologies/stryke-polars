@@ -112,4 +112,11 @@ fn Polars::Ufunc::logaddexp2 ($a, $b) {
     Polars::_decode("np_logaddexp2", polars__np_logaddexp2(to_json({ a => $a, b => $b })))->{array}
 }
 
+## `np.select(conditions, choices, default)` — first matching condition wins.
+fn Polars::Ufunc::select ($conditions, $choices, $default) {
+    my %req = (conditions => $conditions, choices => $choices)
+    $req{default} = $default if defined $default
+    Polars::_decode("np_select", polars__np_select(to_json(\%req)))->{array}
+}
+
 1

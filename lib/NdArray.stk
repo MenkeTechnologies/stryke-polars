@@ -372,4 +372,18 @@ fn Polars::NdArray::unique_counts ($arr) {
     Polars::_decode("arr_unique_counts", polars__arr_unique_counts(to_json({ array => $arr })))
 }
 
+## `np.argmax(a, axis)` — index of max along axis.
+fn Polars::NdArray::argmax_axis ($arr, $axis) {
+    Polars::_decode("arr_argmax_axis", polars__arr_argmax_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+## `np.argmin(a, axis)`.
+fn Polars::NdArray::argmin_axis ($arr, $axis) {
+    Polars::_decode("arr_argmin_axis", polars__arr_argmin_axis(to_json({ array => $arr, axis => $axis })))->{array}
+}
+
+## `np.setdiff1d(a, b)` — sorted unique elements in a but not b (1-D).
+fn Polars::NdArray::setdiff1d ($a, $b) {
+    Polars::_decode("arr_setdiff1d", polars__arr_setdiff1d(to_json({ a => $a, b => $b })))->{array}
+}
+
 1

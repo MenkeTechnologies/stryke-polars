@@ -2171,6 +2171,137 @@ pub extern "C" fn polars__arr_unique_counts(args: *const c_char) -> *mut c_char 
     })
 }
 
+/// `np.argmax(a, axis)` along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_argmax_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out =
+            arr.map_axis(Axis(axis), |row| {
+                let (i, _) = row.iter().enumerate().fold(
+                    (0usize, f64::NEG_INFINITY),
+                    |(bi, bv), (i, &v)| if v > bv { (i, v) } else { (bi, bv) },
+                );
+                i as f64
+            });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.argmin(a, axis)` along an axis.
+#[no_mangle]
+pub extern "C" fn polars__arr_argmin_axis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let axis = args
+            .get("axis")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis`"))? as usize;
+        if axis >= arr.shape().len() {
+            bail!("axis out of range");
+        }
+        let out = arr.map_axis(Axis(axis), |row| {
+            let (i, _) =
+                row.iter()
+                    .enumerate()
+                    .fold((0usize, f64::INFINITY), |(bi, bv), (i, &v)| {
+                        if v < bv {
+                            (i, v)
+                        } else {
+                            (bi, bv)
+                        }
+                    });
+            i as f64
+        });
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.select(conditions, choices, default)` — first true condition's choice.
+///
+/// Args:   `{conditions: [<arr>, ...], choices: [<arr>, ...], default: f64}`
+#[no_mangle]
+pub extern "C" fn polars__np_select(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let conds = args
+            .get("conditions")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `conditions`"))?;
+        let choices = args
+            .get("choices")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `choices`"))?;
+        if conds.len() != choices.len() {
+            bail!("select: conditions/choices length mismatch");
+        }
+        if conds.is_empty() {
+            bail!("select: need at least one condition");
+        }
+        let default = args.get("default").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let cond_arrs: Vec<ArrayD<f64>> = conds.iter().map(parse_array).collect::<Result<_>>()?;
+        let choice_arrs: Vec<ArrayD<f64>> =
+            choices.iter().map(parse_array).collect::<Result<_>>()?;
+        let shape = cond_arrs[0].shape().to_vec();
+        for c in &cond_arrs {
+            if c.shape() != shape.as_slice() {
+                bail!("select: condition shapes mismatch");
+            }
+        }
+        for c in &choice_arrs {
+            if c.shape() != shape.as_slice() {
+                bail!("select: choice shapes mismatch");
+            }
+        }
+        let total: usize = shape.iter().product();
+        let mut data = vec![default; total];
+        for (i, slot) in data.iter_mut().enumerate().take(total) {
+            for k in 0..cond_arrs.len() {
+                if cond_arrs[k].as_slice().unwrap()[i] != 0.0 {
+                    *slot = choice_arrs[k].as_slice().unwrap()[i];
+                    break;
+                }
+            }
+        }
+        let out = ArrayD::from_shape_vec(IxDyn(&shape), data).context("select shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Element-set equality after sort + dedup. 1-D inputs.
+#[no_mangle]
+pub extern "C" fn polars__arr_setdiff1d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape().len() != 1 || b.shape().len() != 1 {
+            bail!("setdiff1d: 1-D inputs required");
+        }
+        let mut b_set: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        for &v in b.iter() {
+            b_set.insert(v.to_bits() as i64);
+        }
+        let mut result: Vec<f64> = Vec::new();
+        let mut seen: std::collections::BTreeSet<i64> = std::collections::BTreeSet::new();
+        for &v in a.iter() {
+            let bits = v.to_bits() as i64;
+            if !b_set.contains(&bits) && seen.insert(bits) {
+                result.push(v);
+            }
+        }
+        result.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = result.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), result).context("setdiff1d shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
