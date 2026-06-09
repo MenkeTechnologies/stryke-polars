@@ -12,6 +12,14 @@ lib-name = "stryke_polars"
 namespace = "Polars"
 exports = [
     "polars__version",
+    "polars__df_new",
+    "polars__df_head",
+    "polars__df_tail",
+    "polars__df_shape",
+    "polars__df_columns",
+    "polars__df_dtypes",
+    "polars__df_select",
+    "polars__df_to_json",
 ]
 
 [scripts]

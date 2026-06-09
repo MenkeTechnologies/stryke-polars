@@ -1,10 +1,12 @@
-# t/test_polars.stk — smoke test against the in-process cdylib.
+# t/test_polars.stk — smoke + P1.1 DataFrame round-trip tests against the
+# in-process cdylib.
 #
 # Requires the cdylib to be loaded. Install once with `s pkg install -g .`
 # from the package root so stryke's FFI bridge dlopens
 # lib/libstryke_polars.{dylib,so} on `use Polars`.
 
 use Polars
+use Polars::DataFrame
 
 my $have_cdylib = eval { Polars::version(); 1 }
 unless ($have_cdylib) {
@@ -12,11 +14,12 @@ unless ($have_cdylib) {
     exit 0
 }
 
-p "1..3"
+p "1..11"
 
 my $i = 0
 
-# version: shape
+# ── version ─────────────────────────────────────────────────────────
+
 my $v
 eval { $v = Polars::version() }
 $i++
@@ -27,7 +30,6 @@ if ($@) {
     p ($ok ? "ok $i - version returns hash with version + polars + ndarray" : "not ok $i - version shape unexpected")
 }
 
-# version: package version is non-empty
 $i++
 if (!defined $v || !defined $v->{version} || length($v->{version}) == 0) {
     p "not ok $i - version.version is empty"
@@ -35,10 +37,105 @@ if (!defined $v || !defined $v->{version} || length($v->{version}) == 0) {
     p "ok $i - version.version is non-empty ($v->{version})"
 }
 
-# version: ndarray version present
 $i++
 if (!defined $v || !defined $v->{ndarray} || length($v->{ndarray}) == 0) {
     p "not ok $i - version.ndarray is empty"
 } else {
     p "ok $i - version.ndarray is non-empty ($v->{ndarray})"
+}
+
+# ── DataFrame round trip ────────────────────────────────────────────
+
+my %frame = (
+    id    => [1, 2, 3, 4, 5],
+    score => [1.5, 2.0, 3.25, 4.0, 5.5],
+    name  => ["alice", "bob", "charlie", "dana", "eve"],
+)
+
+# new: shape + dtypes
+my $r
+eval { $r = Polars::DataFrame::new(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_new call: $@"
+} else {
+    my $ok = ref($r) eq "HASH" && ref($r->{shape}) eq "ARRAY" && $r->{shape}[0] == 5 && $r->{shape}[1] == 3
+    p ($ok ? "ok $i - df_new shape=[5,3]" : "not ok $i - df_new wrong shape: " . to_json($r->{shape}))
+}
+
+# shape
+my $shape
+eval { $shape = Polars::DataFrame::shape(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_shape call: $@"
+} else {
+    my $ok = ref($shape) eq "ARRAY" && $shape->[0] == 5 && $shape->[1] == 3
+    p ($ok ? "ok $i - df_shape=[5,3]" : "not ok $i - df_shape wrong: " . to_json($shape))
+}
+
+# columns
+my $columns
+eval { $columns = Polars::DataFrame::columns(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_columns call: $@"
+} else {
+    my $ok = ref($columns) eq "ARRAY" && scalar(@$columns) == 3
+    p ($ok ? "ok $i - df_columns returns 3 names" : "not ok $i - df_columns wrong: " . to_json($columns))
+}
+
+# dtypes — should include numeric + string after inference
+my $dtypes
+eval { $dtypes = Polars::DataFrame::dtypes(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_dtypes call: $@"
+} else {
+    my $ok = ref($dtypes) eq "ARRAY" && scalar(@$dtypes) == 3
+    p ($ok ? "ok $i - df_dtypes returns 3 dtypes" : "not ok $i - df_dtypes wrong: " . to_json($dtypes))
+}
+
+# head: 2 rows
+my $head
+eval { $head = Polars::DataFrame::head(\%frame, 2) }
+$i++
+if ($@) {
+    p "not ok $i - df_head call: $@"
+} else {
+    my $n = ref($head) eq "HASH" && ref($head->{id}) eq "ARRAY" ? scalar(@{$head->{id}}) : -1
+    p ($n == 2 ? "ok $i - df_head returns 2 rows" : "not ok $i - df_head wrong nrows=$n")
+}
+
+# tail: 2 rows
+my $tail
+eval { $tail = Polars::DataFrame::tail(\%frame, 2) }
+$i++
+if ($@) {
+    p "not ok $i - df_tail call: $@"
+} else {
+    my $n = ref($tail) eq "HASH" && ref($tail->{id}) eq "ARRAY" ? scalar(@{$tail->{id}}) : -1
+    p ($n == 2 ? "ok $i - df_tail returns 2 rows" : "not ok $i - df_tail wrong nrows=$n")
+}
+
+# select: id + score (drop name)
+my $sel
+eval { $sel = Polars::DataFrame::select(\%frame, ["id", "score"]) }
+$i++
+if ($@) {
+    p "not ok $i - df_select call: $@"
+} else {
+    my $ok = ref($sel) eq "HASH" && exists $sel->{id} && exists $sel->{score} && !exists $sel->{name}
+    p ($ok ? "ok $i - df_select projects [id, score]" : "not ok $i - df_select wrong shape")
+}
+
+# to_json round-trip — id column survives identical
+my $rt
+eval { $rt = Polars::DataFrame::to_json(\%frame) }
+$i++
+if ($@) {
+    p "not ok $i - df_to_json call: $@"
+} else {
+    my $ok = ref($rt) eq "HASH" && ref($rt->{id}) eq "ARRAY" && scalar(@{$rt->{id}}) == 5 && $rt->{id}[0] == 1 && $rt->{id}[4] == 5
+    p ($ok ? "ok $i - df_to_json round-trip preserves id column" : "not ok $i - df_to_json round-trip failed")
 }

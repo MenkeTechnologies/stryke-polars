@@ -1,14 +1,65 @@
 ## lib/DataFrame.stk — `use Polars::DataFrame`
 ##
-## pandas DataFrame surface: `df_head`, `df_tail`, `df_loc`, `df_iloc`,
-## `df_at`, `df_iat`, `df_describe`, `df_groupby`, `df_merge`, `df_join`,
-## `df_pivot`, `df_melt`, `df_rolling`, `df_resample`, … (~280 fns target).
+## pandas DataFrame surface (P1.1 slice).
 ##
-## Phase status: scaffold only — exports added per phase. See P1 in
-## docs/PHASES.md for the active dispatch list.
+## Wire format: columnar `{col1 => [v1, v2, ...], col2 => [...], ...}`. The
+## cdylib canonicalizes dtypes on the round trip — pass any hash-of-arrays
+## shape and read back the polars-inferred typing.
 
 package Polars::DataFrame
 
 use Polars
+
+# ── round-trip ───────────────────────────────────────────────────────
+
+## Construct a canonical DataFrame envelope from columnar input.
+## Returns `{ frame, shape => [nrows, ncols], dtypes => [str, ...] }`.
+fn Polars::DataFrame::new ($cols) {
+    Polars::_decode("df_new", polars__df_new(to_json({ frame => $cols })))
+}
+
+# ── readers ──────────────────────────────────────────────────────────
+
+## First `$n` rows (default 5). Returns `{ frame }`.
+fn Polars::DataFrame::head ($cols, $n) {
+    my %req = (frame => $cols)
+    $req{n} = $n if defined $n
+    Polars::_decode("df_head", polars__df_head(to_json(\%req)))->{frame}
+}
+
+## Last `$n` rows (default 5). Returns `{ frame }`.
+fn Polars::DataFrame::tail ($cols, $n) {
+    my %req = (frame => $cols)
+    $req{n} = $n if defined $n
+    Polars::_decode("df_tail", polars__df_tail(to_json(\%req)))->{frame}
+}
+
+## `[nrows, ncols]`.
+fn Polars::DataFrame::shape ($cols) {
+    Polars::_decode("df_shape", polars__df_shape(to_json({ frame => $cols })))->{shape}
+}
+
+## Column names.
+fn Polars::DataFrame::columns ($cols) {
+    Polars::_decode("df_columns", polars__df_columns(to_json({ frame => $cols })))->{columns}
+}
+
+## Per-column dtype as polars Display string (`i64`, `f64`, `str`, `bool`, …).
+fn Polars::DataFrame::dtypes ($cols) {
+    Polars::_decode("df_dtypes", polars__df_dtypes(to_json({ frame => $cols })))->{dtypes}
+}
+
+# ── projection ───────────────────────────────────────────────────────
+
+## Column subset in declared order. Returns the projected frame.
+fn Polars::DataFrame::select ($cols, $names) {
+    my $r = Polars::_decode("df_select", polars__df_select(to_json({ frame => $cols, columns => $names })))
+    $r->{frame}
+}
+
+## Round-trip through polars' canonical columnar form (dtype inference).
+fn Polars::DataFrame::to_json ($cols) {
+    Polars::_decode("df_to_json", polars__df_to_json(to_json({ frame => $cols })))->{frame}
+}
 
 1

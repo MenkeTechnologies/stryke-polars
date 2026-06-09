@@ -25,6 +25,8 @@
 //!   - `polars__ma_*`     — masked arrays
 //!   - `polars__dt64_*`   — datetime64 / timedelta64
 
+mod df;
+
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -37,7 +39,7 @@ const PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Allocate a CString from a JSON value, transfer ownership to caller.
 /// Caller MUST release via `stryke_free_cstring`.
-fn json_to_cstring(v: &Value) -> *mut c_char {
+pub(crate) fn json_to_cstring(v: &Value) -> *mut c_char {
     let s = v.to_string();
     CString::new(s)
         .map(|c| c.into_raw())
@@ -45,7 +47,7 @@ fn json_to_cstring(v: &Value) -> *mut c_char {
 }
 
 /// Decode a JSON arg buffer or fall back to `{}`.
-fn decode_args(ptr: *const c_char) -> Value {
+pub(crate) fn decode_args(ptr: *const c_char) -> Value {
     if ptr.is_null() {
         return json!({});
     }
@@ -59,7 +61,7 @@ fn decode_args(ptr: *const c_char) -> Value {
 /// Run a JSON-in/JSON-out body inside `catch_unwind`; convert any panic or
 /// returned `Err` into `{"error": "..."}` so the stryke side gets a
 /// well-formed JSON envelope every time.
-fn ffi_call<F>(args_ptr: *const c_char, body: F) -> *mut c_char
+pub(crate) fn ffi_call<F>(args_ptr: *const c_char, body: F) -> *mut c_char
 where
     F: FnOnce(Value) -> anyhow::Result<Value>,
 {
