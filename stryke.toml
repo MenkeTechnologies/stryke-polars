@@ -65,6 +65,21 @@ exports = [
     "polars__df_pct_change",
     "polars__df_rank",
     "polars__df_clip",
+    "polars__df_groupby_sum",
+    "polars__df_groupby_mean",
+    "polars__df_groupby_median",
+    "polars__df_groupby_min",
+    "polars__df_groupby_max",
+    "polars__df_groupby_std",
+    "polars__df_groupby_var",
+    "polars__df_groupby_count",
+    "polars__df_rolling_sum",
+    "polars__df_rolling_mean",
+    "polars__df_rolling_min",
+    "polars__df_rolling_max",
+    "polars__df_rolling_std",
+    "polars__df_rolling_var",
+    "polars__df_ewm_mean",
 ]
 
 [scripts]

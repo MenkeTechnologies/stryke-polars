@@ -303,4 +303,68 @@ fn Polars::DataFrame::clip ($cols, $lower, $upper, $columns) {
     Polars::_decode("df_clip", polars__df_clip(to_json(\%req)))->{frame}
 }
 
+# ── P1.5b: groupby ──────────────────────────────────────────────────
+
+## Group-by aggregations. `$by` is an arrayref of key columns. The agg is
+## applied to every column NOT in `$by`.
+fn Polars::DataFrame::groupby_sum    ($cols, $by) { Polars::_decode("df_groupby_sum",    polars__df_groupby_sum   (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_mean   ($cols, $by) { Polars::_decode("df_groupby_mean",   polars__df_groupby_mean  (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_median ($cols, $by) { Polars::_decode("df_groupby_median", polars__df_groupby_median(to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_min    ($cols, $by) { Polars::_decode("df_groupby_min",    polars__df_groupby_min   (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_max    ($cols, $by) { Polars::_decode("df_groupby_max",    polars__df_groupby_max   (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_std    ($cols, $by) { Polars::_decode("df_groupby_std",    polars__df_groupby_std   (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_var    ($cols, $by) { Polars::_decode("df_groupby_var",    polars__df_groupby_var   (to_json({ frame => $cols, by => $by })))->{frame} }
+fn Polars::DataFrame::groupby_count  ($cols, $by) { Polars::_decode("df_groupby_count",  polars__df_groupby_count (to_json({ frame => $cols, by => $by })))->{frame} }
+
+# ── P1.5b: rolling ──────────────────────────────────────────────────
+
+## Rolling-window aggregations. `$window` ≥ 1; `$min_periods` defaults to
+## `$window`; `$columns` arrayref restricts which columns get the op.
+fn Polars::DataFrame::rolling_sum  ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_sum", polars__df_rolling_sum(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::rolling_mean ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_mean", polars__df_rolling_mean(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::rolling_min  ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_min", polars__df_rolling_min(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::rolling_max  ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_max", polars__df_rolling_max(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::rolling_std  ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_std", polars__df_rolling_std(to_json(\%req)))->{frame}
+}
+fn Polars::DataFrame::rolling_var  ($cols, $window, $min_periods, $columns) {
+    my %req = (frame => $cols, window => $window)
+    $req{min_periods} = $min_periods if defined $min_periods
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_rolling_var", polars__df_rolling_var(to_json(\%req)))->{frame}
+}
+
+# ── P1.5b: ewm ──────────────────────────────────────────────────────
+
+## Exponentially weighted moving mean. `$alpha` defaults to 0.5.
+fn Polars::DataFrame::ewm_mean ($cols, $alpha, $columns) {
+    my %req = (frame => $cols)
+    $req{alpha} = $alpha if defined $alpha
+    $req{columns} = $columns if defined $columns
+    Polars::_decode("df_ewm_mean", polars__df_ewm_mean(to_json(\%req)))->{frame}
+}
+
 1

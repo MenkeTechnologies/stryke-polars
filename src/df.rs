@@ -1010,3 +1010,255 @@ pub extern "C" fn polars__df_clip(args: *const c_char) -> *mut c_char {
         })
     })
 }
+
+// ── P1.5b: groupby + rolling + ewm ─────────────────────────────────────────
+
+#[derive(Clone, Copy)]
+enum GroupAgg {
+    Sum,
+    Mean,
+    Median,
+    Min,
+    Max,
+    Std,
+    Var,
+    Count,
+}
+
+fn groupby_op(args: &Value, agg: GroupAgg) -> Result<Value> {
+    let df = get_frame(args)?;
+    let by_arr = args
+        .get("by")
+        .and_then(|v| v.as_array())
+        .ok_or_else(|| anyhow!("missing argument `by` (column names to group by)"))?;
+    let by_names: Vec<String> = by_arr
+        .iter()
+        .filter_map(|v| v.as_str().map(String::from))
+        .collect();
+    if by_names.is_empty() {
+        return Err(anyhow!("`by` must list at least one column"));
+    }
+    let by_exprs: Vec<Expr> = by_names.iter().map(|s| col(s.as_str())).collect();
+
+    let value_names: Vec<String> = df
+        .get_column_names_owned()
+        .iter()
+        .map(|s| s.to_string())
+        .filter(|n| !by_names.contains(n))
+        .collect();
+
+    let agg_exprs: Vec<Expr> = value_names
+        .iter()
+        .map(|n| {
+            let c = col(n.as_str());
+            match agg {
+                GroupAgg::Sum => c.sum(),
+                GroupAgg::Mean => c.mean(),
+                GroupAgg::Median => c.median(),
+                GroupAgg::Min => c.min(),
+                GroupAgg::Max => c.max(),
+                GroupAgg::Std => c.std(1),
+                GroupAgg::Var => c.var(1),
+                GroupAgg::Count => c.count(),
+            }
+            .alias(n.as_str())
+        })
+        .collect();
+
+    let result = df
+        .lazy()
+        .group_by(by_exprs)
+        .agg(agg_exprs)
+        .collect()
+        .context("group_by agg")?;
+    return_frame(result)
+}
+
+/// Group by `by` and sum each remaining column.
+///
+/// Args:   `{frame, by: [name, ...]}`
+/// Result: `{frame}` — one row per group, summed columns
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_sum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Sum))
+}
+
+/// Group by `by` and mean each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Mean))
+}
+
+/// Group by `by` and median each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_median(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Median))
+}
+
+/// Group by `by` and min each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_min(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Min))
+}
+
+/// Group by `by` and max each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_max(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Max))
+}
+
+/// Group by `by` and std (ddof=1) each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_std(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Std))
+}
+
+/// Group by `by` and var (ddof=1) each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_var(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Var))
+}
+
+/// Group by `by` and count each remaining column.
+#[no_mangle]
+pub extern "C" fn polars__df_groupby_count(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| groupby_op(&args, GroupAgg::Count))
+}
+
+// ── rolling ────────────────────────────────────────────────────────────────
+
+#[derive(Clone, Copy)]
+enum RollOp {
+    Sum,
+    Mean,
+    Min,
+    Max,
+    Std,
+    Var,
+}
+
+fn rolling_op(args: &Value, op: RollOp) -> Result<Value> {
+    let df = get_frame(args)?;
+    let window = args
+        .get("window")
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| anyhow!("missing argument `window` (rolling window size)"))?
+        as usize;
+    if window == 0 {
+        return Err(anyhow!("`window` must be ≥ 1"));
+    }
+    let min_periods = args
+        .get("min_periods")
+        .and_then(|v| v.as_u64())
+        .map(|n| n as usize)
+        .unwrap_or(window);
+    let names: Vec<String> = match args.get("columns").and_then(|v| v.as_array()) {
+        Some(arr) => arr
+            .iter()
+            .filter_map(|x| x.as_str().map(String::from))
+            .collect(),
+        None => df
+            .get_column_names_owned()
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+    };
+
+    let opts = RollingOptionsFixedWindow {
+        window_size: window,
+        min_periods,
+        ..Default::default()
+    };
+
+    let exprs: Vec<Expr> = names
+        .iter()
+        .map(|n| {
+            let c = col(n.as_str());
+            let e = match op {
+                RollOp::Sum => c.rolling_sum(opts.clone()),
+                RollOp::Mean => c.rolling_mean(opts.clone()),
+                RollOp::Min => c.rolling_min(opts.clone()),
+                RollOp::Max => c.rolling_max(opts.clone()),
+                RollOp::Std => c.rolling_std(opts.clone()),
+                RollOp::Var => c.rolling_var(opts.clone()),
+            };
+            e.alias(n.as_str())
+        })
+        .collect();
+    let result = df.lazy().with_columns(exprs).collect().context("rolling")?;
+    return_frame(result)
+}
+
+/// Rolling sum over a fixed window. `window` ≥ 1 required.
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_sum(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Sum))
+}
+
+/// Rolling mean.
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Mean))
+}
+
+/// Rolling min.
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_min(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Min))
+}
+
+/// Rolling max.
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_max(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Max))
+}
+
+/// Rolling std (ddof=1).
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_std(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Std))
+}
+
+/// Rolling var (ddof=1).
+#[no_mangle]
+pub extern "C" fn polars__df_rolling_var(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| rolling_op(&args, RollOp::Var))
+}
+
+// ── ewm ────────────────────────────────────────────────────────────────────
+
+/// pandas `ewm(alpha=).mean()`. Default alpha=0.5.
+///
+/// Args:   `{frame, alpha?: f64, columns?: [name, ...]}`
+#[no_mangle]
+pub extern "C" fn polars__df_ewm_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let alpha = args.get("alpha").and_then(|v| v.as_f64()).unwrap_or(0.5);
+        let names: Vec<String> = match args.get("columns").and_then(|v| v.as_array()) {
+            Some(arr) => arr
+                .iter()
+                .filter_map(|x| x.as_str().map(String::from))
+                .collect(),
+            None => df
+                .get_column_names_owned()
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
+        };
+        let opts = EWMOptions {
+            alpha,
+            ..Default::default()
+        };
+        let exprs: Vec<Expr> = names
+            .iter()
+            .map(|n| col(n.as_str()).ewm_mean(opts).alias(n.as_str()))
+            .collect();
+        let result = df
+            .lazy()
+            .with_columns(exprs)
+            .collect()
+            .context("ewm_mean")?;
+        return_frame(result)
+    })
+}
