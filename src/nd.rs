@@ -1223,6 +1223,70 @@ pub extern "C" fn polars__arr_roll(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Flatten any-D to 1-D (preserves row-major order).
+#[no_mangle]
+pub extern "C" fn polars__arr_flatten(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let n = data.len();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("flatten shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Remove all length-1 dims (`np.squeeze`).
+#[no_mangle]
+pub extern "C" fn polars__arr_squeeze(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let new_shape: Vec<usize> = arr.shape().iter().copied().filter(|&d| d != 1).collect();
+        let final_shape = if new_shape.is_empty() {
+            vec![1]
+        } else {
+            new_shape
+        };
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let out = ArrayD::from_shape_vec(IxDyn(&final_shape), data).context("squeeze shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.sinc(x)` — normalized sinc: `sin(πx) / (πx)` (1 at x=0).
+#[no_mangle]
+pub extern "C" fn polars__np_sinc(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| {
+            if x == 0.0 {
+                1.0
+            } else {
+                let px = std::f64::consts::PI * x;
+                px.sin() / px
+            }
+        })
+    })
+}
+
+/// `np.sign_bit(x)` — 1.0 if negative (or -0.0), else 0.0.
+#[no_mangle]
+pub extern "C" fn polars__np_signbit(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        unary_op(&args, |x| if x.is_sign_negative() { 1.0 } else { 0.0 })
+    })
+}
+
+/// `np.deg2rad(x)`.
+#[no_mangle]
+pub extern "C" fn polars__np_deg2rad(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::to_radians))
+}
+
+/// `np.rad2deg(x)`.
+#[no_mangle]
+pub extern "C" fn polars__np_rad2deg(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| unary_op(&args, f64::to_degrees))
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

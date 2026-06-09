@@ -281,6 +281,12 @@ exports = [
     "polars__arr_diagonal",
     "polars__arr_trace",
     "polars__arr_roll",
+    "polars__arr_flatten",
+    "polars__arr_squeeze",
+    "polars__np_sinc",
+    "polars__np_signbit",
+    "polars__np_deg2rad",
+    "polars__np_rad2deg",
 ]
 
 [scripts]

@@ -211,4 +211,14 @@ fn Polars::NdArray::roll ($arr, $shift) {
     Polars::_decode("arr_roll", polars__arr_roll(to_json({ array => $arr, shift => $shift })))->{array}
 }
 
+## Flatten any-D array to 1-D.
+fn Polars::NdArray::flatten ($arr) {
+    Polars::_decode("arr_flatten", polars__arr_flatten(to_json({ array => $arr })))->{array}
+}
+
+## `np.squeeze(a)` — drop length-1 dims.
+fn Polars::NdArray::squeeze ($arr) {
+    Polars::_decode("arr_squeeze", polars__arr_squeeze(to_json({ array => $arr })))->{array}
+}
+
 1
