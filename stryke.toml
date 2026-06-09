@@ -314,6 +314,10 @@ exports = [
     "polars__np_logaddexp",
     "polars__np_logaddexp2",
     "polars__arr_compress",
+    "polars__arr_size",
+    "polars__arr_ndim",
+    "polars__arr_shape",
+    "polars__arr_fill_diagonal",
 ]
 
 [scripts]

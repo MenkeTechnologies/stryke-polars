@@ -322,4 +322,24 @@ fn Polars::NdArray::compress ($arr, $mask) {
     Polars::_decode("arr_compress", polars__arr_compress(to_json({ array => $arr, mask => $mask })))->{array}
 }
 
+## `np.size(a)` — total number of elements.
+fn Polars::NdArray::size ($arr) {
+    Polars::_decode("arr_size", polars__arr_size(to_json({ array => $arr })))->{size}
+}
+
+## `np.ndim(a)` — number of dimensions.
+fn Polars::NdArray::ndim ($arr) {
+    Polars::_decode("arr_ndim", polars__arr_ndim(to_json({ array => $arr })))->{ndim}
+}
+
+## `np.shape(a)` — shape as a list.
+fn Polars::NdArray::shape ($arr) {
+    Polars::_decode("arr_shape", polars__arr_shape(to_json({ array => $arr })))->{shape}
+}
+
+## `np.fill_diagonal(a, value)` — set the diagonal of a 2-D array to `value`.
+fn Polars::NdArray::fill_diagonal ($arr, $value) {
+    Polars::_decode("arr_fill_diagonal", polars__arr_fill_diagonal(to_json({ array => $arr, value => $value })))->{array}
+}
+
 1

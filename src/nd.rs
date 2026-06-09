@@ -1966,6 +1966,60 @@ pub extern "C" fn polars__arr_compress(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.size(a)` — total element count as scalar.
+#[no_mangle]
+pub extern "C" fn polars__arr_size(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        Ok(json!({"size": arr.len()}))
+    })
+}
+
+/// `np.ndim(a)` — number of dimensions.
+#[no_mangle]
+pub extern "C" fn polars__arr_ndim(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        Ok(json!({"ndim": arr.shape().len()}))
+    })
+}
+
+/// `np.shape(a)` — shape as 1-D array.
+#[no_mangle]
+pub extern "C" fn polars__arr_shape(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let shape: Vec<u64> = arr.shape().iter().map(|&d| d as u64).collect();
+        Ok(json!({"shape": shape}))
+    })
+}
+
+/// `np.fill_diagonal` — set the diagonal of a 2-D array to `value`.
+/// Returns the modified array.
+#[no_mangle]
+pub extern "C" fn polars__arr_fill_diagonal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 2 {
+            bail!("fill_diagonal: 2-D required");
+        }
+        let value = args
+            .get("value")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `value`"))?;
+        let rows = arr.shape()[0];
+        let cols = arr.shape()[1];
+        let n = rows.min(cols);
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        for i in 0..n {
+            data[i * cols + i] = value;
+        }
+        let out =
+            ArrayD::from_shape_vec(IxDyn(arr.shape()), data).context("fill_diagonal shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {
