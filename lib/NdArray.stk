@@ -163,4 +163,14 @@ fn Polars::NdArray::cumprod ($arr) { Polars::_decode("arr_cumprod", polars__arr_
 fn Polars::NdArray::cummin  ($arr) { Polars::_decode("arr_cummin",  polars__arr_cummin (to_json({ array => $arr })))->{array} }
 fn Polars::NdArray::cummax  ($arr) { Polars::_decode("arr_cummax",  polars__arr_cummax (to_json({ array => $arr })))->{array} }
 
+## Split a 1-D array into `$n_parts` chunks. Returns arrayref of arrays.
+fn Polars::NdArray::split ($arr, $n_parts) {
+    Polars::_decode("arr_split", polars__arr_split(to_json({ array => $arr, n_parts => $n_parts })))->{chunks}
+}
+
+## `np.meshgrid(x, y)` — returns `{ x, y }` (each a 2-D array `(ny, nx)`).
+fn Polars::NdArray::meshgrid ($x, $y) {
+    Polars::_decode("arr_meshgrid", polars__arr_meshgrid(to_json({ x => $x, y => $y })))
+}
+
 1

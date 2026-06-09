@@ -114,4 +114,25 @@ fn Polars::Random::dirichlet ($n, $alpha, $seed) {
     Polars::_decode("rand_dirichlet", polars__rand_dirichlet(to_json(\%req)))->{array}
 }
 
+## `np.random.pareto(shape, n)`.
+fn Polars::Random::pareto ($n, $shape, $seed) {
+    my %req = (n => $n, shape => $shape)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_pareto", polars__rand_pareto(to_json(\%req)))->{array}
+}
+
+## `np.random.weibull(shape, n)` (scale=1).
+fn Polars::Random::weibull ($n, $shape, $seed) {
+    my %req = (n => $n, shape => $shape)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_weibull", polars__rand_weibull(to_json(\%req)))->{array}
+}
+
+## `np.random.standard_cauchy(n)` — Cauchy(0, 1).
+fn Polars::Random::cauchy ($n, $seed) {
+    my %req = (n => $n)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("rand_cauchy", polars__rand_cauchy(to_json(\%req)))->{array}
+}
+
 1

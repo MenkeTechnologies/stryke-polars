@@ -32,4 +32,14 @@ fn Polars::Polynomial::polyfit ($x, $y, $deg) {
     Polars::_decode("poly_polyfit", polars__poly_polyfit(to_json({ x => $x, y => $y, deg => $deg })))->{coefficients}
 }
 
+## Add two polynomials (pad shorter; coefficient-wise).
+fn Polars::Polynomial::polyadd ($a, $b) {
+    Polars::_decode("poly_polyadd", polars__poly_polyadd(to_json({ a => $a, b => $b })))->{coefficients}
+}
+
+## Multiply two polynomials (convolution of coefficient lists).
+fn Polars::Polynomial::polymul ($a, $b) {
+    Polars::_decode("poly_polymul", polars__poly_polymul(to_json({ a => $a, b => $b })))->{coefficients}
+}
+
 1

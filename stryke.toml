@@ -253,6 +253,14 @@ exports = [
     "polars__rand_dirichlet",
     "polars__poly_polyfit",
     "polars__linalg_eigvalsh",
+    "polars__fft_irfft",
+    "polars__poly_polyadd",
+    "polars__poly_polymul",
+    "polars__arr_split",
+    "polars__arr_meshgrid",
+    "polars__rand_pareto",
+    "polars__rand_weibull",
+    "polars__rand_cauchy",
 ]
 
 [scripts]

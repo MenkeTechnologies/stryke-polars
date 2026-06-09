@@ -783,6 +783,233 @@ pub extern "C" fn polars__poly_polyfit(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Inverse real-FFT — accepts `n/2 + 1` complex bins, returns `n` real values.
+///
+/// Args:   `{complex: {real, imag, shape: [m]}, n: u64}` where `n` is the
+/// original signal length (`m = n/2 + 1`).
+#[no_mangle]
+pub extern "C" fn polars__fft_irfft(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let c = args
+            .get("complex")
+            .ok_or_else(|| anyhow!("missing argument `complex`"))?;
+        let real = c
+            .get("real")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("complex.real missing"))?;
+        let imag = c
+            .get("imag")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("complex.imag missing"))?;
+        if real.len() != imag.len() {
+            bail!("real / imag length mismatch");
+        }
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n` (original signal length)"))?
+            as usize;
+        let m = real.len();
+        if m != n / 2 + 1 {
+            bail!("complex length {m} ≠ n/2+1 ({})", n / 2 + 1);
+        }
+        // Reconstruct full conjugate-symmetric spectrum.
+        let mut buf: Vec<Complex<f64>> = Vec::with_capacity(n);
+        for i in 0..m {
+            let r = real[i].as_f64().unwrap_or(0.0);
+            let im = imag[i].as_f64().unwrap_or(0.0);
+            buf.push(Complex::new(r, im));
+        }
+        for i in (1..n - m + 1).rev() {
+            let c = buf[i];
+            buf.push(c.conj());
+        }
+        let mut planner = FftPlanner::new();
+        let fft = planner.plan_fft_inverse(n);
+        fft.process(&mut buf);
+        let data: Vec<f64> = buf.iter().map(|c| c.re / n as f64).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("irfft shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Add two polynomials (coefficient-wise; pad the shorter one).
+#[no_mangle]
+pub extern "C" fn polars__poly_polyadd(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = args
+            .get("a")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `a` (array)"))?;
+        let b = args
+            .get("b")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `b` (array)"))?;
+        let n = a.len().max(b.len());
+        let mut out = Vec::with_capacity(n);
+        for i in 0..n {
+            let av = a.get(i).and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let bv = b.get(i).and_then(|v| v.as_f64()).unwrap_or(0.0);
+            out.push(scalar_to_value(av + bv));
+        }
+        Ok(json!({"coefficients": out}))
+    })
+}
+
+/// Multiply two polynomials (convolution of coefficient lists).
+#[no_mangle]
+pub extern "C" fn polars__poly_polymul(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a_arr = args
+            .get("a")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `a`"))?;
+        let b_arr = args
+            .get("b")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `b`"))?;
+        let a: Vec<f64> = a_arr.iter().map(|v| v.as_f64().unwrap_or(0.0)).collect();
+        let b: Vec<f64> = b_arr.iter().map(|v| v.as_f64().unwrap_or(0.0)).collect();
+        if a.is_empty() || b.is_empty() {
+            return Ok(json!({"coefficients": Vec::<Value>::new()}));
+        }
+        let mut out = vec![0.0; a.len() + b.len() - 1];
+        for (i, &ai) in a.iter().enumerate() {
+            for (j, &bj) in b.iter().enumerate() {
+                out[i + j] += ai * bj;
+            }
+        }
+        let result: Vec<Value> = out.iter().map(|&v| scalar_to_value(v)).collect();
+        Ok(json!({"coefficients": result}))
+    })
+}
+
+/// Split a 1-D array into `n_parts` contiguous chunks. Returns array of arrays.
+/// If `len(array) % n_parts != 0`, leftover elements go to the last chunk.
+#[no_mangle]
+pub extern "C" fn polars__arr_split(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("split: only 1-D arrays supported");
+        }
+        let n_parts = args
+            .get("n_parts")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n_parts`"))? as usize;
+        if n_parts == 0 {
+            bail!("`n_parts` must be ≥ 1");
+        }
+        let data: Vec<f64> = arr.iter().copied().collect();
+        let total = data.len();
+        let base = total / n_parts;
+        let mut chunks: Vec<Value> = Vec::with_capacity(n_parts);
+        let mut start = 0;
+        for i in 0..n_parts {
+            let end = if i == n_parts - 1 {
+                total
+            } else {
+                start + base
+            };
+            let chunk_data: Vec<f64> = data[start..end].to_vec();
+            let chunk_n = chunk_data.len();
+            let chunk =
+                ArrayD::from_shape_vec(IxDyn(&[chunk_n]), chunk_data).context("split chunk")?;
+            chunks.push(array_to_value(&chunk));
+            start = end;
+        }
+        Ok(json!({"chunks": chunks}))
+    })
+}
+
+/// `np.meshgrid(x, y)` — produces two 2-D arrays `X` (rows of x) and `Y`
+/// (columns of y) with shape `(len(y), len(x))`.
+#[no_mangle]
+pub extern "C" fn polars__arr_meshgrid(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let x = get_array(&args, "x")?;
+        let y = get_array(&args, "y")?;
+        if x.shape().len() != 1 || y.shape().len() != 1 {
+            bail!("meshgrid: x and y must be 1-D");
+        }
+        let nx = x.len();
+        let ny = y.len();
+        let mut x_data = Vec::with_capacity(nx * ny);
+        let mut y_data = Vec::with_capacity(nx * ny);
+        for &yi in y.iter() {
+            for &xi in x.iter() {
+                x_data.push(xi);
+                y_data.push(yi);
+            }
+        }
+        let xx = ArrayD::from_shape_vec(IxDyn(&[ny, nx]), x_data).context("meshgrid x")?;
+        let yy = ArrayD::from_shape_vec(IxDyn(&[ny, nx]), y_data).context("meshgrid y")?;
+        Ok(json!({"x": array_to_value(&xx), "y": array_to_value(&yy)}))
+    })
+}
+
+/// `np.random.pareto(shape, n)`.
+#[no_mangle]
+pub extern "C" fn polars__rand_pareto(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let shape = args
+            .get("shape")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `shape`"))?;
+        if shape <= 0.0 {
+            bail!("`shape` must be > 0");
+        }
+        let dist = rand_distr::Pareto::new(1.0, shape).context("Pareto::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("pareto shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.weibull(shape, n)` (scale=1).
+#[no_mangle]
+pub extern "C" fn polars__rand_weibull(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let shape = args
+            .get("shape")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `shape`"))?;
+        if shape <= 0.0 {
+            bail!("`shape` must be > 0");
+        }
+        let dist = rand_distr::Weibull::new(1.0, shape).context("Weibull::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("weibull shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.random.cauchy(n)` — standard Cauchy(0, 1).
+#[no_mangle]
+pub extern "C" fn polars__rand_cauchy(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))? as usize;
+        let dist = rand_distr::Cauchy::new(0.0, 1.0).context("Cauchy::new")?;
+        let mut rng = rng_for(&args);
+        let data: Vec<f64> = (0..n).map(|_| dist.sample(&mut rng)).collect();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), data).context("cauchy shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
 /// Real eigenvalues of a symmetric matrix (descending).
 #[no_mangle]
 pub extern "C" fn polars__linalg_eigvalsh(args: *const c_char) -> *mut c_char {

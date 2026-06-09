@@ -37,4 +37,10 @@ fn Polars::FFT::fftshift ($arr) {
     Polars::_decode("fft_fftshift", polars__fft_fftshift(to_json({ array => $arr })))->{array}
 }
 
+## Inverse real FFT. `$cplx` is `{real, imag, shape: [n/2+1]}`; `$n` is the
+## original signal length.
+fn Polars::FFT::irfft ($cplx, $n) {
+    Polars::_decode("fft_irfft", polars__fft_irfft(to_json({ complex => $cplx, n => $n })))->{array}
+}
+
 1
