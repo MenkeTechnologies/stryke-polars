@@ -2913,6 +2913,99 @@ pub extern "C" fn polars__arr_linspace_no_endpoint(args: *const c_char) -> *mut 
     })
 }
 
+/// Min and max in one pass. Returns `{min, max}`.
+#[no_mangle]
+pub extern "C" fn polars__arr_minmax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("minmax: empty array");
+        }
+        let (lo, hi) = arr
+            .iter()
+            .copied()
+            .fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), v| {
+                (lo.min(v), hi.max(v))
+            });
+        Ok(json!({"min": scalar_to_value(lo), "max": scalar_to_value(hi)}))
+    })
+}
+
+/// Sum of squares (Σ x²).
+#[no_mangle]
+pub extern "C" fn polars__arr_sum_sq(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let s: f64 = arr.iter().map(|x| x * x).sum();
+        Ok(json!({"scalar": scalar_to_value(s)}))
+    })
+}
+
+/// Root mean square: sqrt(mean(x²)).
+#[no_mangle]
+pub extern "C" fn polars__arr_rms(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n == 0.0 {
+            bail!("rms: empty array");
+        }
+        let s: f64 = arr.iter().map(|x| x * x).sum();
+        Ok(json!({"scalar": scalar_to_value((s / n).sqrt())}))
+    })
+}
+
+/// Numerically stable softmax (1-D).
+#[no_mangle]
+pub extern "C" fn polars__arr_softmax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("softmax: empty array");
+        }
+        let m = arr.iter().copied().fold(f64::NEG_INFINITY, |a, b| a.max(b));
+        let exps: Vec<f64> = arr.iter().map(|&x| (x - m).exp()).collect();
+        let s: f64 = exps.iter().sum();
+        let data: Vec<f64> = exps.iter().map(|&e| e / s).collect();
+        let out = ArrayD::from_shape_vec(IxDyn(arr.shape()), data).context("softmax shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// Geometric mean (positives only).
+#[no_mangle]
+pub extern "C" fn polars__arr_geometric_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("geometric_mean: empty array");
+        }
+        if arr.iter().any(|&x| x <= 0.0) {
+            bail!("geometric_mean: all elements must be > 0");
+        }
+        let n = arr.len() as f64;
+        let log_sum: f64 = arr.iter().map(|x| x.ln()).sum();
+        Ok(json!({"scalar": scalar_to_value((log_sum / n).exp())}))
+    })
+}
+
+/// Harmonic mean (positives only).
+#[no_mangle]
+pub extern "C" fn polars__arr_harmonic_mean(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("harmonic_mean: empty array");
+        }
+        if arr.iter().any(|&x| x <= 0.0) {
+            bail!("harmonic_mean: all elements must be > 0");
+        }
+        let n = arr.len() as f64;
+        let recip_sum: f64 = arr.iter().map(|x| 1.0 / x).sum();
+        Ok(json!({"scalar": scalar_to_value(n / recip_sum)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

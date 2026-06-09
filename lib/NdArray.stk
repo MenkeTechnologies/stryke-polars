@@ -508,4 +508,34 @@ fn Polars::NdArray::linspace_no_endpoint ($start, $stop, $n) {
     Polars::_decode("arr_linspace_no_endpoint", polars__arr_linspace_no_endpoint(to_json({ start => $start, stop => $stop, n => $n })))->{array}
 }
 
+## Min + max in one pass. Returns `{ min, max }`.
+fn Polars::NdArray::minmax ($arr) {
+    Polars::_decode("arr_minmax", polars__arr_minmax(to_json({ array => $arr })))
+}
+
+## Sum of squares (`Σ x²`).
+fn Polars::NdArray::sum_sq ($arr) {
+    Polars::_decode("arr_sum_sq", polars__arr_sum_sq(to_json({ array => $arr })))->{scalar}
+}
+
+## Root mean square: `sqrt(mean(x²))`.
+fn Polars::NdArray::rms ($arr) {
+    Polars::_decode("arr_rms", polars__arr_rms(to_json({ array => $arr })))->{scalar}
+}
+
+## Numerically stable softmax.
+fn Polars::NdArray::softmax ($arr) {
+    Polars::_decode("arr_softmax", polars__arr_softmax(to_json({ array => $arr })))->{array}
+}
+
+## Geometric mean (all elements must be > 0).
+fn Polars::NdArray::geometric_mean ($arr) {
+    Polars::_decode("arr_geometric_mean", polars__arr_geometric_mean(to_json({ array => $arr })))->{scalar}
+}
+
+## Harmonic mean (all elements must be > 0).
+fn Polars::NdArray::harmonic_mean ($arr) {
+    Polars::_decode("arr_harmonic_mean", polars__arr_harmonic_mean(to_json({ array => $arr })))->{scalar}
+}
+
 1

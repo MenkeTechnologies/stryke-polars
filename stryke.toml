@@ -362,6 +362,12 @@ exports = [
     "polars__arr_partition",
     "polars__arr_kth_smallest",
     "polars__arr_linspace_no_endpoint",
+    "polars__arr_minmax",
+    "polars__arr_sum_sq",
+    "polars__arr_rms",
+    "polars__arr_softmax",
+    "polars__arr_geometric_mean",
+    "polars__arr_harmonic_mean",
 ]
 
 [scripts]
