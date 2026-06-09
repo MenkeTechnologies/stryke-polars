@@ -1287,6 +1287,109 @@ pub extern "C" fn polars__np_rad2deg(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| unary_op(&args, f64::to_degrees))
 }
 
+/// `np.cross(a, b)` for 3-D vectors. Returns 1-D length-3 array.
+#[no_mangle]
+pub extern "C" fn polars__arr_cross(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let b = get_array(&args, "b")?;
+        if a.shape() != b.shape() || a.shape().len() != 1 || a.len() != 3 {
+            bail!("cross: both inputs must be 1-D length 3");
+        }
+        let ax = a[[0]];
+        let ay = a[[1]];
+        let az = a[[2]];
+        let bx = b[[0]];
+        let by = b[[1]];
+        let bz = b[[2]];
+        let data = vec![ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx];
+        let arr = ArrayD::from_shape_vec(IxDyn(&[3]), data).context("cross shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Subtract polynomial b from a (pad shorter to longer).
+#[no_mangle]
+pub extern "C" fn polars__poly_polysub(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = args
+            .get("a")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `a`"))?;
+        let b = args
+            .get("b")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `b`"))?;
+        let n = a.len().max(b.len());
+        let mut out = Vec::with_capacity(n);
+        for i in 0..n {
+            let av = a.get(i).and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let bv = b.get(i).and_then(|v| v.as_f64()).unwrap_or(0.0);
+            out.push(scalar_to_value(av - bv));
+        }
+        Ok(json!({"coefficients": out}))
+    })
+}
+
+/// Eigenvalues (real part) of a general matrix (descending by magnitude).
+#[no_mangle]
+pub extern "C" fn polars__linalg_eigvals(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let m = parse_matrix(
+            args.get("matrix")
+                .ok_or_else(|| anyhow!("missing argument `matrix`"))?,
+        )?;
+        if !m.is_square() {
+            bail!("eigvals: matrix must be square");
+        }
+        let sch = nalgebra::Schur::new(m);
+        let evs = sch.complex_eigenvalues();
+        let mut vals: Vec<f64> = evs.iter().map(|c| c.re).collect();
+        vals.sort_by(|a, b| {
+            b.abs()
+                .partial_cmp(&a.abs())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        let n = vals.len();
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), vals).context("eigvals shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.percentile(a, q)` — q in `[0, 100]`, 1-D array required.
+#[no_mangle]
+pub extern "C" fn polars__arr_percentile(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("percentile: only 1-D arrays supported");
+        }
+        let q = args
+            .get("q")
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing argument `q`"))?;
+        if !(0.0..=100.0).contains(&q) {
+            bail!("`q` must be in [0, 100]");
+        }
+        let mut data: Vec<f64> = arr.iter().copied().collect();
+        if data.is_empty() {
+            bail!("percentile of empty array");
+        }
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = data.len();
+        let pos = (q / 100.0) * (n as f64 - 1.0);
+        let lo = pos.floor() as usize;
+        let hi = pos.ceil() as usize;
+        let frac = pos - lo as f64;
+        let val = if lo == hi {
+            data[lo]
+        } else {
+            data[lo] + frac * (data[hi] - data[lo])
+        };
+        Ok(json!({"scalar": scalar_to_value(val)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

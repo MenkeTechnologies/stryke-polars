@@ -287,6 +287,10 @@ exports = [
     "polars__np_signbit",
     "polars__np_deg2rad",
     "polars__np_rad2deg",
+    "polars__arr_cross",
+    "polars__poly_polysub",
+    "polars__linalg_eigvals",
+    "polars__arr_percentile",
 ]
 
 [scripts]

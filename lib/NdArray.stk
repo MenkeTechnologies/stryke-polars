@@ -221,4 +221,14 @@ fn Polars::NdArray::squeeze ($arr) {
     Polars::_decode("arr_squeeze", polars__arr_squeeze(to_json({ array => $arr })))->{array}
 }
 
+## `np.cross(a, b)` for 3-D vectors.
+fn Polars::NdArray::cross ($a, $b) {
+    Polars::_decode("arr_cross", polars__arr_cross(to_json({ a => $a, b => $b })))->{array}
+}
+
+## `np.percentile(a, q)`. `$q` in `[0, 100]`.
+fn Polars::NdArray::percentile ($arr, $q) {
+    Polars::_decode("arr_percentile", polars__arr_percentile(to_json({ array => $arr, q => $q })))->{scalar}
+}
+
 1

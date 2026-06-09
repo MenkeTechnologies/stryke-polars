@@ -42,4 +42,9 @@ fn Polars::Polynomial::polymul ($a, $b) {
     Polars::_decode("poly_polymul", polars__poly_polymul(to_json({ a => $a, b => $b })))->{coefficients}
 }
 
+## Subtract polynomial `$b` from `$a` (pad shorter to longer).
+fn Polars::Polynomial::polysub ($a, $b) {
+    Polars::_decode("poly_polysub", polars__poly_polysub(to_json({ a => $a, b => $b })))->{coefficients}
+}
+
 1

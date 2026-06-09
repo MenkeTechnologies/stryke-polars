@@ -92,4 +92,9 @@ fn Polars::Linalg::eigvalsh ($m) {
     Polars::_decode("linalg_eigvalsh", polars__linalg_eigvalsh(to_json({ matrix => $m })))->{array}
 }
 
+## Eigenvalues of a general matrix (real part, descending by magnitude).
+fn Polars::Linalg::eigvals ($m) {
+    Polars::_decode("linalg_eigvals", polars__linalg_eigvals(to_json({ matrix => $m })))->{array}
+}
+
 1
