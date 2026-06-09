@@ -302,6 +302,9 @@ exports = [
     "polars__rand_chisquare",
     "polars__rand_t",
     "polars__rand_f",
+    "polars__arr_correlate",
+    "polars__arr_interp",
+    "polars__arr_bincount",
 ]
 
 [scripts]

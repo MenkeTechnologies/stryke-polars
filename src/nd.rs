@@ -1689,6 +1689,123 @@ pub extern "C" fn polars__rand_f(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// `np.correlate(a, v)` — discrete cross-correlation (`mode='full'`).
+#[no_mangle]
+pub extern "C" fn polars__arr_correlate(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_array(&args, "a")?;
+        let v = get_array(&args, "v")?;
+        if a.shape().len() != 1 || v.shape().len() != 1 {
+            bail!("correlate: both inputs must be 1-D");
+        }
+        let a_data: Vec<f64> = a.iter().copied().collect();
+        // numpy's correlate(a, v) is equivalent to convolve(a, reverse(v)).
+        let mut v_data: Vec<f64> = v.iter().copied().collect();
+        v_data.reverse();
+        if a_data.is_empty() || v_data.is_empty() {
+            return Ok(json!({"array": array_to_value(&a)}));
+        }
+        let n = a_data.len() + v_data.len() - 1;
+        let mut out = vec![0.0; n];
+        for (i, &ai) in a_data.iter().enumerate() {
+            for (j, &vj) in v_data.iter().enumerate() {
+                out[i + j] += ai * vj;
+            }
+        }
+        let arr = ArrayD::from_shape_vec(IxDyn(&[n]), out).context("correlate shape")?;
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// `np.interp(x, xp, fp)` — 1-D linear interpolation.
+///
+/// Args:   `{x: <array>, xp: <array>, fp: <array>}`
+/// Requirements: xp must be monotonically increasing; xp and fp same length.
+#[no_mangle]
+pub extern "C" fn polars__arr_interp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let x = get_array(&args, "x")?;
+        let xp = get_array(&args, "xp")?;
+        let fp = get_array(&args, "fp")?;
+        if xp.shape().len() != 1 || fp.shape().len() != 1 {
+            bail!("interp: xp and fp must be 1-D");
+        }
+        if xp.len() != fp.len() {
+            bail!("interp: xp and fp must have same length");
+        }
+        let xp_data: Vec<f64> = xp.iter().copied().collect();
+        let fp_data: Vec<f64> = fp.iter().copied().collect();
+        let m = xp_data.len();
+        if m == 0 {
+            bail!("interp: empty xp/fp");
+        }
+        let interp_one = |xi: f64| -> f64 {
+            if xi <= xp_data[0] {
+                return fp_data[0];
+            }
+            if xi >= xp_data[m - 1] {
+                return fp_data[m - 1];
+            }
+            // Binary search for upper bound.
+            let mut lo = 0usize;
+            let mut hi = m;
+            while lo < hi {
+                let mid = (lo + hi) / 2;
+                if xp_data[mid] <= xi {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            let i = lo - 1;
+            let x0 = xp_data[i];
+            let x1 = xp_data[i + 1];
+            let f0 = fp_data[i];
+            let f1 = fp_data[i + 1];
+            let frac = (xi - x0) / (x1 - x0);
+            f0 + frac * (f1 - f0)
+        };
+        let data: Vec<f64> = x.iter().map(|&xi| interp_one(xi)).collect();
+        let out = ArrayD::from_shape_vec(IxDyn(x.shape()), data).context("interp shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
+/// `np.bincount(x)` — count occurrences. Values truncated to non-negative ints.
+#[no_mangle]
+pub extern "C" fn polars__arr_bincount(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().len() != 1 {
+            bail!("bincount: only 1-D arrays supported");
+        }
+        let mut max_idx: i64 = -1;
+        let ints: Vec<i64> = arr
+            .iter()
+            .map(|&x| {
+                let i = x as i64;
+                if i > max_idx {
+                    max_idx = i;
+                }
+                i
+            })
+            .collect();
+        if max_idx < 0 {
+            return Ok(json!({"array": array_to_value(&arr.mapv(|_| 0.0))}));
+        }
+        let n_bins = (max_idx + 1) as usize;
+        let mut counts = vec![0u64; n_bins];
+        for &i in &ints {
+            if i >= 0 {
+                counts[i as usize] += 1;
+            }
+        }
+        let data: Vec<f64> = counts.iter().map(|&c| c as f64).collect();
+        let out = ArrayD::from_shape_vec(IxDyn(&[n_bins]), data).context("bincount shape")?;
+        Ok(json!({"array": array_to_value(&out)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

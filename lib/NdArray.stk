@@ -276,4 +276,19 @@ fn Polars::NdArray::searchsorted ($arr, $v) {
     Polars::_decode("arr_searchsorted", polars__arr_searchsorted(to_json({ array => $arr, v => $v })))->{index}
 }
 
+## `np.correlate(a, v)` — discrete cross-correlation (`mode='full'`).
+fn Polars::NdArray::correlate ($a, $v) {
+    Polars::_decode("arr_correlate", polars__arr_correlate(to_json({ a => $a, v => $v })))->{array}
+}
+
+## `np.interp(x, xp, fp)` — 1-D linear interpolation.
+fn Polars::NdArray::interp ($x, $xp, $fp) {
+    Polars::_decode("arr_interp", polars__arr_interp(to_json({ x => $x, xp => $xp, fp => $fp })))->{array}
+}
+
+## `np.bincount(x)` — non-negative int occurrence counts.
+fn Polars::NdArray::bincount ($arr) {
+    Polars::_decode("arr_bincount", polars__arr_bincount(to_json({ array => $arr })))->{array}
+}
+
 1
