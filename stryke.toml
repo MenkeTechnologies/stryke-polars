@@ -80,6 +80,15 @@ exports = [
     "polars__df_rolling_std",
     "polars__df_rolling_var",
     "polars__df_ewm_mean",
+    "polars__df_transpose",
+    "polars__df_to_csv",
+    "polars__df_to_ndjson",
+    "polars__df_pearson_corr",
+    "polars__df_filter_is_in",
+    "polars__df_nlargest",
+    "polars__df_nsmallest",
+    "polars__df_sample",
+    "polars__df_replace_value",
 ]
 
 [scripts]

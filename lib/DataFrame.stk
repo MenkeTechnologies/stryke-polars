@@ -367,4 +367,60 @@ fn Polars::DataFrame::ewm_mean ($cols, $alpha, $columns) {
     Polars::_decode("df_ewm_mean", polars__df_ewm_mean(to_json(\%req)))->{frame}
 }
 
+# ── P1.5c: misc ─────────────────────────────────────────────────────
+
+## Transpose (rows ↔ columns). Optional `$keep_names_as` retains original
+## column names as the first transposed column.
+fn Polars::DataFrame::transpose ($cols, $keep_names_as) {
+    my %req = (frame => $cols)
+    $req{keep_names_as} = $keep_names_as if defined $keep_names_as
+    Polars::_decode("df_transpose", polars__df_transpose(to_json(\%req)))->{frame}
+}
+
+## Serialize to CSV (string). Optional `$sep` (default ',') and `$has_header`
+## (default true).
+fn Polars::DataFrame::to_csv ($cols, $sep, $has_header) {
+    my %req = (frame => $cols)
+    $req{sep} = $sep if defined $sep
+    $req{has_header} = $has_header if defined $has_header
+    Polars::_decode("df_to_csv", polars__df_to_csv(to_json(\%req)))->{csv}
+}
+
+## Serialize to NDJSON (one row per line). Returns the string.
+fn Polars::DataFrame::to_ndjson ($cols) {
+    Polars::_decode("df_to_ndjson", polars__df_to_ndjson(to_json({ frame => $cols })))->{json}
+}
+
+## Pearson correlation between columns `$x` and `$y`. Returns scalar f64.
+fn Polars::DataFrame::pearson_corr ($cols, $x, $y) {
+    Polars::_decode("df_pearson_corr", polars__df_pearson_corr(to_json({ frame => $cols, x => $x, y => $y })))->{corr}
+}
+
+## Rows where `$column` value is in `$values` arrayref.
+fn Polars::DataFrame::filter_is_in ($cols, $column, $values) {
+    Polars::_decode("df_filter_is_in", polars__df_filter_is_in(to_json({ frame => $cols, column => $column, values => $values })))->{frame}
+}
+
+## Top `$k` rows ordered descending by `$column`.
+fn Polars::DataFrame::nlargest ($cols, $k, $column) {
+    Polars::_decode("df_nlargest", polars__df_nlargest(to_json({ frame => $cols, k => $k, column => $column })))->{frame}
+}
+
+## Bottom `$k` rows ordered ascending by `$column`.
+fn Polars::DataFrame::nsmallest ($cols, $k, $column) {
+    Polars::_decode("df_nsmallest", polars__df_nsmallest(to_json({ frame => $cols, k => $k, column => $column })))->{frame}
+}
+
+## Random sample of `$n` rows. Optional `$seed` for reproducibility.
+fn Polars::DataFrame::sample ($cols, $n, $seed) {
+    my %req = (frame => $cols, n => $n)
+    $req{seed} = $seed if defined $seed
+    Polars::_decode("df_sample", polars__df_sample(to_json(\%req)))->{frame}
+}
+
+## In `$column`, replace literal `$from` with literal `$to`.
+fn Polars::DataFrame::replace_value ($cols, $column, $from, $to) {
+    Polars::_decode("df_replace_value", polars__df_replace_value(to_json({ frame => $cols, column => $column, from => $from, to => $to })))->{frame}
+}
+
 1

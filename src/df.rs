@@ -1262,3 +1262,238 @@ pub extern "C" fn polars__df_ewm_mean(args: *const c_char) -> *mut c_char {
         return_frame(result)
     })
 }
+
+// ── P1.5c: misc — transpose / IO / corr / replace / is_in / topk / sample ──
+
+/// Transpose the frame (rows ↔ columns). Auto-named `column_0`, `column_1`, …
+///
+/// Args:   `{frame, keep_names_as?: str}`
+#[no_mangle]
+pub extern "C" fn polars__df_transpose(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut df = get_frame(&args)?;
+        let keep = args.get("keep_names_as").and_then(|v| v.as_str());
+        let result = df.transpose(keep, None).context("transpose")?;
+        return_frame(result)
+    })
+}
+
+/// Serialize the frame to CSV (in-memory string).
+///
+/// Args:   `{frame, sep?: char (default ','), has_header?: bool (default true)}`
+/// Result: `{csv: "..."}`
+#[no_mangle]
+pub extern "C" fn polars__df_to_csv(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut df = get_frame(&args)?;
+        let sep = args
+            .get("sep")
+            .and_then(|v| v.as_str())
+            .and_then(|s| s.chars().next())
+            .unwrap_or(',') as u8;
+        let has_header = args
+            .get("has_header")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let mut buf = Vec::new();
+        CsvWriter::new(&mut buf)
+            .with_separator(sep)
+            .include_header(has_header)
+            .finish(&mut df)
+            .context("CsvWriter")?;
+        let s = String::from_utf8(buf).context("CSV utf8")?;
+        Ok(json!({"csv": s}))
+    })
+}
+
+/// Serialize the frame to NDJSON (one row per line).
+///
+/// Args:   `{frame}`
+/// Result: `{json: "..."}`
+#[no_mangle]
+pub extern "C" fn polars__df_to_ndjson(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let mut df = get_frame(&args)?;
+        let mut buf = Vec::new();
+        JsonWriter::new(&mut buf)
+            .with_json_format(JsonFormat::JsonLines)
+            .finish(&mut df)
+            .context("JsonWriter")?;
+        let s = String::from_utf8(buf).context("JSON utf8")?;
+        Ok(json!({"json": s}))
+    })
+}
+
+/// Pearson correlation between two columns. Result: scalar f64.
+///
+/// Args:   `{frame, x: name, y: name}`
+/// Result: `{corr: f64}`
+#[no_mangle]
+pub extern "C" fn polars__df_pearson_corr(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let x = args
+            .get("x")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `x`"))?;
+        let y = args
+            .get("y")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `y`"))?;
+        let result = df
+            .lazy()
+            .select([pearson_corr(col(x), col(y)).alias("corr")])
+            .collect()
+            .context("pearson_corr")?;
+        let s = result
+            .column("corr")?
+            .as_materialized_series()
+            .f64()
+            .context("corr column not f64")?;
+        let v = s.get(0).unwrap_or(f64::NAN);
+        Ok(json!({"corr": v}))
+    })
+}
+
+/// Filter rows where `column` value is in `values` (list of literals).
+///
+/// Args:   `{frame, column: name, values: [v1, v2, ...]}`
+#[no_mangle]
+pub extern "C" fn polars__df_filter_is_in(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let vals_arr = args
+            .get("values")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing argument `values`"))?;
+        // Build a Series of literal values, infer dtype from first non-null.
+        let s = json_array_to_series("__values__", vals_arr)?;
+        let mask_lit = Expr::Literal(LiteralValue::Series(SpecialEq::new(s)));
+        let result = df
+            .lazy()
+            .filter(col(col_name).is_in(mask_lit))
+            .collect()
+            .context("filter_is_in")?;
+        return_frame(result)
+    })
+}
+
+/// Top `k` rows ordered descending by `column`. pandas `nlargest`.
+///
+/// Args:   `{frame, k: u64, column: name}`
+#[no_mangle]
+pub extern "C" fn polars__df_nlargest(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let k = args
+            .get("k")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `k`"))?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let result = df
+            .lazy()
+            .top_k(
+                k as u32,
+                vec![col(col_name)],
+                SortMultipleOptions::default().with_order_descending(false),
+            )
+            .collect()
+            .context("top_k")?;
+        return_frame(result)
+    })
+}
+
+/// Bottom `k` rows ordered ascending by `column`. pandas `nsmallest`.
+///
+/// Args:   `{frame, k: u64, column: name}`
+#[no_mangle]
+pub extern "C" fn polars__df_nsmallest(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let k = args
+            .get("k")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `k`"))?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let result = df
+            .lazy()
+            .bottom_k(
+                k as u32,
+                vec![col(col_name)],
+                SortMultipleOptions::default().with_order_descending(false),
+            )
+            .collect()
+            .context("bottom_k")?;
+        return_frame(result)
+    })
+}
+
+/// Sample `n` rows. Without replacement. Optional `seed` (u64).
+///
+/// Args:   `{frame, n: u64, seed?: u64, with_replacement?: bool, shuffle?: bool}`
+#[no_mangle]
+pub extern "C" fn polars__df_sample(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let n = args
+            .get("n")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `n`"))?;
+        let seed = args.get("seed").and_then(|v| v.as_u64());
+        let with_replacement = args
+            .get("with_replacement")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let shuffle = args
+            .get("shuffle")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let n_series = Series::new("__n__".into(), &[n as i64]);
+        let result = df
+            .sample_n(&n_series, with_replacement, shuffle, seed)
+            .context("sample_n")?;
+        return_frame(result)
+    })
+}
+
+/// Replace literal `from` with literal `to` in `column`.
+///
+/// Args:   `{frame, column: name, from, to}`
+#[no_mangle]
+pub extern "C" fn polars__df_replace_value(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let col_name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let from_lit = json_to_lit(
+            args.get("from")
+                .ok_or_else(|| anyhow!("missing argument `from`"))?,
+        )?;
+        let to_lit = json_to_lit(
+            args.get("to")
+                .ok_or_else(|| anyhow!("missing argument `to`"))?,
+        )?;
+        let from_series = from_lit.to_string();
+        let to_series = to_lit.to_string();
+        // Use polars Expr::replace: `col(name).replace([from], [to])`
+        // We need actual Series, not Expr — use lit() form directly:
+        let result = df
+            .lazy()
+            .with_columns([col(col_name).replace(from_lit, to_lit).alias(col_name)])
+            .collect()
+            .context(format!("replace ({from_series} → {to_series})"))?;
+        return_frame(result)
+    })
+}

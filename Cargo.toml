@@ -87,6 +87,15 @@ polars = { version = "0.45", features = [
     "reinterpret",
     "diagonal_concat",
     "row_hash",
+    "top_k",
+    "random",
+    "cov",
+    "is_between",
+    "is_unique",
+    "extract_groups",
+    "coalesce",
+    "product",
+    "range",
 ] }
 ndarray = { version = "0.16", features = ["rayon", "serde", "approx"] }
 # linalg: nalgebra ships pure-Rust SVD/QR/LU/Cholesky/Eigen/solve/inv/det,
