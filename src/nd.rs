@@ -3006,6 +3006,138 @@ pub extern "C" fn polars__arr_harmonic_mean(args: *const c_char) -> *mut c_char 
     })
 }
 
+// ── P4ae: stats moments / scaling / info-theoretic ─────────────────────────
+
+/// Sample skewness (g₁).
+#[no_mangle]
+pub extern "C" fn polars__arr_skewness(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n < 2.0 {
+            bail!("skewness: need ≥ 2 points");
+        }
+        let mean = arr.iter().sum::<f64>() / n;
+        let m2: f64 = arr.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        let m3: f64 = arr.iter().map(|x| (x - mean).powi(3)).sum::<f64>() / n;
+        let s = if m2 == 0.0 { 0.0 } else { m3 / m2.powf(1.5) };
+        Ok(json!({"scalar": scalar_to_value(s)}))
+    })
+}
+
+/// Sample kurtosis (g₂, excess).
+#[no_mangle]
+pub extern "C" fn polars__arr_kurtosis(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n < 2.0 {
+            bail!("kurtosis: need ≥ 2 points");
+        }
+        let mean = arr.iter().sum::<f64>() / n;
+        let m2: f64 = arr.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        let m4: f64 = arr.iter().map(|x| (x - mean).powi(4)).sum::<f64>() / n;
+        let k = if m2 == 0.0 { 0.0 } else { m4 / (m2 * m2) - 3.0 };
+        Ok(json!({"scalar": scalar_to_value(k)}))
+    })
+}
+
+/// z-score standardization: `(x − mean) / std` (population std, ddof=0).
+#[no_mangle]
+pub extern "C" fn polars__arr_zscore(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let n = arr.len() as f64;
+        if n == 0.0 {
+            bail!("zscore: empty array");
+        }
+        let mean = arr.iter().sum::<f64>() / n;
+        let var: f64 = arr.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        let std = var.sqrt();
+        if std == 0.0 {
+            bail!("zscore: zero std (constant array)");
+        }
+        let result = arr.mapv(|x| (x - mean) / std);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// Min-max scale to `[0, 1]`.
+#[no_mangle]
+pub extern "C" fn polars__arr_minmax_scale(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("minmax_scale: empty array");
+        }
+        let lo = arr.iter().copied().fold(f64::INFINITY, |a, b| a.min(b));
+        let hi = arr.iter().copied().fold(f64::NEG_INFINITY, |a, b| a.max(b));
+        let span = hi - lo;
+        if span == 0.0 {
+            let zeros = ArrayD::<f64>::zeros(IxDyn(arr.shape()));
+            return Ok(json!({"array": array_to_value(&zeros)}));
+        }
+        let result = arr.mapv(|x| (x - lo) / span);
+        Ok(json!({"array": array_to_value(&result)}))
+    })
+}
+
+/// Numerically stable `log(Σ exp(x))`.
+#[no_mangle]
+pub extern "C" fn polars__arr_logsumexp(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("logsumexp: empty array");
+        }
+        let m = arr.iter().copied().fold(f64::NEG_INFINITY, |a, b| a.max(b));
+        if !m.is_finite() {
+            return Ok(json!({"scalar": scalar_to_value(m)}));
+        }
+        let s: f64 = arr.iter().map(|&x| (x - m).exp()).sum();
+        Ok(json!({"scalar": scalar_to_value(m + s.ln())}))
+    })
+}
+
+/// Shannon entropy `-Σ p log p` (natural log). p_i must sum to 1; zeros allowed.
+#[no_mangle]
+pub extern "C" fn polars__arr_entropy(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.is_empty() {
+            bail!("entropy: empty array");
+        }
+        let s: f64 = arr
+            .iter()
+            .map(|&p| if p > 0.0 { -p * p.ln() } else { 0.0 })
+            .sum();
+        Ok(json!({"scalar": scalar_to_value(s)}))
+    })
+}
+
+/// KL divergence `D(p ‖ q) = Σ p log(p/q)`. Both same length; entries > 0 for q.
+#[no_mangle]
+pub extern "C" fn polars__arr_kl_divergence(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let p = get_array(&args, "p")?;
+        let q = get_array(&args, "q")?;
+        if p.shape() != q.shape() {
+            bail!("kl_divergence: shape mismatch");
+        }
+        let mut acc = 0.0;
+        for (&pi, &qi) in p.iter().zip(q.iter()) {
+            if pi <= 0.0 {
+                continue;
+            }
+            if qi <= 0.0 {
+                bail!("kl_divergence: q has non-positive at index with positive p");
+            }
+            acc += pi * (pi / qi).ln();
+        }
+        Ok(json!({"scalar": scalar_to_value(acc)}))
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

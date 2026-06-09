@@ -538,4 +538,14 @@ fn Polars::NdArray::harmonic_mean ($arr) {
     Polars::_decode("arr_harmonic_mean", polars__arr_harmonic_mean(to_json({ array => $arr })))->{scalar}
 }
 
+fn Polars::NdArray::skewness       ($arr) { Polars::_decode("arr_skewness",       polars__arr_skewness      (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::kurtosis       ($arr) { Polars::_decode("arr_kurtosis",       polars__arr_kurtosis      (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::zscore         ($arr) { Polars::_decode("arr_zscore",         polars__arr_zscore        (to_json({ array => $arr })))->{array} }
+fn Polars::NdArray::minmax_scale   ($arr) { Polars::_decode("arr_minmax_scale",   polars__arr_minmax_scale  (to_json({ array => $arr })))->{array} }
+fn Polars::NdArray::logsumexp      ($arr) { Polars::_decode("arr_logsumexp",      polars__arr_logsumexp     (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::entropy        ($arr) { Polars::_decode("arr_entropy",        polars__arr_entropy       (to_json({ array => $arr })))->{scalar} }
+fn Polars::NdArray::kl_divergence  ($p, $q) {
+    Polars::_decode("arr_kl_divergence", polars__arr_kl_divergence(to_json({ p => $p, q => $q })))->{scalar}
+}
+
 1

@@ -368,6 +368,13 @@ exports = [
     "polars__arr_softmax",
     "polars__arr_geometric_mean",
     "polars__arr_harmonic_mean",
+    "polars__arr_skewness",
+    "polars__arr_kurtosis",
+    "polars__arr_zscore",
+    "polars__arr_minmax_scale",
+    "polars__arr_logsumexp",
+    "polars__arr_entropy",
+    "polars__arr_kl_divergence",
 ]
 
 [scripts]
