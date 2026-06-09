@@ -88,8 +88,6 @@ polars = { version = "0.45", features = [
     "diagonal_concat",
     "horizontal_concat",
     "row_hash",
-    "hash_join",
-    "object",
 ] }
 ndarray = { version = "0.16", features = ["rayon", "serde", "approx"] }
 ndarray-linalg = { version = "0.17", default-features = false, features = ["openblas-system"] }
