@@ -97,4 +97,9 @@ fn Polars::Ufunc::signbit ($arr) { Polars::_decode("np_signbit", polars__np_sign
 fn Polars::Ufunc::deg2rad ($arr) { Polars::_decode("np_deg2rad", polars__np_deg2rad(to_json({ array => $arr })))->{array} }
 fn Polars::Ufunc::rad2deg ($arr) { Polars::_decode("np_rad2deg", polars__np_rad2deg(to_json({ array => $arr })))->{array} }
 
+## `np.modf(x)` — splits each element into `{ frac, int }`.
+fn Polars::Ufunc::modf ($arr) {
+    Polars::_decode("np_modf", polars__np_modf(to_json({ array => $arr })))
+}
+
 1

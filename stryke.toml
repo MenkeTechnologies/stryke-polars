@@ -305,6 +305,10 @@ exports = [
     "polars__arr_correlate",
     "polars__arr_interp",
     "polars__arr_bincount",
+    "polars__arr_swapaxes",
+    "polars__np_modf",
+    "polars__arr_atleast_1d",
+    "polars__arr_atleast_2d",
 ]
 
 [scripts]

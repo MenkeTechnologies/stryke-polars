@@ -1806,6 +1806,80 @@ pub extern "C" fn polars__arr_bincount(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Swap two axes of an N-D array.
+///
+/// Args:   `{array, axis1: u64, axis2: u64}`
+#[no_mangle]
+pub extern "C" fn polars__arr_swapaxes(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let a1 = args
+            .get("axis1")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis1`"))? as usize;
+        let a2 = args
+            .get("axis2")
+            .and_then(|v| v.as_u64())
+            .ok_or_else(|| anyhow!("missing argument `axis2`"))? as usize;
+        if a1 >= arr.shape().len() || a2 >= arr.shape().len() {
+            bail!("swapaxes: axis out of range");
+        }
+        let mut swapped = arr.clone();
+        swapped.swap_axes(a1, a2);
+        let owned: ArrayD<f64> = swapped.to_owned();
+        Ok(json!({"array": array_to_value(&owned)}))
+    })
+}
+
+/// `np.modf(x)` — split into fractional and integer parts.
+/// Returns `{frac, int}` (two arrays of input shape).
+#[no_mangle]
+pub extern "C" fn polars__np_modf(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        let frac = arr.mapv(|x| x.fract());
+        let int = arr.mapv(|x| x.trunc());
+        Ok(json!({"frac": array_to_value(&frac), "int": array_to_value(&int)}))
+    })
+}
+
+/// Ensure at least 1-D — wraps scalar input into a 1-element array.
+#[no_mangle]
+pub extern "C" fn polars__arr_atleast_1d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        if arr.shape().is_empty() {
+            let s = arr.iter().next().copied().unwrap_or(0.0);
+            let out = ArrayD::from_shape_vec(IxDyn(&[1]), vec![s]).context("atleast_1d")?;
+            return Ok(json!({"array": array_to_value(&out)}));
+        }
+        Ok(json!({"array": array_to_value(&arr)}))
+    })
+}
+
+/// Ensure at least 2-D — wraps 1-D into `(1, n)`.
+#[no_mangle]
+pub extern "C" fn polars__arr_atleast_2d(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let arr = get_array(&args, "array")?;
+        match arr.shape().len() {
+            0 => {
+                let s = arr.iter().next().copied().unwrap_or(0.0);
+                let out = ArrayD::from_shape_vec(IxDyn(&[1, 1]), vec![s]).context("atleast_2d")?;
+                Ok(json!({"array": array_to_value(&out)}))
+            }
+            1 => {
+                let n = arr.len();
+                let data: Vec<f64> = arr.iter().copied().collect();
+                let out =
+                    ArrayD::from_shape_vec(IxDyn(&[1, n]), data).context("atleast_2d shape")?;
+                Ok(json!({"array": array_to_value(&out)}))
+            }
+            _ => Ok(json!({"array": array_to_value(&arr)})),
+        }
+    })
+}
+
 /// `np.clip(a, lo, hi)` — scalar bounds applied elementwise.
 #[no_mangle]
 pub extern "C" fn polars__np_clip(args: *const c_char) -> *mut c_char {

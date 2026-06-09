@@ -291,4 +291,17 @@ fn Polars::NdArray::bincount ($arr) {
     Polars::_decode("arr_bincount", polars__arr_bincount(to_json({ array => $arr })))->{array}
 }
 
+## Swap two axes of an N-D array.
+fn Polars::NdArray::swapaxes ($arr, $axis1, $axis2) {
+    Polars::_decode("arr_swapaxes", polars__arr_swapaxes(to_json({ array => $arr, axis1 => $axis1, axis2 => $axis2 })))->{array}
+}
+
+## `np.atleast_1d(x)` / `np.atleast_2d(x)` — ensure minimum dimensionality.
+fn Polars::NdArray::atleast_1d ($arr) {
+    Polars::_decode("arr_atleast_1d", polars__arr_atleast_1d(to_json({ array => $arr })))->{array}
+}
+fn Polars::NdArray::atleast_2d ($arr) {
+    Polars::_decode("arr_atleast_2d", polars__arr_atleast_2d(to_json({ array => $arr })))->{array}
+}
+
 1
