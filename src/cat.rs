@@ -699,3 +699,152 @@ pub extern "C" fn polars__cat_map(args: *const c_char) -> *mut c_char {
         return_cat(codes, new_cats, ordered)
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    /// `cat_concat` must dedupe categories that exist in both `a` and `b`, and
+    /// rewrite codes from `b` through the shared category index. A naive
+    /// implementation that appends `b`'s categories blindly (or that
+    /// concatenates codes without remapping) silently corrupts the join. This
+    /// also pins that null code (-1) in `b` survives unchanged.
+    #[test]
+    fn cat_concat_dedupes_overlapping_categories_and_remaps_codes() {
+        // a: codes=[0,1] cats=["x","y"]   → ["x","y"]
+        // b: codes=[0,1,-1] cats=["y","z"] → ["y","z", null]
+        // expected new_cats = ["x","y","z"] (dedupe y)
+        // expected new_codes = [0,1, /*b[0]="y" remap=1*/ 1, /*b[1]="z" remap=2*/ 2, -1]
+        let v = call(
+            super::polars__cat_concat,
+            json!({
+                "a": {"codes": [0, 1], "categories": ["x", "y"], "ordered": false},
+                "b": {"codes": [0, 1, -1], "categories": ["y", "z"], "ordered": false},
+            }),
+        );
+        let cats: Vec<String> = v["categorical"]["categories"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect();
+        let codes: Vec<i64> = v["categorical"]["codes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(cats, vec!["x", "y", "z"], "y must dedupe across a and b");
+        assert_eq!(codes, vec![0, 1, 1, 2, -1], "b's y(0) must remap to 1");
+    }
+
+    /// `cat_remove_categories` must rewrite any codes pointing to a removed
+    /// category to -1 (null), not leave them as dangling indices that would
+    /// later out-of-bounds against the shrunken `categories` vec. Concretely:
+    /// remove "b" from cats=["a","b","c"] codes=[0,1,2,1] must yield
+    /// cats=["a","c"] codes=[0,-1,1,-1]. An off-by-one in the remap building
+    /// (or skipping the rewrite of in-use codes) would corrupt downstream
+    /// indexing.
+    #[test]
+    fn cat_remove_categories_rewrites_used_codes_to_minus_one() {
+        let v = call(
+            super::polars__cat_remove_categories,
+            json!({
+                "categorical": {
+                    "codes": [0, 1, 2, 1],
+                    "categories": ["a", "b", "c"],
+                    "ordered": false,
+                },
+                "remove": ["b"],
+            }),
+        );
+        let cats: Vec<String> = v["categorical"]["categories"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect();
+        let codes: Vec<i64> = v["categorical"]["codes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(cats, vec!["a", "c"]);
+        assert_eq!(
+            codes,
+            vec![0, -1, 1, -1],
+            "removed category's codes must rewrite to -1 and survivors must compact"
+        );
+    }
+
+    /// `cat_remove_unused` must drop categories with zero usage AND compact
+    /// the remaining codes through a remap. Concrete adversarial setup:
+    /// cats=["a","b","c","d"] codes=[2,0] — neither b nor d is used, so they
+    /// must drop, leaving cats=["a","c"] and remapped codes=[1,0] (c was at
+    /// index 2 → now at index 1; a was at 0 → still 0). A bug that forgets to
+    /// remap (or off-by-ones the new-index counter) would output
+    /// codes=[2,0] against a 2-element `cats` and crash other ops downstream.
+    #[test]
+    fn cat_remove_unused_drops_unused_and_remaps_survivors() {
+        let v = call(
+            super::polars__cat_remove_unused,
+            json!({
+                "categorical": {
+                    "codes": [2, 0],
+                    "categories": ["a", "b", "c", "d"],
+                    "ordered": false,
+                },
+            }),
+        );
+        let cats: Vec<String> = v["categorical"]["categories"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect();
+        let codes: Vec<i64> = v["categorical"]["codes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(cats, vec!["a", "c"], "unused b and d must drop");
+        assert_eq!(
+            codes,
+            vec![1, 0],
+            "c's code must shift from 2 to 1; a stays at 0"
+        );
+    }
+
+    /// `cat_argsort` sorts by raw `i64` code value. Because null is encoded
+    /// as -1, ascending argsort places nulls FIRST. This pins that behavior
+    /// so a future refactor that swaps to an `Ord`-impl that treats -1 as
+    /// "missing/last" (matching pandas `na_position='last'`) won't silently
+    /// flip the wire contract without a test catching it. Adversarial input:
+    /// codes=[1,-1,0] — naive impl returns [1,2,0]; an na-aware impl would
+    /// return [2,0,1].
+    #[test]
+    fn cat_argsort_places_minus_one_nulls_at_the_front() {
+        let v = call(
+            super::polars__cat_argsort,
+            json!({
+                "categorical": {
+                    "codes": [1, -1, 0],
+                    "categories": ["a", "b"],
+                    "ordered": false,
+                },
+            }),
+        );
+        let out: Vec<i64> = v["argsort"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        // -1 (index 1) sorts first, then 0 (index 2), then 1 (index 0).
+        assert_eq!(out, vec![1, 2, 0]);
+    }
+}
