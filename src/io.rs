@@ -432,7 +432,7 @@ pub extern "C" fn polars__pd_to_html(args: *const c_char) -> *mut c_char {
         let df = get_frame(&args)?;
         let mut s = String::from("<table>\n  <thead><tr>");
         for c in df.get_columns() {
-            s.push_str(&format!("<th>{}</th>", c.name()));
+            s.push_str(&format!("<th>{}</th>", html_escape(c.name().as_str())));
         }
         s.push_str("</tr></thead>\n  <tbody>\n");
         let h = df.height();
@@ -443,13 +443,28 @@ pub extern "C" fn polars__pd_to_html(args: *const c_char) -> *mut c_char {
                     .as_materialized_series()
                     .get(i)
                     .map_err(|e| anyhow!("get: {e}"))?;
-                s.push_str(&format!("<td>{av}</td>"));
+                s.push_str(&format!("<td>{}</td>", html_escape(&av.to_string())));
             }
             s.push_str("</tr>\n");
         }
         s.push_str("  </tbody>\n</table>\n");
         Ok(json!({"html": s}))
     })
+}
+
+fn html_escape(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    for ch in input.chars() {
+        match ch {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            '"' => out.push_str("&quot;"),
+            '\'' => out.push_str("&#x27;"),
+            c => out.push(c),
+        }
+    }
+    out
 }
 
 /// pandas IO to markdown.
@@ -705,6 +720,60 @@ mod tests {
             a_back.len(),
             3,
             "row count must survive records round trip, got {a_back:?}"
+        );
+    }
+
+    /// `polars__pd_to_html` must HTML-escape both column names and cell
+    /// values. Pre-fix, a cell containing `<script>alert(1)</script>` was
+    /// emitted as raw HTML and would execute when the output was rendered
+    /// in a notebook / dashboard / email preview.
+    #[test]
+    fn pd_to_html_escapes_script_tag_in_cell_value() {
+        let frame = json!({
+            "name": ["<script>alert(1)</script>"],
+            "n":    [42],
+        });
+        let out = call(polars__pd_to_html, json!({"frame": frame}));
+        let html = out["html"].as_str().expect("to_html returned `html`");
+        assert!(
+            !html.contains("<script>"),
+            "raw <script> must not survive escaping; got: {html}"
+        );
+        assert!(
+            html.contains("&lt;script&gt;alert(1)&lt;/script&gt;"),
+            "expected entity-encoded script tag; got: {html}"
+        );
+    }
+
+    /// Column names are also user-controlled (e.g. headers from a CSV
+    /// upload, JSONL key names). They must escape with the same rules as
+    /// cells, otherwise a header `<img src=x onerror=...>` survives.
+    #[test]
+    fn pd_to_html_escapes_angle_brackets_in_column_name() {
+        let frame = json!({"<col>": [1, 2], "ok": [3, 4]});
+        let out = call(polars__pd_to_html, json!({"frame": frame}));
+        let html = out["html"].as_str().expect("to_html returned `html`");
+        assert!(
+            !html.contains("<col>"),
+            "raw <col> header must not survive escaping; got: {html}"
+        );
+        assert!(
+            html.contains("&lt;col&gt;"),
+            "expected escaped header; got: {html}"
+        );
+    }
+
+    /// `&` must escape to `&amp;` before any character-specific replacement,
+    /// otherwise a literal `&lt;` in the input survives as a `<` after a
+    /// downstream un-escape, which is the textbook double-escape XSS bypass.
+    #[test]
+    fn pd_to_html_escapes_ampersand_before_other_entities() {
+        let frame = json!({"c": ["&lt;img&gt;"]});
+        let out = call(polars__pd_to_html, json!({"frame": frame}));
+        let html = out["html"].as_str().expect("to_html returned `html`");
+        assert!(
+            html.contains("&amp;lt;img&amp;gt;"),
+            "literal `&lt;` in input must become `&amp;lt;`, not `&lt;`; got: {html}"
         );
     }
 }
