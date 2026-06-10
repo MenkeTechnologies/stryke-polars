@@ -203,4 +203,48 @@ mod tests {
         assert!(!ret.is_null());
         unsafe { super::stryke_free_cstring(ret) };
     }
+
+    /// The DataFrame round-trip the linter + stryke wrappers all funnel
+    /// through. Catches regressions in JSON arg shape parsing for
+    /// `{ frame: {col: [vals]} }` AND in the response shape (callers
+    /// destructure `shape` as `[rows, cols]`).
+    #[test]
+    fn ffi_df_shape_returns_array_of_two_ints() {
+        let v = call(
+            super::df::polars__df_shape,
+            json!({"frame": {
+                "id":   [1, 2, 3, 4, 5],
+                "name": ["a", "b", "c", "d", "e"],
+            }}),
+        );
+        assert!(v["error"].is_null(), "df_shape errored: {v}");
+        let shape = v["shape"].as_array().expect("shape is array");
+        assert_eq!(shape.len(), 2, "shape arity != 2 in {v}");
+        assert_eq!(shape[0].as_i64(), Some(5), "rows != 5 in {v}");
+        assert_eq!(shape[1].as_i64(), Some(2), "cols != 2 in {v}");
+    }
+
+    /// Selecting by a column-name list must preserve the requested order
+    /// AND filter out any non-requested columns. Catches regressions in
+    /// both directions (drop ordering, leaked columns).
+    #[test]
+    fn ffi_df_select_preserves_order_and_filters() {
+        let v = call(
+            super::df::polars__df_select,
+            json!({
+                "frame": {
+                    "a": [1, 2],
+                    "b": [3, 4],
+                    "c": [5, 6],
+                },
+                "columns": ["c", "a"],
+            }),
+        );
+        assert!(v["error"].is_null(), "df_select errored: {v}");
+        let frame = v["frame"].as_object().expect("frame is object");
+        assert_eq!(frame.len(), 2, "expected 2 cols, got {v}");
+        assert!(frame.contains_key("c"));
+        assert!(frame.contains_key("a"));
+        assert!(!frame.contains_key("b"), "non-requested col `b` leaked");
+    }
 }
