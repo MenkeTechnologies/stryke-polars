@@ -598,3 +598,113 @@ pub extern "C" fn polars__pd_merge(args: *const c_char) -> *mut c_char {
         Ok(json!({"frame": df_to_value(&result)?}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    /// CSV write→read round trip must survive embedded delimiters and double
+    /// quotes inside string cells. Catches the most classic CSV bug class:
+    /// forgetting to enable quote-escaping (RFC 4180 §2.6/2.7), which would
+    /// split a single cell value across columns when the value contains the
+    /// separator, or truncate at the inner quote. We deliberately pick a
+    /// value containing both `,` and `"` so a half-broken wrapper that
+    /// quotes commas but not quotes still fails.
+    #[test]
+    fn pd_csv_string_roundtrip_preserves_quote_and_comma_in_cell() {
+        let frame = json!({
+            "name": ["plain", "comma,inside", "quote\"inside", "both,\"both\""],
+            "n":    [1,        2,              3,                4],
+        });
+        let written = call(polars__pd_to_csv_string, json!({"frame": frame}));
+        let csv = written["data"]
+            .as_str()
+            .expect("to_csv_string returned `data`");
+        assert!(
+            csv.contains('"'),
+            "polars CSV writer must quote cells containing `,` or `\"` (RFC 4180); \
+             produced: {csv}"
+        );
+        let parsed = call(polars__pd_read_csv_string, json!({"data": csv}));
+        assert!(
+            parsed["error"].is_null(),
+            "read_csv_string errored on its own writer's output: {parsed}"
+        );
+        let names: Vec<String> = parsed["frame"]["name"]
+            .as_array()
+            .expect("name column is array")
+            .iter()
+            .map(|v| v.as_str().unwrap().to_string())
+            .collect();
+        assert_eq!(
+            names,
+            vec![
+                "plain".to_string(),
+                "comma,inside".to_string(),
+                "quote\"inside".to_string(),
+                "both,\"both\"".to_string(),
+            ],
+            "embedded `,` and `\"` must survive CSV write→read round trip"
+        );
+        // n column must NOT have leaked extra rows from mis-quoted splits.
+        let n: Vec<i64> = parsed["frame"]["n"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap())
+            .collect();
+        assert_eq!(n, vec![1, 2, 3, 4], "row count must be preserved");
+    }
+
+    /// `pd_to_records` then `pd_from_records` must reproduce the column set
+    /// for null-bearing rows (a record with a missing key must round-trip
+    /// as a null cell, not as a dropped column). Catches a regression in
+    /// the records→DataFrame path where missing keys would either crash via
+    /// length mismatch in `DataFrame::new` or silently produce ragged
+    /// columns. The test uses i64 values that survive JSON exactly, so any
+    /// failure is on the records-handling code path, not numeric coercion.
+    #[test]
+    fn pd_records_roundtrip_handles_nulls_uniformly() {
+        let frame = json!({
+            "a": [1,    null, 3],
+            "b": [10,   20,   null],
+        });
+        let recs = call(polars__pd_to_records, json!({"frame": frame.clone()}));
+        assert!(recs["error"].is_null(), "to_records errored: {recs}");
+        let records = recs["records"]
+            .as_array()
+            .expect("records is array")
+            .clone();
+        assert_eq!(records.len(), 3, "expected 3 rows, got {:?}", records);
+        // Every record must contain BOTH keys (null materialized as
+        // serde_json::Value::Null, not omitted).
+        for (i, rec) in records.iter().enumerate() {
+            let obj = rec
+                .as_object()
+                .unwrap_or_else(|| panic!("row {i} not object: {rec}"));
+            assert!(
+                obj.contains_key("a"),
+                "row {i} missing key `a`: {rec} — pd_to_records dropped null"
+            );
+            assert!(
+                obj.contains_key("b"),
+                "row {i} missing key `b`: {rec} — pd_to_records dropped null"
+            );
+        }
+        let back = call(polars__pd_from_records, json!({"records": records}));
+        assert!(back["error"].is_null(), "from_records errored: {back}");
+        // Round trip must preserve row count.
+        let a_back = back["frame"]["a"]
+            .as_array()
+            .expect("column a present after from_records");
+        assert_eq!(
+            a_back.len(),
+            3,
+            "row count must survive records round trip, got {a_back:?}"
+        );
+    }
+}

@@ -1989,3 +1989,122 @@ pub extern "C" fn polars__df_replace_value(args: *const c_char) -> *mut c_char {
         return_frame(result)
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    /// `descending=true` on the single sort key must reverse the row order
+    /// vs the default-ascending case. Catches any future regression where
+    /// `parse_bool_vec` returns `false` on a bare bool (default-init bug),
+    /// or where `SortMultipleOptions::with_order_descending_multi` is wired
+    /// to the wrong polars field (an inversion would let an ascending test
+    /// pass while every real call silently sorts the wrong way).
+    #[test]
+    fn df_sort_descending_bool_reverses_against_ascending() {
+        let frame = json!({"k": [3, 1, 2]});
+        let asc = call(
+            polars__df_sort,
+            json!({"frame": frame, "by": ["k"], "descending": false}),
+        );
+        let desc = call(
+            polars__df_sort,
+            json!({"frame": frame, "by": ["k"], "descending": true}),
+        );
+        let asc_k: Vec<i64> = asc["frame"]["k"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap())
+            .collect();
+        let desc_k: Vec<i64> = desc["frame"]["k"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap())
+            .collect();
+        assert_eq!(asc_k, vec![1, 2, 3], "ascending sort order");
+        assert_eq!(desc_k, vec![3, 2, 1], "descending sort order");
+        let mut reversed = asc_k.clone();
+        reversed.reverse();
+        assert_eq!(
+            desc_k, reversed,
+            "descending must be the reverse of ascending"
+        );
+    }
+
+    /// `df_drop_nulls` with no `subset` must drop a row whose value in ANY
+    /// column is null, NOT just rows where every column is null. Catches a
+    /// classic "drop where all null" vs "drop where any null" inversion;
+    /// pandas/polars semantics is "any null" by default and a swap to "all
+    /// null" would silently keep rows with mixed null/non-null data, which
+    /// downstream stats / agg paths would propagate as NaN.
+    #[test]
+    fn df_drop_nulls_drops_row_with_any_null() {
+        // Row 0: (1, 10). Row 1: (null, 20). Row 2: (3, null). Row 3: (4, 40).
+        // With default "any null" semantics, only rows 0 and 3 survive.
+        let v = call(
+            polars__df_drop_nulls,
+            json!({"frame": {
+                "a": [1,    null, 3,    4],
+                "b": [10,   20,   null, 40],
+            }}),
+        );
+        assert!(v["error"].is_null(), "drop_nulls errored: {v}");
+        let a: Vec<i64> = v["frame"]["a"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        let b: Vec<i64> = v["frame"]["b"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(
+            a,
+            vec![1, 4],
+            "rows with any null in a or b must be dropped"
+        );
+        assert_eq!(b, vec![10, 40]);
+    }
+
+    /// `df_filter_eq` on a numeric column with a numeric value must match
+    /// only the exact numeric value, not stringified equivalents. Catches a
+    /// regression where someone routes `json_to_lit` through `to_string`
+    /// (turning `1` into `"1"`), which would compare i64 vs str and either
+    /// error or, worse, silently return the empty frame.
+    #[test]
+    fn df_filter_eq_matches_only_exact_int_value() {
+        let v = call(
+            polars__df_filter_eq,
+            json!({
+                "frame": {"id": [1, 2, 3, 2, 4], "tag": ["a", "b", "c", "d", "e"]},
+                "column": "id",
+                "value": 2,
+            }),
+        );
+        assert!(v["error"].is_null(), "filter_eq errored: {v}");
+        let id: Vec<i64> = v["frame"]["id"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        let tag: Vec<String> = v["frame"]["tag"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect();
+        assert_eq!(id, vec![2, 2], "two rows with id==2");
+        // Ordering is preserved relative to the input, so tags must be "b","d".
+        assert_eq!(tag, vec!["b".to_string(), "d".to_string()]);
+    }
+}
