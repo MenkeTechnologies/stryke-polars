@@ -4543,3 +4543,295 @@ pub extern "C" fn polars__fft_ifft(args: *const c_char) -> *mut c_char {
         Ok(json!({"array": array_to_value(&arr)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    //! Hand-crafted regression tests targeting specific arithmetic bug
+    //! classes in the numpy surface — modular roll, last-chunk-leftover
+    //! split contract, binary-search insertion-point edge cases, and arange
+    //! step-direction guard. Each test is an adversarial case that a naive
+    //! reimplementation (off-by-one, wrong shift sign, premature loop exit,
+    //! missing zero-step rejection) would fail loudly.
+    use serde_json::json;
+    use std::f64;
+
+    use crate::ffi_test::call;
+
+    fn flat_data(v: &serde_json::Value) -> Vec<f64> {
+        v["array"]["data"]
+            .as_array()
+            .expect("array.data")
+            .iter()
+            .map(|x| x.as_f64().expect("f64"))
+            .collect()
+    }
+
+    fn flat_shape(v: &serde_json::Value) -> Vec<usize> {
+        v["array"]["shape"]
+            .as_array()
+            .expect("array.shape")
+            .iter()
+            .map(|x| x.as_u64().expect("u64") as usize)
+            .collect()
+    }
+
+    /// `arr_roll` must implement true modular shift: negative shifts rotate
+    /// left, positive shifts rotate right, and |shift| > len must wrap. A
+    /// naive `shift as usize` (without first folding into `[0, n)`) panics
+    /// or silently corrupts on negative input. A modulo-only impl missing
+    /// the `+ n` normalization step on negative `shift % n` returns garbage
+    /// for shift=-1. This fixture pins all four edge cases at once.
+    #[test]
+    fn arr_roll_handles_negative_oversized_and_zero_shifts() {
+        let arr = json!({"data": [1.0, 2.0, 3.0, 4.0, 5.0], "shape": [5]});
+
+        // shift = +1 → right-rotate by one
+        let v = call(super::polars__arr_roll, json!({"array": arr, "shift": 1}));
+        assert!(v["error"].is_null(), "shift=+1 errored: {v}");
+        assert_eq!(flat_data(&v), vec![5.0, 1.0, 2.0, 3.0, 4.0]);
+
+        // shift = -1 → left-rotate by one (equivalent to +4 on len-5)
+        let v = call(super::polars__arr_roll, json!({"array": arr, "shift": -1}));
+        assert!(v["error"].is_null(), "shift=-1 errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            vec![2.0, 3.0, 4.0, 5.0, 1.0],
+            "shift=-1 must equal shift=+4 (modular wrap)"
+        );
+
+        // shift = +6 → right-rotate by (6 mod 5) = 1
+        let v = call(super::polars__arr_roll, json!({"array": arr, "shift": 6}));
+        assert!(v["error"].is_null(), "shift=+6 errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            vec![5.0, 1.0, 2.0, 3.0, 4.0],
+            "shift=+6 on len-5 must equal shift=+1"
+        );
+
+        // shift = -10 → left-rotate by (10 mod 5) = 0 → identity
+        let v = call(super::polars__arr_roll, json!({"array": arr, "shift": -10}));
+        assert!(v["error"].is_null(), "shift=-10 errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            vec![1.0, 2.0, 3.0, 4.0, 5.0],
+            "shift=-10 on len-5 must equal identity"
+        );
+
+        // shift = 0 → identity
+        let v = call(super::polars__arr_roll, json!({"array": arr, "shift": 0}));
+        assert!(v["error"].is_null(), "shift=0 errored: {v}");
+        assert_eq!(flat_data(&v), vec![1.0, 2.0, 3.0, 4.0, 5.0]);
+    }
+
+    /// `arr_split` docstring promises "leftover elements go to the last
+    /// chunk" — i.e., the LAST chunk swallows the remainder while earlier
+    /// chunks are exactly `total / n_parts`. The competing numpy
+    /// `np.array_split` distributes the remainder to the FIRST chunks. A
+    /// refactor toward the numpy convention would silently flip
+    /// downstream chunk indexing for every caller that relies on the
+    /// documented contract. This pins both directions at once with an
+    /// adversarial setup that distinguishes them.
+    #[test]
+    fn arr_split_leftover_goes_to_the_last_chunk_not_the_first() {
+        // 11 / 3 = 3 remainder 2 → docstring contract: [3, 3, 5]
+        //                       → numpy contract:     [4, 4, 3]
+        let v = call(
+            super::polars__arr_split,
+            json!({
+                "array": {"data": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0], "shape": [11]},
+                "n_parts": 3,
+            }),
+        );
+        assert!(v["error"].is_null(), "split errored: {v}");
+        let chunks = v["chunks"].as_array().expect("chunks array");
+        assert_eq!(chunks.len(), 3, "got {} chunks", chunks.len());
+        let chunk_data: Vec<Vec<f64>> = chunks
+            .iter()
+            .map(|c| {
+                c["data"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|x| x.as_f64().unwrap())
+                    .collect()
+            })
+            .collect();
+        assert_eq!(chunk_data[0], vec![1.0, 2.0, 3.0]);
+        assert_eq!(chunk_data[1], vec![4.0, 5.0, 6.0]);
+        assert_eq!(
+            chunk_data[2],
+            vec![7.0, 8.0, 9.0, 10.0, 11.0],
+            "leftover (2 extra elements) must land in the LAST chunk per docstring"
+        );
+
+        // total < n_parts: base=0 so every chunk except the last is empty,
+        // last gets everything. Pins that no off-by-one walks `start`
+        // past `total` mid-loop (would underflow `data[start..end]`).
+        let v = call(
+            super::polars__arr_split,
+            json!({
+                "array": {"data": [42.0, 43.0], "shape": [2]},
+                "n_parts": 5,
+            }),
+        );
+        assert!(v["error"].is_null(), "split (total<n_parts) errored: {v}");
+        let chunks = v["chunks"].as_array().expect("chunks array");
+        assert_eq!(chunks.len(), 5);
+        for (i, chunk) in chunks.iter().enumerate().take(4) {
+            let d: Vec<f64> = chunk["data"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|x| x.as_f64().unwrap())
+                .collect();
+            assert!(d.is_empty(), "chunk {i} must be empty, got {d:?}");
+        }
+        let last: Vec<f64> = chunks[4]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(
+            last,
+            vec![42.0, 43.0],
+            "last chunk must absorb every element when total < n_parts"
+        );
+    }
+
+    /// `arr_searchsorted` must implement numpy's `side='left'` insertion
+    /// point: leftmost index `i` such that `a[i] >= v`. The adversarial
+    /// cases are (a) empty array → 0, (b) v less than every element → 0,
+    /// (c) v greater than every element → len, (d) v equal to a duplicate
+    /// run → first matching index (not last, not middle). A binary-search
+    /// off-by-one that uses `<=` instead of `<` would push duplicates to
+    /// the right (numpy's `side='right'` behavior); a naive linear
+    /// `position(|x| x >= v)` would still pass the first three but a
+    /// missing branch on duplicates would silently shift indices.
+    #[test]
+    fn arr_searchsorted_left_insertion_point_pins_duplicate_and_boundary_cases() {
+        // Empty array → 0.
+        let v = call(
+            super::polars__arr_searchsorted,
+            json!({"array": {"data": [], "shape": [0]}, "v": 3.0}),
+        );
+        assert!(v["error"].is_null(), "empty errored: {v}");
+        assert_eq!(v["index"].as_u64(), Some(0));
+
+        // v less than every element → 0.
+        let v = call(
+            super::polars__arr_searchsorted,
+            json!({"array": {"data": [10.0, 20.0, 30.0], "shape": [3]}, "v": 5.0}),
+        );
+        assert_eq!(v["index"].as_u64(), Some(0));
+
+        // v greater than every element → len.
+        let v = call(
+            super::polars__arr_searchsorted,
+            json!({"array": {"data": [10.0, 20.0, 30.0], "shape": [3]}, "v": 99.0}),
+        );
+        assert_eq!(v["index"].as_u64(), Some(3));
+
+        // v exactly equals a duplicate run → leftmost matching position
+        // (numpy `side='left'`). For [1, 2, 2, 2, 3] and v=2, answer is 1.
+        let v = call(
+            super::polars__arr_searchsorted,
+            json!({"array": {"data": [1.0, 2.0, 2.0, 2.0, 3.0], "shape": [5]}, "v": 2.0}),
+        );
+        assert_eq!(
+            v["index"].as_u64(),
+            Some(1),
+            "side='left' must return the first matching index, not the last"
+        );
+
+        // v equals last element exactly → len-1, not len. Catches a
+        // `data[mid] <= v ⇒ lo = mid + 1` bug that would push past the
+        // tail for equal values.
+        let v = call(
+            super::polars__arr_searchsorted,
+            json!({"array": {"data": [10.0, 20.0, 30.0], "shape": [3]}, "v": 30.0}),
+        );
+        assert_eq!(
+            v["index"].as_u64(),
+            Some(2),
+            "v equal to last element must give len-1 under side='left'"
+        );
+    }
+
+    /// `arr_arange` must (a) reject step=0 with a clean error rather than
+    /// looping forever, (b) honor the sign of `step` for the loop guard
+    /// (positive step uses `<`, negative step uses `>`), and (c) return
+    /// an empty array when the direction implies no progress (e.g.
+    /// start=5, stop=0, step=+1). A copy-paste bug that uses the same
+    /// `<` for both branches would loop forever or fail to produce
+    /// reversed sequences. Default-`start` (omitted) must equal 0 so
+    /// `arange(stop=3)` returns `[0,1,2]` per numpy convention — a
+    /// regression dropping the `.unwrap_or(0.0)` default would surface
+    /// here.
+    #[test]
+    fn arr_arange_step_direction_zero_rejection_and_default_start() {
+        // step=0 → clean error envelope.
+        let v = call(
+            super::polars__arr_arange,
+            json!({"start": 0.0, "stop": 10.0, "step": 0.0}),
+        );
+        assert!(
+            v["error"]
+                .as_str()
+                .map(|s| s.contains("step"))
+                .unwrap_or(false),
+            "expected step=0 to bail with `step` in error, got {v}"
+        );
+
+        // Negative step descending from 5 to 0.
+        let v = call(
+            super::polars__arr_arange,
+            json!({"start": 5.0, "stop": 0.0, "step": -1.0}),
+        );
+        assert!(v["error"].is_null(), "negative step errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            vec![5.0, 4.0, 3.0, 2.0, 1.0],
+            "negative step must descend and exclude stop"
+        );
+        assert_eq!(flat_shape(&v), vec![5]);
+
+        // Positive step with start > stop → empty (no progress).
+        // A bug that flipped the `>` comparator in the descend branch
+        // would also flip the ascend branch and infinite-loop here.
+        let v = call(
+            super::polars__arr_arange,
+            json!({"start": 5.0, "stop": 0.0, "step": 1.0}),
+        );
+        assert!(v["error"].is_null(), "start>stop +step errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            Vec::<f64>::new(),
+            "positive step with start>stop must yield empty array"
+        );
+        assert_eq!(flat_shape(&v), vec![0]);
+
+        // Default start=0 when `start` is omitted (numpy convention).
+        let v = call(super::polars__arr_arange, json!({"stop": 3.0, "step": 1.0}));
+        assert!(v["error"].is_null(), "omitted start errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            vec![0.0, 1.0, 2.0],
+            "omitted `start` must default to 0.0"
+        );
+
+        // Negative step with start < stop → empty. Symmetric to the
+        // positive-step start>stop case above. Catches a single-branch
+        // refactor that drops the `if step > 0.0` dispatch.
+        let v = call(
+            super::polars__arr_arange,
+            json!({"start": 0.0, "stop": 5.0, "step": -1.0}),
+        );
+        assert!(v["error"].is_null(), "neg step start<stop errored: {v}");
+        assert_eq!(
+            flat_data(&v),
+            Vec::<f64>::new(),
+            "negative step with start<stop must yield empty array"
+        );
+    }
+}
