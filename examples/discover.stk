@@ -1,0 +1,46 @@
+#!/usr/bin/env stryke
+# examples/discover.stk — minimum-viable tour of the `Polars` package.
+#
+# Self-contained: builds an in-memory DataFrame from a 4-column dict,
+# exercises shape / head / select / columns / dtypes / to_json. No
+# external file argument, no service.
+#
+# Run:   s examples/discover.stk
+
+use Polars
+use Polars::DataFrame
+
+p "=== Polars discover ==="
+val $ver = Polars::version()
+p "version: " . (ref($ver) eq "HASH" ? ($ver->{version} // "?") : $ver)
+p ""
+
+# Build a DataFrame from a column dict (key -> array).
+val %cols = (
+    id    => [1, 2, 3, 4, 5],
+    name  => ["alice", "bob", "charlie", "dana", "eve"],
+    score => [1.5, 2.0, 3.25, 4.0, 5.5],
+    city  => ["ny", "sf", "ny", "la", "sf"],
+)
+
+# Polars DataFrame ops are stateless — every method takes the raw column
+# hash, not a previously-built handle. `new` validates the shape and
+# returns a {shape, columns} metadata blob.
+val $meta = Polars::DataFrame::new(\%cols)
+p "new:          shape=" . join("x", @{ $meta->{shape} // [] })
+
+val ($nrows, $ncols) = @{ Polars::DataFrame::shape(\%cols) }
+p "shape:        ${nrows} rows × ${ncols} cols"
+
+val @columns = @{ Polars::DataFrame::columns(\%cols) }
+p "columns:      " . join(", ", @columns)
+
+val @types = @{ Polars::DataFrame::dtypes(\%cols) }
+p "dtypes:       " . join(", ", @types)
+
+val $head = Polars::DataFrame::head(\%cols, 3)
+p "head(3):      " . to_json($head)
+
+val $projected = Polars::DataFrame::select(\%cols, ["name", "score"])
+val @pcols = @{ Polars::DataFrame::columns($projected) }
+p "select cols:  " . join(", ", @pcols)
