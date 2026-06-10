@@ -1,0 +1,44 @@
+#!/usr/bin/env stryke
+# examples/groupby.stk — group-by aggregation tour.
+#
+# Self-contained: builds a small sales dataset in-memory, runs group_by
+# with multiple aggs (sum, mean, count), prints summary. Runs in <100ms.
+#
+# Run:   s examples/groupby.stk
+
+use Polars
+use Polars::DataFrame
+
+p "=== Polars group_by tour ==="
+
+# Mini sales dataset across 3 regions × 4 products.
+val %cols = (
+    region  => ["east", "east", "east", "west", "west", "west", "north", "north", "north"],
+    product => ["a",    "b",    "c",    "a",    "b",    "c",    "a",     "b",     "c"],
+    revenue => [100,    150,    80,     90,     130,    70,     60,      85,      55],
+    units   => [10,     12,     8,      9,      11,     7,      6,       8,       5],
+)
+
+val ($nrows, $ncols) = @{ Polars::DataFrame::shape(\%cols) }
+p "input: ${nrows} rows × ${ncols} cols"
+p "columns: " . join(", ", @{ Polars::DataFrame::columns(\%cols) })
+p ""
+
+# Sum revenue + units per region.
+val $sum_region = Polars::DataFrame::groupby_sum(\%cols, ["region"])
+p "── sum per region ──"
+p "  " . to_json($sum_region)
+
+p ""
+
+# Mean revenue + units per product (across regions).
+val $mean_product = Polars::DataFrame::groupby_mean(\%cols, ["product"])
+p "── mean per product ──"
+p "  " . to_json($mean_product)
+
+p ""
+
+# Count rows per region.
+val $count_region = Polars::DataFrame::groupby_count(\%cols, ["region"])
+p "── count per region ──"
+p "  " . to_json($count_region)
