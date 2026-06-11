@@ -49,7 +49,7 @@ stryke's core stays small on purpose — most one-liner / awk-replacement work d
 | Core builtins (~40 MB stryke) | small deps, used everywhere | string, math, regex, parallel ops, scipy-class math |
 | Package tier (opt-in) | heavy deps, narrow use cases | parquet, arrow, big-ML, cloud SDKs, **full pandas + numpy** |
 
-`stryke-polars` ships as a local stryke package + a Rust cdylib (`libstryke_polars.{dylib,so}`) loaded on demand. The stryke side is a thin JSON-pipe wrapper; the heavy `polars`/`ndarray`/`ndarray-linalg`/`nalgebra`/`rustfft` code lives in the cdylib and is loaded on first `use Polars`. Core stryke is never linked against any of them.
+`stryke-polars` ships as a local stryke package + a Rust cdylib (`libstryke_polars.{dylib,so}`) loaded on demand. The stryke side is a thin JSON-pipe wrapper; the heavy `polars`/`ndarray`/`nalgebra`/`rustfft` code lives in the cdylib and is loaded on first `use Polars`. Core stryke is never linked against any of them.
 
 ## [0x01] Install
 
