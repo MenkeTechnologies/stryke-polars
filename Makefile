@@ -9,7 +9,7 @@ help:
 	  '  make release   - cargo build --release  (default; produces target/release/libstryke_polars.{dylib,so})' \
 	  '  make debug     - cargo build  (faster compile, slower binary)' \
 	  '  make test      - cargo test then `s test t/`' \
-	  '  make install   - `s pkg install -g .` (cdylib lands in ~/.stryke/store/polars@<ver>/)' \
+	  '  make install   - `s pkg install -g .` (cdylib lands in ~/.stryke/store/stryke-polars@<ver>/)' \
 	  '  make clean     - cargo clean'
 
 release:
