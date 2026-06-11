@@ -76,51 +76,69 @@ my $v = Polars::version()
 say "stryke-polars $v->{version} (polars $v->{polars}, ndarray $v->{ndarray})"
 ```
 
-Real DataFrame / ndarray / linalg / random / FFT examples land per phase — see [\[0x08\]](#0x08-phases).
+Working DataFrame / groupby examples live in `examples/` (`discover.stk`,
+`groupby.stk`); the full per-family surface is exercised by the suites in
+`t/`.
 
 ## [0x03] Surface
 
-| Family | Stryke prefix | cdylib prefix | Target fns |
-|---|---|---|---|
-| pandas DataFrame | `df_*` | `polars__df_*` | ~280 |
-| pandas Series | `sr_*` | `polars__sr_*` | ~250 |
-| pandas Index family | `idx_*` | `polars__idx_*` | ~80 |
-| pandas IO | `pd_read_*` / `pd_to_*` | `polars__pd_*` | ~30 |
-| pandas groupby / rolling / resample / EWM | `df_*` (verb forms) | `polars__df_*` | ~150 |
-| pandas `.str.*` accessor | `sr_str_*` | `polars__sr_str_*` | ~50 |
-| pandas `.dt.*` accessor | `sr_dt_*` | `polars__sr_dt_*` | ~50 |
-| pandas Categorical | `cat_*` | `polars__cat_*` | ~30 |
-| numpy ndarray | `arr_*` | `polars__arr_*` | ~180 |
-| numpy ufuncs | `np_*` | `polars__np_*` | ~70 |
-| numpy linalg | `linalg_*` | `polars__linalg_*` | ~50 |
-| numpy random | `rand_*` | `polars__rand_*` | ~80 |
-| numpy fft | `fft_*` | `polars__fft_*` | ~20 |
-| numpy polynomial | `poly_*` | `polars__poly_*` | ~40 |
-| numpy masked | `ma_*` | `polars__ma_*` | ~80 |
-| numpy datetime64 / timedelta64 | `dt64_*` | `polars__dt64_*` | ~30 |
-| **Total** | | | **~1470** |
+46 wrapper modules in `lib/`, 1,471 stryke-side fns total
+(`grep -c '^fn ' lib/*.stk`), each calling a `polars__*` cdylib export:
+
+| Module | Package | Fns |
+|---|---|---|
+| `Series.stk` | `Polars::Series` | 206 |
+| `NdArray.stk` | `Polars::NdArray` | 124 |
+| `DataFrame.stk` | `Polars::DataFrame` | 115 |
+| `Ufunc.stk` | `Polars::Ufunc` | 70 |
+| `Index.stk` | `Polars::Index` | 69 |
+| `NdArrayExt.stk` | `Polars::NdArrayExt` | 68 |
+| `UfuncExt.stk` | `Polars::UfuncExt` | 66 |
+| `Masked.stk` | `Polars::Masked` | 61 |
+| `DataFrameExt.stk` | `Polars::DataFrameExt` | 47 |
+| `DateTime64.stk` | `Polars::DateTime64` | 42 |
+| `Image.stk` | `Polars::Image` | 42 |
+| `Categorical.stk` | `Polars::Categorical` | 35 |
+| `Dist.stk` | `Polars::Dist` | 35 |
+| `Signal.stk` | `Polars::Signal` | 35 |
+| `Bit.stk` | `Polars::Bit` | 30 |
+| `IO.stk` | `Polars::IO` | 29 |
+| `Text.stk` | `Polars::Text` | 27 |
+| `Stat.stk` | `Polars::Stat` | 24 |
+| `Stattest.stk` | `Polars::Stattest` | 24 |
+| `Misc.stk` | `Polars::Misc` | 23 |
+| `Metric.stk` | `Polars::Metric` | 22 |
+| `GroupBy.stk` | `Polars::GroupBy` | 21 |
+| `Random.stk` | `Polars::Random` | 20 |
+| `RandomExt.stk` | `Polars::RandomExt` | 20 |
+| `Linalg.stk` | `Polars::Linalg` | 19 |
+| `LinalgExt.stk` | `Polars::LinalgExt` | 18 |
+| `Window.stk` | `Polars::Window` | 17 |
+| `Fmt.stk` | `Polars::Fmt` | 14 |
+| `Json.stk` | `Polars::Json` | 14 |
+| `Graph.stk` | `Polars::Graph` | 13 |
+| `TS.stk` | `Polars::TS` | 13 |
+| `Geo.stk` | `Polars::Geo` | 12 |
+| `Bool.stk` | `Polars::Bool` | 11 |
+| `Sparse.stk` | `Polars::Sparse` | 11 |
+| `PolynomialExt.stk` | `Polars::PolynomialExt` | 10 |
+| `Set.stk` | `Polars::Set` | 9 |
+| `FFT.stk` | `Polars::FFT` | 8 |
+| `Encoding.stk` | `Polars::Encoding` | 7 |
+| `Polynomial.stk` | `Polars::Polynomial` | 7 |
+| `Interp.stk` | `Polars::Interp` | 6 |
+| `Checksum.stk` | `Polars::Checksum` | 5 |
+| `Cluster.stk` | `Polars::Cluster` | 5 |
+| `FFTExt.stk` | `Polars::FFTExt` | 5 |
+| `Hash.stk` | `Polars::Hash` | 5 |
+| `Opt.stk` | `Polars::Opt` | 5 |
+| `Polars.stk` | `Polars` (root: `version`, `_decode`) | 2 |
 
 ## [0x04] API Reference
 
-Per-family `.stk` wrappers live in `lib/`:
-
-| File | Wraps |
-|---|---|
-| `lib/Polars.stk` | Root: `Polars::version`, `Polars::_decode` |
-| `lib/DataFrame.stk` | `df_*` |
-| `lib/Series.stk` | `sr_*` |
-| `lib/Index.stk` | `idx_*` |
-| `lib/IO.stk` | `pd_read_*` / `pd_to_*` |
-| `lib/NdArray.stk` | `arr_*` |
-| `lib/Ufunc.stk` | `np_*` |
-| `lib/Linalg.stk` | `linalg_*` |
-| `lib/Random.stk` | `rand_*` |
-| `lib/FFT.stk` | `fft_*` |
-| `lib/Polynomial.stk` | `poly_*` |
-| `lib/Masked.stk` | `ma_*` |
-| `lib/DateTime64.stk` | `dt64_*` |
-
-Per-fn docs land alongside each export as it's added per phase.
+Per-family `.stk` wrappers live in `lib/` — one module per family, listed
+with fn counts in [\[0x03\]](#0x03-surface). Per-fn docs live inline as
+`##` doc comments above each wrapper fn.
 
 ## [0x05] FFI Layer
 
@@ -134,7 +152,7 @@ JSON envelope on success is the per-fn shape (see [\[0x04\]](#0x04-api-reference
 |---|---|
 | DataFrame / Series / Index / pandas IO | `polars` (full feature set) |
 | ndarray + ufuncs | `ndarray` + `rayon` |
-| linalg | `ndarray-linalg` (OpenBLAS), `nalgebra` |
+| linalg | `nalgebra` |
 | random | `rand` + `rand_distr` + `ndarray-rand` + `rand_chacha` |
 | fft | `rustfft` + `realfft` |
 | polynomial | hand-rolled on `ndarray` (recurrence formulas) |
@@ -146,29 +164,27 @@ Parquet / Arrow IO routes through `stryke-arrow` to share a single arrow-rs link
 
 ## [0x07] Naming Convention
 
-Stryke-side builtins follow the existing flat prefix pattern set by `strykelang/builtins_*.rs`:
+Stryke-side wrappers are namespaced packages — `use Polars::DataFrame`
+gives `Polars::DataFrame::head`, `use Polars::Linalg` gives
+`Polars::Linalg::*`, etc. (one package per `lib/*.stk` module).
 
-- `df_<verb>` for DataFrame ops (matches the 57 existing `df_*` already in core).
-- `sr_<verb>` for Series ops.
-- `arr_<verb>` for ndarray ops.
-- `np_<verb>` for ufuncs (matches Python `np.<verb>` muscle memory).
-- `linalg_<verb>` / `rand_<verb>` / `fft_<verb>` / `poly_<verb>` / `ma_<verb>` / `dt64_<verb>` for namespaced families (matches Python `np.linalg.<verb>` etc.).
-- `pd_read_<fmt>` / `pd_to_<fmt>` for IO (matches Python `pd.read_<fmt>`).
-
-cdylib-side FFI symbols prefix every name with `polars__` (double-underscore namespace).
+cdylib-side FFI symbols are flat, prefixed `polars__` (double-underscore
+namespace) plus a per-family verb prefix: `polars__df_<verb>` for
+DataFrame, `polars__sr_<verb>` for Series, `polars__arr_<verb>` for
+ndarray, `polars__np_<verb>` for ufuncs, `polars__linalg_<verb>` /
+`polars__rand_<verb>` / `polars__fft_<verb>` / `polars__poly_<verb>` /
+`polars__ma_<verb>` / `polars__dt64_<verb>` for the namespaced families,
+`polars__pd_read_<fmt>` / `polars__pd_to_<fmt>` for IO.
 
 ## [0x08] Phases
 
-The full ~1470-fn surface lands in numbered phases. Each phase is one git commit / one CI green / one release tag.
-
-| Phase | Scope | Files |
-|---|---|---|
-| **P0** | Scaffold (this commit): Cargo.toml, stryke.toml, src/lib.rs (FFI plumbing + `polars__version`), lib/*.stk wrappers, README, LICENSE, Makefile, CI, tests | this commit |
-| **P1** | DataFrame full surface (`df_*` ~280) | `src/df.rs`, `lib/DataFrame.stk` |
-| **P2** | Series + Index + IO | `src/sr.rs`, `src/idx.rs`, `src/io.rs` |
-| **P3** | groupby + rolling + resample + EWM + str + dt + Categorical | `src/groupby.rs`, `src/accessors.rs`, `src/cat.rs` |
-| **P4** | ndarray + ufuncs | `src/nd.rs`, `src/ufunc.rs` |
-| **P5** | linalg + random + fft + polynomial + masked + datetime64 | `src/linalg.rs`, `src/random.rs`, `src/fft.rs`, `src/poly.rs`, `src/ma.rs`, `src/dt64.rs` |
+The surface landed in numbered phases (each phase one git commit / one CI
+green / one release tag). The original P0–P5 plan — scaffold, DataFrame,
+Series + Index + IO, groupby / accessors / Categorical, ndarray + ufuncs,
+then linalg / random / fft / polynomial / masked / datetime64 — has
+shipped, and the surface has since expanded well past it (image, signal,
+distributions, stat tests, text, graph, geo, sparse, and more — see the
+module table in [\[0x03\]](#0x03-surface)).
 
 ## [0x09] Tests
 
@@ -181,9 +197,8 @@ Per-fn correctness is gated by reference checks against pandas/numpy where possi
 ## [0x0A] Dev Workflow
 
 ```sh
-make debug          # cargo build (fast iter)
+make release        # cargo build --release (default target)
 make test           # cargo test + stryke t/
-make release        # cargo build --release
 make install        # release + s pkg install -g .
 cargo fmt --all     # required before every push (CI gate)
 cargo clippy --all-targets --locked -- -D warnings
@@ -196,21 +211,20 @@ stryke-polars/
 ├── Cargo.toml              # crate-type=cdylib, deps
 ├── stryke.toml             # package meta + FFI exports + scripts
 ├── src/
-│   └── lib.rs              # FFI plumbing + per-phase fn impls
-├── lib/                    # stryke-side .stk wrappers
-│   ├── Polars.stk
-│   ├── DataFrame.stk
-│   ├── Series.stk
-│   ├── Index.stk
-│   ├── IO.stk
-│   ├── NdArray.stk
-│   ├── Ufunc.stk
-│   ├── Linalg.stk
-│   ├── Random.stk
-│   ├── FFT.stk
-│   ├── Polynomial.stk
-│   ├── Masked.stk
-│   └── DateTime64.stk
+│   ├── lib.rs              # FFI plumbing + version export
+│   ├── df.rs               # DataFrame + .str/.dt accessors
+│   ├── sr.rs / more_sr.rs  # Series
+│   ├── idx.rs              # Index
+│   ├── io.rs               # pandas IO
+│   ├── cat.rs              # Categorical
+│   ├── nd.rs / more_nd.rs  # ndarray, ufuncs, linalg, random, fft, polynomial
+│   ├── ma.rs               # masked arrays
+│   ├── dt64.rs             # datetime64 / timedelta64
+│   ├── img.rs              # image ops
+│   ├── signal.rs           # signal processing + windows
+│   ├── stattest.rs         # stat tests, distributions, interpolation
+│   └── extras{,2,3,4}.rs   # groupby, stat, set, bool, cluster, geo, graph, text, json, … expansion families
+├── lib/                    # 46 stryke-side .stk wrapper modules (see [0x03])
 ├── tests/                  # contract gates (shell)
 ├── t/                      # stryke integration tests
 ├── examples/
