@@ -1808,3 +1808,89 @@ pub extern "C" fn polars__df_mode_per_column(args: *const c_char) -> *mut c_char
         Ok(json!({"mode": Value::Object(out)}))
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::ffi_test::call;
+
+    use super::*;
+
+    /// `roll_apply` must ALWAYS return a vector whose length equals the input
+    /// length, regardless of window size — the leading `prefix` NaNs plus the
+    /// `n - w + 1` emitted windows must sum exactly to `n`. A miscount in
+    /// `prefix = (w-1).min(n)` or the `(w-1)..n` loop bound would desync the
+    /// output length from the input, silently misaligning every downstream
+    /// column the rolling result feeds.
+    #[test]
+    fn roll_apply_output_length_always_equals_input_length() {
+        let v = [10.0, 20.0, 30.0, 40.0, 50.0];
+        for w in 0..=8usize {
+            let out = roll_apply(&v, w, |w| w.iter().sum::<f64>());
+            assert_eq!(
+                out.len(),
+                v.len(),
+                "window {w} produced length {} for input length {}",
+                out.len(),
+                v.len()
+            );
+        }
+    }
+
+    /// The `w == 0` guard is load-bearing: the loop computes `i + 1 - w`, so a
+    /// zero window with the guard removed would underflow `usize` and panic.
+    /// `w == 0` must yield all-NaN of length `n`. `w > n` must do the same —
+    /// there is no full window anywhere in the data, so every position is NaN.
+    /// Both are pinned here against the off-by-one / underflow bug class.
+    #[test]
+    fn roll_apply_degenerate_windows_are_all_nan() {
+        let v = [1.0, 2.0, 3.0];
+        for w in [0usize, 4, 99] {
+            let out = roll_apply(&v, w, |w| w.iter().sum::<f64>());
+            assert_eq!(out.len(), v.len(), "w={w} length");
+            assert!(
+                out.iter().all(|x| x.is_nan()),
+                "w={w} should be all NaN, got {out:?}"
+            );
+        }
+    }
+
+    /// Window content invariant: the first `w-1` outputs are NaN (no full
+    /// window yet) and each emitted value is the reducer over exactly the `w`
+    /// consecutive inputs ending at that index — i.e. the slice
+    /// `v[i+1-w..=i]`. A trailing rolling sum with window 3 over 1..=5 must be
+    /// [NaN, NaN, 6, 9, 12]; an off-by-one in the slice bounds (e.g. `v[i-w..i]`
+    /// or an inclusive-vs-exclusive slip) would shift these by one element.
+    #[test]
+    fn roll_apply_window_is_trailing_w_elements() {
+        let v = [1.0, 2.0, 3.0, 4.0, 5.0];
+        let out = roll_apply(&v, 3, |w| w.iter().sum::<f64>());
+        assert_eq!(out.len(), 5);
+        assert!(out[0].is_nan(), "index 0 must be NaN (no full window)");
+        assert!(out[1].is_nan(), "index 1 must be NaN (no full window)");
+        assert_eq!(out[2], 6.0, "sum of [1,2,3]");
+        assert_eq!(out[3], 9.0, "sum of [2,3,4]");
+        assert_eq!(out[4], 12.0, "sum of [3,4,5]");
+
+        // Window == length: exactly one full window at the final index.
+        let full = roll_apply(&v, 5, |w| w.iter().sum::<f64>());
+        assert!(full[..4].iter().all(|x| x.is_nan()));
+        assert_eq!(full[4], 15.0, "single window covering all elements");
+    }
+
+    /// FFI surface check for the rolling family: `polars__roll_mean` with a
+    /// missing `window` key must surface a structured error envelope rather
+    /// than panicking or defaulting to a silent window — the macro's
+    /// `ok_or_else(|| anyhow!("missing `window`"))` path. This pins the
+    /// error-mapping contract callers depend on to distinguish bad input from
+    /// a NaN-filled result.
+    #[test]
+    fn roll_mean_missing_window_is_error_envelope() {
+        let v = call(polars__roll_mean, json!({ "data": [1.0, 2.0, 3.0] }));
+        assert!(
+            v.get("error").is_some(),
+            "missing window should be an error envelope, got {v}"
+        );
+    }
+}
