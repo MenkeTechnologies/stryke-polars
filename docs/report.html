@@ -79,7 +79,7 @@
             <a href="https://github.com/MenkeTechnologies/strykelang" target="_blank" rel="noopener noreferrer">strykelang</a>
           </nav>
           <p style="margin:0.35rem 0 0;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.03em;opacity:0.75;">
-            v0.5.2 &middot; 1383 cdylib exports &middot; 46 <code>.stk</code> wrapper packages &middot; 120 Rust unit tests &middot; <code>dlopen</code>'d in-process on <code>use Polars</code> &middot; JSON-over-FFI envelope
+            v0.5.3 &middot; 1383 cdylib exports &middot; 46 <code>.stk</code> wrapper packages &middot; 120 Rust unit tests &middot; <code>dlopen</code>'d in-process on <code>use Polars</code> &middot; JSON-over-FFI envelope
           </p>
         </div>
         <div class="tutorial-toolbar">
@@ -93,11 +93,11 @@
     <main class="tutorial-main">
 
       <h2 class="tutorial-title"><span class="step-hash">&gt;_</span>EXECUTIVE SUMMARY</h2>
-      <p class="tutorial-subtitle"><strong>stryke-polars</strong> is one of the opt-in connector packages in the stryke ecosystem. As of <strong>v0.5.2</strong> it ships the full pandas + numpy surface &mdash; DataFrame, Series, Index, IO, Categorical, ndarray, ufuncs, linalg, random, fft, polynomial, masked arrays, datetime64 &mdash; <em>plus</em> a scipy-class extension layer covering signal processing, statistical tests, image filters, ML metrics, graph algorithms, time-series analytics, sparse matrices, distance/clustering, JSON/bit/format helpers. <strong>1383 cdylib exports across 39 prefix families</strong>, all in one cdylib that stryke <code>dlopen</code>'s in-process on <code>use Polars</code>.</p>
+      <p class="tutorial-subtitle"><strong>stryke-polars</strong> is one of the opt-in connector packages in the stryke ecosystem. As of <strong>v0.5.3</strong> it ships the full pandas + numpy surface &mdash; DataFrame, Series, Index, IO, Categorical, ndarray, ufuncs, linalg, random, fft, polynomial, masked arrays, datetime64 &mdash; <em>plus</em> a scipy-class extension layer covering signal processing, statistical tests, image filters, ML metrics, graph algorithms, time-series analytics, sparse matrices, distance/clustering, JSON/bit/format helpers. <strong>1383 cdylib exports across 39 prefix families</strong>, all in one cdylib that stryke <code>dlopen</code>'s in-process on <code>use Polars</code>.</p>
       <p class="tutorial-subtitle">Why opt-in: pandas + numpy bring 200+ transitive crates plus OpenBLAS. Linking them into the daily-driver <code>stryke</code> binary would 5&times; its size and pull in build-time deps that one-liner / awk-replacement users do not need.</p>
 
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-val">v0.5.2</div><div class="stat-label">Current release</div></div>
+        <div class="stat-card"><div class="stat-val">v0.5.3</div><div class="stat-label">Current release</div></div>
         <div class="stat-card"><div class="stat-val cyan">1383</div><div class="stat-label">cdylib exports</div></div>
         <div class="stat-card"><div class="stat-val green">120</div><div class="stat-label">Rust unit tests passing</div></div>
         <div class="stat-card"><div class="stat-val">46</div><div class="stat-label"><code>.stk</code> wrapper packages</div></div>
@@ -205,7 +205,7 @@
           <tr><td><code>P5</code></td><td>pandas Series + Index + IO + Categorical + groupby + scipy-class extensions (signal, stattest, image, distance, graph, metric, text, ts, sparse, bit, JSON, fmt, geo, opt, hash, cluster, encoding)</td><td>~1020</td></tr>
           <tr><td><code>P5b</code></td><td>Auto-generate 30 new <code>.stk</code> wrappers + hand-write <code>DateTime64.stk</code> + add 1062 missing <code>///</code> doc comments + populate <code>stryke.toml</code> <code>[ffi].exports</code></td><td>0</td></tr>
           <tr><td><code>P5c</code></td><td>120 hand-crafted Rust unit tests (shared <code>ffi_test::call</code> harness exercises the FFI envelope end-to-end). Surfaced and fixed two real bugs along the way.</td><td>0</td></tr>
-          <tr><td><strong>Total shipped at v0.5.2</strong></td><td></td><td><strong>1383</strong></td></tr>
+          <tr><td><strong>Total shipped at v0.5.3</strong></td><td></td><td><strong>1383</strong></td></tr>
         </tbody>
       </table>
 
