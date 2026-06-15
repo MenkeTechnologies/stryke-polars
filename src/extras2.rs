@@ -1903,6 +1903,21 @@ pub extern "C" fn polars__sparse_trace(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix Frobenius norm: the square root of the sum of squared entries.
+/// Only stored (nonzero) entries contribute, so it is exact for the sparse
+/// representation. `eye(n)` has norm `sqrt(n)`.
+#[no_mangle]
+pub extern "C" fn polars__sparse_frobenius(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("sparse")
+            .ok_or_else(|| anyhow!("missing `sparse`"))?;
+        let (data, _, _, _, _) = parse_sparse(s)?;
+        let sumsq: f64 = data.iter().map(|x| x * x).sum();
+        Ok(json!({"norm": scalar(sumsq.sqrt())}))
+    })
+}
+
 /// Sparse matrix eye.
 #[no_mangle]
 pub extern "C" fn polars__sparse_eye(args: *const c_char) -> *mut c_char {

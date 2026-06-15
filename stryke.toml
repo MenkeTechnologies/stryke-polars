@@ -1,6 +1,6 @@
 [package]
 name = "stryke-polars"
-version = "0.8.0"
+version = "0.9.0"
 description = "Polars-backed pandas + numpy surface for stryke. Hand-rolled df_*/sr_*/arr_*/np_*/linalg_*/rand_*/fft_* builtins on top of polars + ndarray, dlopened in-process via stryke's FFI bridge — no helper-binary fork, no NDJSON pipe."
 authors = ["MenkeTechnologies"]
 license = "MIT"
@@ -1135,6 +1135,7 @@ exports = [
     "polars__sparse_density",
     "polars__sparse_diagonal",
     "polars__sparse_eye",
+    "polars__sparse_frobenius",
     "polars__sparse_from_dense",
     "polars__sparse_mul_vec",
     "polars__sparse_nnz",

@@ -40,6 +40,11 @@ fn Polars::Sparse::eye ($n) {
     Polars::_decode("sparse_eye", polars__sparse_eye(to_json({ n => $n })))->{sparse}
 }
 
+## Frobenius norm: sqrt of the sum of squared entries. eye(n) → sqrt(n).
+fn Polars::Sparse::frobenius ($sparse) {
+    Polars::_decode("sparse_frobenius", polars__sparse_frobenius(to_json({ sparse => $sparse })))->{norm}
+}
+
 ## Sparse matrix from dense.
 fn Polars::Sparse::from_dense ($matrix) {
     Polars::_decode("sparse_from_dense", polars__sparse_from_dense(to_json({ matrix => $matrix })))->{sparse}
