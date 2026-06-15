@@ -1747,6 +1747,43 @@ pub extern "C" fn polars__sparse_add(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix subtract (`a - b`). Same-shape required; explicit zeros are
+/// dropped from the result, mirroring `sparse_add`.
+#[no_mangle]
+pub extern "C" fn polars__sparse_sub(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = args.get("a").ok_or_else(|| anyhow!("missing `a`"))?;
+        let b = args.get("b").ok_or_else(|| anyhow!("missing `b`"))?;
+        let (da, ra, ca, nra, nca) = parse_sparse(a)?;
+        let (db, rb, cb, nrb, ncb) = parse_sparse(b)?;
+        if (nra, nca) != (nrb, ncb) {
+            bail!("shape mismatch");
+        }
+        let mut map: std::collections::HashMap<(usize, usize), f64> =
+            std::collections::HashMap::new();
+        for i in 0..da.len() {
+            *map.entry((ra[i], ca[i])).or_insert(0.0) += da[i];
+        }
+        for i in 0..db.len() {
+            *map.entry((rb[i], cb[i])).or_insert(0.0) -= db[i];
+        }
+        let mut data = vec![];
+        let mut rows = vec![];
+        let mut cols = vec![];
+        for ((r, c), v) in map {
+            if v != 0.0 {
+                data.push(v);
+                rows.push(r);
+                cols.push(c);
+            }
+        }
+        Ok(json!({"sparse": {
+            "data": data, "rows": rows, "cols": cols,
+            "n_rows": nra, "n_cols": nca,
+        }}))
+    })
+}
+
 /// Sparse matrix mul vec.
 #[no_mangle]
 pub extern "C" fn polars__sparse_mul_vec(args: *const c_char) -> *mut c_char {
@@ -2064,6 +2101,47 @@ mod tests {
             .map(|x| x.as_f64().unwrap())
             .collect();
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn sparse_sub_cancels_equal_entries_and_drops_zeros() {
+        // A - B where the (1,1) entries are equal → that cell cancels to 0
+        // and must NOT appear in the result (explicit zeros dropped).
+        let a = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [5.0, 0.0, 0.0, 3.0], "shape": [2, 2]}}),
+        );
+        let b = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [1.0, 0.0, 0.0, 3.0], "shape": [2, 2]}}),
+        );
+        let diff = call(
+            polars__sparse_sub,
+            json!({"a": a["sparse"], "b": b["sparse"]}),
+        );
+        // Only (0,0) = 4 survives; (1,1) cancelled.
+        assert_eq!(diff["sparse"]["data"].as_array().unwrap().len(), 1);
+        let dense = call(polars__sparse_to_dense, json!({"sparse": diff["sparse"]}));
+        let got: Vec<f64> = dense["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(got, vec![4.0, 0.0, 0.0, 0.0]);
+        // Shape mismatch is rejected.
+        let wide = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [1.0, 2.0, 3.0], "shape": [1, 3]}}),
+        );
+        let err = call(
+            polars__sparse_sub,
+            json!({"a": a["sparse"], "b": wide["sparse"]}),
+        );
+        assert!(err["error"]
+            .as_str()
+            .unwrap_or("")
+            .contains("shape mismatch"));
     }
 
     #[test]

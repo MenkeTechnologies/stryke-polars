@@ -13,6 +13,11 @@ fn Polars::Sparse::add ($a, $b) {
     Polars::_decode("sparse_add", polars__sparse_add(to_json({ a => $a, b => $b })))->{sparse}
 }
 
+## Sparse matrix subtract (a - b). Same-shape required; cancelled entries drop.
+fn Polars::Sparse::sub ($a, $b) {
+    Polars::_decode("sparse_sub", polars__sparse_sub(to_json({ a => $a, b => $b })))->{sparse}
+}
+
 ## Sparse matrix density.
 fn Polars::Sparse::density ($sparse) {
     Polars::_decode("sparse_density", polars__sparse_density(to_json({ sparse => $sparse })))->{density}
