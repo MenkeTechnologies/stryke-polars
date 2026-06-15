@@ -25,6 +25,12 @@ fn Polars::Sparse::mat_mul ($a, $b) {
     Polars::_decode("sparse_mat_mul", polars__sparse_mat_mul(to_json({ a => $a, b => $b })))->{sparse}
 }
 
+## Sparse element-wise (Hadamard) product a ∘ b. Same shape required; an entry
+## survives only where BOTH inputs are non-zero. Distinct from mat_mul.
+fn Polars::Sparse::hadamard ($a, $b) {
+    Polars::_decode("sparse_hadamard", polars__sparse_hadamard(to_json({ a => $a, b => $b })))->{sparse}
+}
+
 ## Sparse matrix density.
 fn Polars::Sparse::density ($sparse) {
     Polars::_decode("sparse_density", polars__sparse_density(to_json({ sparse => $sparse })))->{density}

@@ -1747,6 +1747,43 @@ pub extern "C" fn polars__sparse_add(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse element-wise (Hadamard) product `a ∘ b`. A result entry is non-zero
+/// only where BOTH inputs have a stored value at that position (the product is
+/// zero everywhere else), so the output is at most as dense as the sparser
+/// input — distinct from `mat_mul`, which is the matrix product. Same shape
+/// required.
+#[no_mangle]
+pub extern "C" fn polars__sparse_hadamard(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = args.get("a").ok_or_else(|| anyhow!("missing `a`"))?;
+        let b = args.get("b").ok_or_else(|| anyhow!("missing `b`"))?;
+        let (da, ra, ca, nra, nca) = parse_sparse(a)?;
+        let (db, rb, cb, nrb, ncb) = parse_sparse(b)?;
+        if (nra, nca) != (nrb, ncb) {
+            bail!("shape mismatch");
+        }
+        let amap: std::collections::HashMap<(usize, usize), f64> =
+            (0..da.len()).map(|i| ((ra[i], ca[i]), da[i])).collect();
+        let mut data = vec![];
+        let mut rows = vec![];
+        let mut cols = vec![];
+        for i in 0..db.len() {
+            if let Some(av) = amap.get(&(rb[i], cb[i])) {
+                let v = av * db[i];
+                if v != 0.0 {
+                    data.push(v);
+                    rows.push(rb[i]);
+                    cols.push(cb[i]);
+                }
+            }
+        }
+        Ok(json!({"sparse": {
+            "data": data, "rows": rows, "cols": cols,
+            "n_rows": nra, "n_cols": nca,
+        }}))
+    })
+}
+
 /// Sparse matrix subtract (`a - b`). Same-shape required; explicit zeros are
 /// dropped from the result, mirroring `sparse_add`.
 #[no_mangle]
