@@ -553,3 +553,13 @@ fn Polars::DataFrame::sample ($cols, $n, $seed) {
 fn Polars::DataFrame::replace_value ($cols, $column, $from, $to) {
     Polars::_decode("df_replace_value", polars__df_replace_value(to_json({ frame => $cols, column => $column, from => $from, to => $to })))->{frame}
 }
+
+# ── pure helper (no frame) ────────────────────────────────────────────
+
+## Canonicalize and categorize a dtype name (no DataFrame). Accepts aliases
+## (i64/int64/int, f64/float, str/utf8, …) and returns a hashref { dtype,
+## canonical, numeric, integer, float, signed, temporal }. Validate a cast
+## target before calling `cast_column`.
+fn Polars::DataFrame::parse_dtype ($dtype) {
+    Polars::_decode("parse_dtype", polars__parse_dtype(to_json({ dtype => $dtype })))
+}

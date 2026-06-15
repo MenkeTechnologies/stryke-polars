@@ -1741,6 +1741,59 @@ pub extern "C" fn polars__misc_char_frequency(args: *const c_char) -> *mut c_cha
     })
 }
 
+/// Canonicalize and categorize a Polars dtype name. Pure — no DataFrame.
+///
+/// Args: `{"dtype": "i64"}`. Returns `{dtype, canonical, numeric, integer,
+/// float, signed, temporal}`. Accepts the common aliases (`i64`/`int64`/`int`,
+/// `f64`/`float64`/`float`, `str`/`string`/`utf8`, …). Errors on an unknown name.
+#[no_mangle]
+pub extern "C" fn polars__parse_dtype(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let name = get_str(&args, "dtype")?;
+        let canonical = match name.to_ascii_lowercase().as_str() {
+            "i8" | "int8" => "Int8",
+            "i16" | "int16" => "Int16",
+            "i32" | "int32" => "Int32",
+            "i64" | "int64" | "int" => "Int64",
+            "u8" | "uint8" => "UInt8",
+            "u16" | "uint16" => "UInt16",
+            "u32" | "uint32" => "UInt32",
+            "u64" | "uint64" => "UInt64",
+            "f32" | "float32" => "Float32",
+            "f64" | "float64" | "float" => "Float64",
+            "bool" | "boolean" => "Boolean",
+            "str" | "string" | "utf8" => "String",
+            "binary" => "Binary",
+            "date" => "Date",
+            "datetime" => "Datetime",
+            "time" => "Time",
+            "duration" => "Duration",
+            "cat" | "categorical" => "Categorical",
+            "null" => "Null",
+            other => return Err(anyhow!("unknown dtype `{other}`")),
+        };
+        let integer = matches!(
+            canonical,
+            "Int8" | "Int16" | "Int32" | "Int64" | "UInt8" | "UInt16" | "UInt32" | "UInt64"
+        );
+        let float = matches!(canonical, "Float32" | "Float64");
+        let signed = matches!(
+            canonical,
+            "Int8" | "Int16" | "Int32" | "Int64" | "Float32" | "Float64"
+        );
+        let temporal = matches!(canonical, "Date" | "Datetime" | "Time" | "Duration");
+        Ok(json!({
+            "dtype": name,
+            "canonical": canonical,
+            "numeric": integer || float,
+            "integer": integer,
+            "float": float,
+            "signed": signed,
+            "temporal": temporal,
+        }))
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;
@@ -2007,5 +2060,37 @@ mod tests {
         // Adler32("Wikipedia") = 0x11E60398 — RFC 1950 test vector.
         let v = call(polars__sum_adler32, json!({"value": "Wikipedia"}));
         assert_eq!(v["checksum"].as_u64().unwrap(), 0x11E60398);
+    }
+
+    #[test]
+    fn parse_dtype_canonicalizes_and_categorizes() {
+        let i = call(polars__parse_dtype, json!({"dtype": "int"}));
+        assert_eq!(i["canonical"], "Int64");
+        assert_eq!(i["numeric"], true);
+        assert_eq!(i["integer"], true);
+        assert_eq!(i["float"], false);
+        assert_eq!(i["signed"], true);
+
+        let u = call(polars__parse_dtype, json!({"dtype": "u32"}));
+        assert_eq!(u["canonical"], "UInt32");
+        assert_eq!(u["integer"], true);
+        assert_eq!(u["signed"], false, "unsigned");
+
+        let f = call(polars__parse_dtype, json!({"dtype": "Float64"}));
+        assert_eq!(f["canonical"], "Float64");
+        assert_eq!(f["float"], true);
+        assert_eq!(f["numeric"], true);
+
+        let s = call(polars__parse_dtype, json!({"dtype": "utf8"}));
+        assert_eq!(s["canonical"], "String", "utf8 alias");
+        assert_eq!(s["numeric"], false);
+
+        let dt = call(polars__parse_dtype, json!({"dtype": "datetime"}));
+        assert_eq!(dt["canonical"], "Datetime");
+        assert_eq!(dt["temporal"], true);
+        assert_eq!(dt["numeric"], false);
+
+        let bad = call(polars__parse_dtype, json!({"dtype": "complex128"}));
+        assert!(bad["error"].as_str().unwrap().contains("unknown dtype"));
     }
 }

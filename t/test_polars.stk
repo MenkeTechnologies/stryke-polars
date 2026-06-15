@@ -260,6 +260,21 @@ assert_eq $bset, 8, "bit_set(0, 3) == 8 (1 << 3)"
 val $bclr = from_json(polars__bit_clear(to_json({x => 8, n => 3})))->{clear}
 assert_eq $bclr, 0, "bit_clear(8, 3) == 0 (set + clear = identity)"
 
+# ── pure helper: parse_dtype (no frame) ────────────────────────────
+val $di = Polars::DataFrame::parse_dtype("int")
+assert_eq $di->{canonical}, "Int64",  "parse_dtype: int → Int64"
+assert_eq $di->{numeric},   1,         "parse_dtype: Int64 is numeric"
+assert_eq $di->{integer},   1,         "parse_dtype: Int64 is integer"
+assert_eq $di->{signed},    1,         "parse_dtype: Int64 is signed"
+val $du = Polars::DataFrame::parse_dtype("u32")
+assert_eq $du->{canonical}, "UInt32",  "parse_dtype: u32 → UInt32"
+assert_eq $du->{signed},    0,         "parse_dtype: UInt32 is unsigned"
+val $ds = Polars::DataFrame::parse_dtype("utf8")
+assert_eq $ds->{canonical}, "String",  "parse_dtype: utf8 → String"
+assert_eq $ds->{numeric},   0,         "parse_dtype: String is not numeric"
+val $dt = Polars::DataFrame::parse_dtype("datetime")
+assert_eq $dt->{temporal},  1,         "parse_dtype: Datetime is temporal"
+
 # ══════════════════════════════════════════════════════════════════
 # Run all collected assertions and report.
 # ══════════════════════════════════════════════════════════════════
