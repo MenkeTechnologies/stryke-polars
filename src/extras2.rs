@@ -1784,6 +1784,51 @@ pub extern "C" fn polars__sparse_sub(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Sparse matrix–matrix multiply (`a · b`). Requires `a.n_cols == b.n_rows`;
+/// the result is `a.n_rows × b.n_cols`. Computed coordinate-wise (no dense
+/// intermediate) and explicit zeros are dropped, mirroring `sparse_add`.
+#[no_mangle]
+pub extern "C" fn polars__sparse_mat_mul(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = args.get("a").ok_or_else(|| anyhow!("missing `a`"))?;
+        let b = args.get("b").ok_or_else(|| anyhow!("missing `b`"))?;
+        let (da, ra, ca, nra, nca) = parse_sparse(a)?;
+        let (db, rb, cb, nrb, ncb) = parse_sparse(b)?;
+        if nca != nrb {
+            bail!("inner dimension mismatch: a has {nca} cols, b has {nrb} rows");
+        }
+        // Index b by its row so each a-entry only visits the matching b-row.
+        let mut b_rows: std::collections::HashMap<usize, Vec<(usize, f64)>> =
+            std::collections::HashMap::new();
+        for i in 0..db.len() {
+            b_rows.entry(rb[i]).or_default().push((cb[i], db[i]));
+        }
+        let mut map: std::collections::HashMap<(usize, usize), f64> =
+            std::collections::HashMap::new();
+        for i in 0..da.len() {
+            if let Some(row) = b_rows.get(&ca[i]) {
+                for &(j, bv) in row {
+                    *map.entry((ra[i], j)).or_insert(0.0) += da[i] * bv;
+                }
+            }
+        }
+        let mut data = vec![];
+        let mut rows = vec![];
+        let mut cols = vec![];
+        for ((r, c), v) in map {
+            if v != 0.0 {
+                data.push(v);
+                rows.push(r);
+                cols.push(c);
+            }
+        }
+        Ok(json!({"sparse": {
+            "data": data, "rows": rows, "cols": cols,
+            "n_rows": nra, "n_cols": ncb,
+        }}))
+    })
+}
+
 /// Sparse matrix mul vec.
 #[no_mangle]
 pub extern "C" fn polars__sparse_mul_vec(args: *const c_char) -> *mut c_char {
@@ -2142,6 +2187,56 @@ mod tests {
             .as_str()
             .unwrap_or("")
             .contains("shape mismatch"));
+    }
+
+    #[test]
+    fn sparse_mat_mul_matches_dense_product() {
+        // A = [[1,2],[0,3]], B = [[4,0],[1,5]]  →  A·B = [[6,10],[3,15]].
+        let a = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [1.0, 2.0, 0.0, 3.0], "shape": [2, 2]}}),
+        );
+        let b = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [4.0, 0.0, 1.0, 5.0], "shape": [2, 2]}}),
+        );
+        let prod = call(
+            polars__sparse_mat_mul,
+            json!({"a": a["sparse"], "b": b["sparse"]}),
+        );
+        let dense = call(polars__sparse_to_dense, json!({"sparse": prod["sparse"]}));
+        let got: Vec<f64> = dense["array"]["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(got, vec![6.0, 10.0, 3.0, 15.0]);
+        // Non-square inner dim: (2×3)·(3×2) = (2×2).
+        let m = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [1.0, 0.0, 2.0, 0.0, 3.0, 0.0], "shape": [2, 3]}}),
+        );
+        let n = call(
+            polars__sparse_from_dense,
+            json!({"matrix": {"data": [1.0, 0.0, 0.0, 1.0, 1.0, 0.0], "shape": [3, 2]}}),
+        );
+        let mn = call(
+            polars__sparse_mat_mul,
+            json!({"a": m["sparse"], "b": n["sparse"]}),
+        );
+        assert_eq!(mn["sparse"]["n_rows"], 2);
+        assert_eq!(mn["sparse"]["n_cols"], 2);
+        // Inner-dimension mismatch is rejected.
+        // Inner-dimension mismatch is rejected: a is 2×2, n is 3×2 (2 ≠ 3).
+        let bad = call(
+            polars__sparse_mat_mul,
+            json!({"a": a["sparse"], "b": n["sparse"]}),
+        );
+        assert!(bad["error"]
+            .as_str()
+            .unwrap_or("")
+            .contains("inner dimension mismatch"));
     }
 
     #[test]

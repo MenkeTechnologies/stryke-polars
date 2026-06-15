@@ -1358,6 +1358,7 @@ assert_ok exists &Polars::Signal::zero_crossings, "Polars::Signal::zero_crossing
 # ── Sparse.stk ──────────────────────────────────────────────
 assert_ok exists &Polars::Sparse::add, "Polars::Sparse::add exists"
 assert_ok exists &Polars::Sparse::sub, "Polars::Sparse::sub exists"
+assert_ok exists &Polars::Sparse::mat_mul, "Polars::Sparse::mat_mul exists"
 assert_ok exists &Polars::Sparse::density, "Polars::Sparse::density exists"
 assert_ok exists &Polars::Sparse::diagonal, "Polars::Sparse::diagonal exists"
 assert_ok exists &Polars::Sparse::eye, "Polars::Sparse::eye exists"

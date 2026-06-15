@@ -18,6 +18,13 @@ fn Polars::Sparse::sub ($a, $b) {
     Polars::_decode("sparse_sub", polars__sparse_sub(to_json({ a => $a, b => $b })))->{sparse}
 }
 
+## Sparse matrix-matrix multiply (a . b). Requires a.n_cols == b.n_rows; the
+## result is a.n_rows x b.n_cols. Computed coordinate-wise, cancelled entries
+## drop.
+fn Polars::Sparse::mat_mul ($a, $b) {
+    Polars::_decode("sparse_mat_mul", polars__sparse_mat_mul(to_json({ a => $a, b => $b })))->{sparse}
+}
+
 ## Sparse matrix density.
 fn Polars::Sparse::density ($sparse) {
     Polars::_decode("sparse_density", polars__sparse_density(to_json({ sparse => $sparse })))->{density}
