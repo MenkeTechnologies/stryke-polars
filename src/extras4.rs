@@ -1270,6 +1270,23 @@ pub extern "C" fn polars__sum_bsd16(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Checksum fletcher16 — Fletcher's 16-bit checksum (RFC 1146): two running
+/// 8-bit sums mod 255, combined as `(sum2 << 8) | sum1`. Distinct from adler32
+/// (mod 65521) and bsd16 (rotate-and-add).
+#[no_mangle]
+pub extern "C" fn polars__sum_fletcher16(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = get_str(&args, "value")?;
+        let mut sum1: u16 = 0;
+        let mut sum2: u16 = 0;
+        for b in s.bytes() {
+            sum1 = (sum1 + b as u16) % 255;
+            sum2 = (sum2 + sum1) % 255;
+        }
+        Ok(json!({"checksum": (sum2 << 8) | sum1}))
+    })
+}
+
 /// Checksum internet.
 #[no_mangle]
 pub extern "C" fn polars__sum_internet(args: *const c_char) -> *mut c_char {
@@ -2060,6 +2077,30 @@ mod tests {
         // Adler32("Wikipedia") = 0x11E60398 — RFC 1950 test vector.
         let v = call(polars__sum_adler32, json!({"value": "Wikipedia"}));
         assert_eq!(v["checksum"].as_u64().unwrap(), 0x11E60398);
+    }
+
+    #[test]
+    fn sum_fletcher16_known_vectors() {
+        // Fletcher-16("abcde") = 0xC8F0 — the Wikipedia worked example.
+        assert_eq!(
+            call(polars__sum_fletcher16, json!({"value": "abcde"}))["checksum"]
+                .as_u64()
+                .unwrap(),
+            0xC8F0
+        );
+        assert_eq!(
+            call(polars__sum_fletcher16, json!({"value": "abcdef"}))["checksum"]
+                .as_u64()
+                .unwrap(),
+            0x2057
+        );
+        // Empty input is 0.
+        assert_eq!(
+            call(polars__sum_fletcher16, json!({"value": ""}))["checksum"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
     }
 
     #[test]

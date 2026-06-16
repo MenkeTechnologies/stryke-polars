@@ -127,7 +127,7 @@ Working DataFrame / groupby examples live in `examples/` (`discover.stk`,
 | `Encoding.stk` | `Polars::Encoding` | 7 |
 | `Polynomial.stk` | `Polars::Polynomial` | 7 |
 | `Interp.stk` | `Polars::Interp` | 6 |
-| `Checksum.stk` | `Polars::Checksum` | 5 |
+| `Checksum.stk` | `Polars::Checksum` | 6 |
 | `Cluster.stk` | `Polars::Cluster` | 5 |
 | `FFTExt.stk` | `Polars::FFTExt` | 5 |
 | `Hash.stk` | `Polars::Hash` | 5 |

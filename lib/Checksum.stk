@@ -18,6 +18,11 @@ fn Polars::Checksum::bsd16 ($value) {
     Polars::_decode("sum_bsd16", polars__sum_bsd16(to_json({ value => $value })))->{checksum}
 }
 
+## Checksum fletcher16 — Fletcher's 16-bit checksum (RFC 1146).
+fn Polars::Checksum::fletcher16 ($value) {
+    Polars::_decode("sum_fletcher16", polars__sum_fletcher16(to_json({ value => $value })))->{checksum}
+}
+
 ## Checksum internet.
 fn Polars::Checksum::internet ($value) {
     Polars::_decode("sum_internet", polars__sum_internet(to_json({ value => $value })))->{checksum}

@@ -312,6 +312,12 @@ assert_eq $had->{data}[2], 0,  "Sparse::hadamard: (1,0) zero — a has no entry 
 assert_eq $had->{data}[3], 15, "Sparse::hadamard: (1,1) = 3*5 = 15"
 assert_eq Polars::Sparse::nnz(Polars::Sparse::hadamard($ma, $mb)), 2, "Sparse::hadamard: only overlapping positions survive"
 
+# ── Checksum::fletcher16 — Fletcher's 16-bit checksum (RFC 1146) ──
+use Polars::Checksum
+assert_eq Polars::Checksum::fletcher16("abcde"),  51440, "Checksum::fletcher16: abcde = 0xC8F0 (Wikipedia vector)"
+assert_eq Polars::Checksum::fletcher16("abcdef"), 8279,  "Checksum::fletcher16: abcdef = 0x2057"
+assert_eq Polars::Checksum::fletcher16(""),       0,     "Checksum::fletcher16: empty is 0"
+
 # ══════════════════════════════════════════════════════════════════
 # Run all collected assertions and report.
 # ══════════════════════════════════════════════════════════════════
