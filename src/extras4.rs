@@ -711,6 +711,42 @@ pub extern "C" fn polars__fmt_human_bytes(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Parse a human byte size back to a count — the inverse of `fmt_human_bytes`.
+/// Splits the leading number from a unit suffix and multiplies by the matching
+/// power of 1024 (B=1, KB=1024, MB=1024², … PB), matching `human_bytes`'s
+/// base-1024 scaling. The suffix is case-insensitive and the bare (`K`/`M`/…)
+/// and `KiB`/`MiB` spellings are also accepted; a missing suffix means bytes.
+/// `parse_bytes(human_bytes(n)) ≈ n` (within the two-decimal rounding
+/// `human_bytes` applies). opts: `value` (or `formatted`). Returns `{bytes}`.
+#[no_mangle]
+pub extern "C" fn polars__fmt_parse_bytes(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let raw = args
+            .get("value")
+            .or_else(|| args.get("formatted"))
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let s = raw.trim();
+        let split = s.find(|c: char| c.is_ascii_alphabetic()).unwrap_or(s.len());
+        let (num_part, suffix_part) = s.split_at(split);
+        let num: f64 = num_part
+            .trim()
+            .parse()
+            .map_err(|_| anyhow!("invalid number in `{raw}`"))?;
+        let power = match suffix_part.trim().to_ascii_uppercase().as_str() {
+            "" | "B" => 0i32,
+            "K" | "KB" | "KIB" => 1,
+            "M" | "MB" | "MIB" => 2,
+            "G" | "GB" | "GIB" => 3,
+            "T" | "TB" | "TIB" => 4,
+            "P" | "PB" | "PIB" => 5,
+            other => return Err(anyhow!("unknown byte suffix `{other}`")),
+        };
+        let bytes = (num * 1024f64.powi(power)).round() as i64;
+        Ok(json!({ "bytes": bytes }))
+    })
+}
+
 /// Format human duration.
 #[no_mangle]
 pub extern "C" fn polars__fmt_human_duration(args: *const c_char) -> *mut c_char {
@@ -2196,6 +2232,44 @@ mod tests {
             let v = call(polars__fmt_ordinal, json!({"n": n}));
             assert_eq!(v["ordinal"].as_str().unwrap(), expect, "ordinal({n})");
         }
+    }
+
+    #[test]
+    fn fmt_parse_bytes_inverts_human_bytes() {
+        let b = |s: &str| {
+            call(polars__fmt_parse_bytes, json!({ "value": s }))["bytes"]
+                .as_i64()
+                .unwrap()
+        };
+        // Base-1024 scaling, matching human_bytes.
+        assert_eq!(b("1.5 MB"), 1_572_864);
+        assert_eq!(b("1 KB"), 1024);
+        assert_eq!(b("2 GB"), 2 * 1024 * 1024 * 1024);
+        // A bare number is bytes; the suffix is case-insensitive and space-optional.
+        assert_eq!(b("512"), 512);
+        assert_eq!(b("512b"), 512);
+        assert_eq!(b("3mb"), 3 * 1024 * 1024);
+        // Bare and -iB spellings map to the same power.
+        assert_eq!(b("4M"), b("4 MB"));
+        assert_eq!(b("4 MiB"), b("4 MB"));
+        // Round-trips human_bytes within its 2-decimal rounding for clean values.
+        for n in [0i64, 1024, 1_572_864, 5 * 1024 * 1024 * 1024] {
+            let formatted = call(polars__fmt_human_bytes, json!({ "bytes": n }))["formatted"]
+                .as_str()
+                .unwrap()
+                .to_string();
+            assert_eq!(b(&formatted), n, "round-trip {n}");
+        }
+        // An unknown suffix and a non-numeric prefix are rejected.
+        assert!(call(polars__fmt_parse_bytes, json!({ "value": "5 ZB" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_bytes, json!({ "value": "MB" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_bytes, json!({}))
+            .get("error")
+            .is_some());
     }
 
     #[test]

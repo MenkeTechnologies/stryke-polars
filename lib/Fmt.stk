@@ -37,6 +37,13 @@ fn Polars::Fmt::human_bytes ($bytes) {
     Polars::_decode("fmt_human_bytes", polars__fmt_human_bytes(to_json({ bytes => $bytes })))->{formatted}
 }
 
+## Parse a human byte size back to a count — inverse of human_bytes. Splits the
+## number from a unit suffix (B/KB/MB/GB/TB/PB, base 1024, case-insensitive; bare
+## K/M/… and KiB/MiB also accepted). parse_bytes("1.5 MB") → 1572864.
+fn Polars::Fmt::parse_bytes ($value) {
+    Polars::_decode("fmt_parse_bytes", polars__fmt_parse_bytes(to_json({ value => $value })))->{bytes}
+}
+
 ## Format human duration.
 fn Polars::Fmt::human_duration ($seconds) {
     Polars::_decode("fmt_human_duration", polars__fmt_human_duration(to_json({ seconds => $seconds })))->{formatted}

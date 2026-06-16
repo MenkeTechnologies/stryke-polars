@@ -198,6 +198,10 @@ assert_eq from_json(polars__fmt_from_roman(to_json({roman => "MCMXCIV"})))->{n},
 assert_eq from_json(polars__fmt_from_roman(to_json({roman => "xiv"})))->{n},     14,   "from_roman is case-insensitive"
 assert_ok from_json(polars__fmt_from_roman(to_json({roman => "IIII"})))->{error}, "from_roman rejects a non-canonical numeral (returns error)"
 
+assert_eq from_json(polars__fmt_parse_bytes(to_json({value => "1.5 MB"})))->{bytes}, 1572864, "parse_bytes(1.5 MB) == 1572864 (base 1024)"
+assert_eq from_json(polars__fmt_parse_bytes(to_json({value => "512"})))->{bytes},    512,     "parse_bytes(512) == 512 (bare number is bytes)"
+assert_eq from_json(polars__fmt_parse_bytes(to_json({value => from_json(polars__fmt_human_bytes(to_json({bytes => 1572864})))->{formatted}})))->{bytes}, 1572864, "parse_bytes round-trips human_bytes"
+
 assert_eq from_json(polars__fmt_ordinal(to_json({n => 1 })))->{ordinal}, "1st",   "ordinal(1)   == 1st"
 assert_eq from_json(polars__fmt_ordinal(to_json({n => 11})))->{ordinal}, "11th",  "ordinal(11)  == 11th (teen carve-out)"
 assert_eq from_json(polars__fmt_ordinal(to_json({n => 22})))->{ordinal}, "22nd",  "ordinal(22)  == 22nd"
