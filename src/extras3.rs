@@ -397,6 +397,28 @@ pub extern "C" fn polars__metric_rmse(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// ML metric msle (mean squared logarithmic error). Mean of
+/// `(ln(1+y_true) - ln(1+y_pred))^2`, using `ln_1p` for accuracy near zero. The
+/// log domain requires every value `> -1`; an input `<= -1` errors. Typically
+/// used on non-negative targets (counts, prices) to penalise relative error.
+#[no_mangle]
+pub extern "C" fn polars__metric_msle(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let y = get_vec(&args, "y_true")?;
+        let p = get_vec(&args, "y_pred")?;
+        if y.iter().chain(p.iter()).any(|&v| v <= -1.0) {
+            anyhow::bail!("metric_msle: every value must be > -1 (log1p domain)");
+        }
+        let msle: f64 = y
+            .iter()
+            .zip(p.iter())
+            .map(|(a, b)| (a.ln_1p() - b.ln_1p()).powi(2))
+            .sum::<f64>()
+            / y.len() as f64;
+        Ok(json!({"msle": scalar(msle)}))
+    })
+}
+
 /// ML metric mape.
 #[no_mangle]
 pub extern "C" fn polars__metric_mape(args: *const c_char) -> *mut c_char {
@@ -1723,6 +1745,29 @@ mod tests {
         assert!((mae["mae"].as_f64().unwrap() - 0.5).abs() < 1e-12);
         assert!((mse["mse"].as_f64().unwrap() - 0.25).abs() < 1e-12);
         assert!((rmse["rmse"].as_f64().unwrap() - 0.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn metric_msle_matches_manual_calc() {
+        // A perfect prediction has zero log error.
+        let perfect = call(
+            polars__metric_msle,
+            json!({"y_true": [1.0, 2.0, 3.0], "y_pred": [1.0, 2.0, 3.0]}),
+        );
+        assert!(perfect["msle"].as_f64().unwrap().abs() < 1e-12);
+        // ln(1+0)=0 and ln(1+(e-1))=ln(e)=1, so the squared log error is (0-1)^2 = 1.
+        let e = std::f64::consts::E;
+        let v = call(
+            polars__metric_msle,
+            json!({"y_true": [0.0], "y_pred": [e - 1.0]}),
+        );
+        assert!((v["msle"].as_f64().unwrap() - 1.0).abs() < 1e-12);
+        // A value <= -1 is outside the log1p domain and must error.
+        let err = call(
+            polars__metric_msle,
+            json!({"y_true": [-1.0], "y_pred": [0.0]}),
+        );
+        assert!(err.get("error").is_some(), "value <= -1 must error: {err}");
     }
 
     #[test]

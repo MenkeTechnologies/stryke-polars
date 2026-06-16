@@ -87,6 +87,13 @@ fn Polars::Metric::mse ($y_true, $y_pred) {
     Polars::_decode("metric_mse", polars__metric_mse(to_json({ y_true => $y_true, y_pred => $y_pred })))->{mse}
 }
 
+## ML metric msle (mean squared logarithmic error) — mean of (ln(1+y_true) -
+## ln(1+y_pred))^2; penalises relative error. Every value must be > -1; typically
+## used on non-negative targets.
+fn Polars::Metric::msle ($y_true, $y_pred) {
+    Polars::_decode("metric_msle", polars__metric_msle(to_json({ y_true => $y_true, y_pred => $y_pred })))->{msle}
+}
+
 ## ML metric precision.
 fn Polars::Metric::precision ($y_true, $y_pred) {
     Polars::_decode("metric_precision", polars__metric_precision(to_json({ y_true => $y_true, y_pred => $y_pred })))->{precision}

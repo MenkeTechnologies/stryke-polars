@@ -1,6 +1,6 @@
 [package]
 name = "stryke-polars"
-version = "0.14.0"
+version = "0.15.0"
 description = "Polars-backed pandas + numpy surface for stryke. Hand-rolled df_*/sr_*/arr_*/np_*/linalg_*/rand_*/fft_* builtins on top of polars + ndarray, dlopened in-process via stryke's FFI bridge — no helper-binary fork, no NDJSON pipe."
 authors = ["MenkeTechnologies"]
 license = "MIT"
@@ -841,6 +841,7 @@ exports = [
     "polars__metric_mape",
     "polars__metric_matthews_corrcoef",
     "polars__metric_mse",
+    "polars__metric_msle",
     "polars__metric_precision",
     "polars__metric_r2",
     "polars__metric_recall",
