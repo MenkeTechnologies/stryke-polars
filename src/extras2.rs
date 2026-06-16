@@ -593,6 +593,42 @@ pub extern "C" fn polars__enc_label(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encoding frequency: map each categorical label to the relative frequency of
+/// its category (count / total) — the count-based encoder, distinct from `label`
+/// (arbitrary integer ids) and `one_hot` (indicator columns). Returns
+/// `{frequencies, counts}` where `frequencies` is the per-element proportion (in
+/// input order) and `counts` is the per-category occurrence count.
+#[no_mangle]
+pub extern "C" fn polars__enc_frequency(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let v = args
+            .get("labels")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| anyhow!("missing `labels`"))?;
+        let n = v.len();
+        let mut counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        for s in v {
+            *counts
+                .entry(s.as_str().unwrap_or("").to_string())
+                .or_insert(0) += 1;
+        }
+        let out: Vec<f64> = v
+            .iter()
+            .map(|s| {
+                let key = s.as_str().unwrap_or("").to_string();
+                if n == 0 {
+                    0.0
+                } else {
+                    *counts.get(&key).unwrap_or(&0) as f64 / n as f64
+                }
+            })
+            .collect();
+        let counts_obj: serde_json::Map<String, Value> =
+            counts.iter().map(|(k, c)| (k.clone(), json!(c))).collect();
+        Ok(json!({"frequencies": out, "counts": Value::Object(counts_obj)}))
+    })
+}
+
 /// Encoding binary.
 #[no_mangle]
 pub extern "C" fn polars__enc_binary(args: *const c_char) -> *mut c_char {
@@ -2351,5 +2387,36 @@ mod tests {
             let s: f64 = chunk.iter().sum();
             assert!((s - 1.0).abs() < 1e-12);
         }
+    }
+
+    #[test]
+    fn enc_frequency_maps_each_label_to_its_proportion() {
+        // red×2, blue×1, green×1 of 4 → 0.5 / 0.25 / 0.25, in input order.
+        let v = call(
+            polars__enc_frequency,
+            json!({"labels": ["red", "blue", "red", "green"]}),
+        );
+        let freqs: Vec<f64> = v["frequencies"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect();
+        assert_eq!(freqs, vec![0.5, 0.25, 0.5, 0.25]);
+        // Per-category counts.
+        assert_eq!(v["counts"]["red"].as_u64().unwrap(), 2);
+        assert_eq!(v["counts"]["blue"].as_u64().unwrap(), 1);
+        // Every frequency is in (0, 1] and the distinct values sum to 1.
+        assert!(freqs.iter().all(|&f| f > 0.0 && f <= 1.0));
+        // A single uniform category → all 1.0.
+        let u = call(polars__enc_frequency, json!({"labels": ["x", "x", "x"]}));
+        assert_eq!(
+            u["frequencies"].as_array().unwrap(),
+            &vec![json!(1.0), json!(1.0), json!(1.0)]
+        );
+        // Missing labels errors.
+        assert!(call(polars__enc_frequency, json!({}))
+            .get("error")
+            .is_some());
     }
 }

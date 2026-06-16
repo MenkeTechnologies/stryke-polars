@@ -30,6 +30,12 @@ fn Polars::Encoding::label ($labels) {
     Polars::_decode("enc_label", polars__enc_label(to_json({ labels => $labels })))->{labels}
 }
 
+## Encoding frequency: map each label to the relative frequency of its category
+## (count / total). Returns the per-element frequency list.
+fn Polars::Encoding::frequency ($labels) {
+    Polars::_decode("enc_frequency", polars__enc_frequency(to_json({ labels => $labels })))->{frequencies}
+}
+
 ## Encoding one hot.
 fn Polars::Encoding::one_hot ($labels) {
     Polars::_decode("enc_one_hot", polars__enc_one_hot(to_json({ labels => $labels })))->{array}
