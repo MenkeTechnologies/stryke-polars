@@ -49,6 +49,15 @@ fn Polars::Fmt::human_duration ($seconds) {
     Polars::_decode("fmt_human_duration", polars__fmt_human_duration(to_json({ seconds => $seconds })))->{formatted}
 }
 
+## Parse a human duration string back to seconds — the inverse of human_duration.
+## A duration is a run of <number><unit> components (whitespace optional); units
+## are d/day(s) (86400), h/hr/hour(s) (3600), m/min/minute(s) (60),
+## s/sec/second(s) (1) and ms (0.001), summed. A bare trailing number is taken as
+## seconds. parse_duration("1h 30m 0s") → 5400, round-tripping human_duration.
+fn Polars::Fmt::parse_duration ($value) {
+    Polars::_decode("fmt_parse_duration", polars__fmt_parse_duration(to_json({ value => $value })))->{seconds}
+}
+
 ## Format ordinal.
 fn Polars::Fmt::ordinal ($n) {
     Polars::_decode("fmt_ordinal", polars__fmt_ordinal(to_json({ n => $n })))->{ordinal}

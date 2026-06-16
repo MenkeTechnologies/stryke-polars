@@ -1,6 +1,6 @@
 [package]
 name = "stryke-polars"
-version = "0.19.0"
+version = "0.20.0"
 description = "Polars-backed pandas + numpy surface for stryke. Hand-rolled df_*/sr_*/arr_*/np_*/linalg_*/rand_*/fft_* builtins on top of polars + ndarray, dlopened in-process via stryke's FFI bridge — no helper-binary fork, no NDJSON pipe."
 authors = ["MenkeTechnologies"]
 license = "MIT"
@@ -501,6 +501,7 @@ exports = [
     "polars__fmt_human_bytes",
     "polars__fmt_parse_bytes",
     "polars__fmt_human_duration",
+    "polars__fmt_parse_duration",
     "polars__fmt_ordinal",
     "polars__fmt_pad_left",
     "polars__fmt_pad_right",

@@ -762,6 +762,73 @@ pub extern "C" fn polars__fmt_human_duration(args: *const c_char) -> *mut c_char
     })
 }
 
+/// Parse a human duration string back to seconds — the inverse of
+/// `human_duration`. A duration is a run of `<number><unit>` components (optional
+/// whitespace between them); the units are `d`/`day(s)` (86400), `h`/`hr`/`hour(s)`
+/// (3600), `m`/`min`/`minute(s)` (60), `s`/`sec`/`second(s)` (1) and `ms` (0.001),
+/// summed. A bare trailing number with no unit is taken as seconds. So
+/// `parse_duration("1h 30m 0s")` is `5400`, round-tripping `human_duration`.
+#[no_mangle]
+pub extern "C" fn polars__fmt_parse_duration(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let raw = args
+            .get("value")
+            .or_else(|| args.get("duration"))
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut total = 0.0f64;
+        let mut num = String::new();
+        let mut any = false;
+        let mut chars = raw.chars().peekable();
+        while let Some(c) = chars.next() {
+            if c.is_ascii_whitespace() {
+                continue;
+            }
+            if c.is_ascii_digit() || c == '.' || c == '-' || c == '+' {
+                num.push(c);
+                continue;
+            }
+            let mut unit = String::new();
+            unit.push(c.to_ascii_lowercase());
+            while let Some(&n) = chars.peek() {
+                if n.is_ascii_alphabetic() {
+                    unit.push(n.to_ascii_lowercase());
+                    chars.next();
+                } else {
+                    break;
+                }
+            }
+            if num.is_empty() {
+                return Err(anyhow!("unit `{unit}` without a number in: {raw}"));
+            }
+            let val: f64 = num
+                .parse()
+                .map_err(|_| anyhow!("bad number `{num}` in: {raw}"))?;
+            num.clear();
+            let mult = match unit.as_str() {
+                "d" | "day" | "days" => 86400.0,
+                "h" | "hr" | "hrs" | "hour" | "hours" => 3600.0,
+                "m" | "min" | "mins" | "minute" | "minutes" => 60.0,
+                "s" | "sec" | "secs" | "second" | "seconds" => 1.0,
+                "ms" => 0.001,
+                _ => return Err(anyhow!("unknown duration unit `{unit}` in: {raw}")),
+            };
+            total += val * mult;
+            any = true;
+        }
+        if !num.is_empty() {
+            total += num
+                .parse::<f64>()
+                .map_err(|_| anyhow!("bad number `{num}` in: {raw}"))?;
+            any = true;
+        }
+        if !any {
+            return Err(anyhow!("no duration components in: {raw}"));
+        }
+        Ok(json!({ "seconds": total }))
+    })
+}
+
 /// Format ordinal.
 #[no_mangle]
 pub extern "C" fn polars__fmt_ordinal(args: *const c_char) -> *mut c_char {
@@ -2268,6 +2335,45 @@ mod tests {
             .get("error")
             .is_some());
         assert!(call(polars__fmt_parse_bytes, json!({}))
+            .get("error")
+            .is_some());
+    }
+
+    #[test]
+    fn fmt_parse_duration_inverts_human_duration() {
+        let d = |s: &str| {
+            call(polars__fmt_parse_duration, json!({ "value": s }))["seconds"]
+                .as_f64()
+                .unwrap()
+        };
+        // The human_duration output form round-trips.
+        assert_eq!(d("1h 30m 0s"), 5400.0);
+        assert_eq!(d("2h 5m 30s"), 7530.0);
+        // Whitespace optional; multiple unit spellings; days and ms.
+        assert_eq!(d("90m"), 5400.0);
+        assert_eq!(d("1h30m"), 5400.0);
+        assert_eq!(d("1d"), 86400.0);
+        assert_eq!(d("500ms"), 0.5);
+        assert_eq!(d("2 hours 15 minutes"), 8100.0);
+        // A bare number is seconds.
+        assert_eq!(d("45"), 45.0);
+        // Round-trips human_duration for whole-second inputs.
+        for secs in [0i64, 59, 60, 3661, 7530] {
+            let formatted = call(polars__fmt_human_duration, json!({ "seconds": secs }))
+                ["formatted"]
+                .as_str()
+                .unwrap()
+                .to_string();
+            assert_eq!(d(&formatted), secs as f64, "round-trip {secs}");
+        }
+        // An unknown unit, a unit with no number, and a missing arg are rejected.
+        assert!(call(polars__fmt_parse_duration, json!({ "value": "5x" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_duration, json!({ "value": "h" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_duration, json!({}))
             .get("error")
             .is_some());
     }
