@@ -1229,6 +1229,21 @@ pub extern "C" fn polars__set_is_disjoint(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Set is equal — true when both sets have the same distinct elements,
+/// ignoring order and multiplicity (mutual subset). Companion of
+/// `set_is_subset`/`set_is_superset`.
+#[no_mangle]
+pub extern "C" fn polars__set_is_equal(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let a = get_set(&args, "a")?;
+        let b = get_set(&args, "b")?;
+        let as_: std::collections::HashSet<u64> = a.iter().map(|x| x.to_bits()).collect();
+        let bs: std::collections::HashSet<u64> = b.iter().map(|x| x.to_bits()).collect();
+        let r = as_ == bs;
+        Ok(json!({"is_equal": r}))
+    })
+}
+
 /// Set contains.
 #[no_mangle]
 pub extern "C" fn polars__set_contains(args: *const c_char) -> *mut c_char {

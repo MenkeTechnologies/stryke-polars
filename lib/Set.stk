@@ -38,6 +38,12 @@ fn Polars::Set::is_superset ($a, $b) {
     Polars::_decode("set_is_superset", polars__set_is_superset(to_json({ a => $a, b => $b })))->{is_superset}
 }
 
+## Set is equal — true when $a and $b have the same distinct elements, ignoring
+## order and multiplicity (mutual subset). Companion of is_subset/is_superset.
+fn Polars::Set::is_equal ($a, $b) {
+    Polars::_decode("set_is_equal", polars__set_is_equal(to_json({ a => $a, b => $b })))->{is_equal}
+}
+
 ## Set size.
 fn Polars::Set::size ($a) {
     Polars::_decode("set_size", polars__set_size(to_json({ a => $a })))->{size}
