@@ -35,3 +35,8 @@ fn Polars::Hash::murmur32 ($value, $seed) {
     Polars::_decode("hash_murmur32", polars__hash_murmur32(to_json(\%req)))->{hash}
 }
 
+## Hash sdbm — the classic companion of djb2 (h = c + (h<<6) + (h<<16) - h).
+fn Polars::Hash::sdbm ($value) {
+    Polars::_decode("hash_sdbm", polars__hash_sdbm(to_json({ value => $value })))->{hash}
+}
+

@@ -505,6 +505,7 @@ assert_ok exists &Polars::GroupBy::var, "Polars::GroupBy::var exists"
 # ── Hash.stk ──────────────────────────────────────────────
 assert_ok exists &Polars::Hash::crc32, "Polars::Hash::crc32 exists"
 assert_ok exists &Polars::Hash::djb2, "Polars::Hash::djb2 exists"
+assert_ok exists &Polars::Hash::sdbm, "Polars::Hash::sdbm exists"
 assert_ok exists &Polars::Hash::fnv1a, "Polars::Hash::fnv1a exists"
 assert_ok exists &Polars::Hash::jenkins, "Polars::Hash::jenkins exists"
 assert_ok exists &Polars::Hash::murmur32, "Polars::Hash::murmur32 exists"

@@ -697,6 +697,24 @@ pub extern "C" fn polars__hash_djb2(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash sdbm — the classic companion of djb2 (from the canonical public-domain
+/// string-hash set). `h = c + (h<<6) + (h<<16) - h`, i.e. `h*65599 + c`, over the
+/// bytes with u64 wrapping.
+#[no_mangle]
+pub extern "C" fn polars__hash_sdbm(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u64 = 0;
+        for b in s.bytes() {
+            h = h.wrapping_mul(65599).wrapping_add(b as u64);
+        }
+        Ok(json!({"hash": h}))
+    })
+}
+
 /// Hash fnv1a.
 #[no_mangle]
 pub extern "C" fn polars__hash_fnv1a(args: *const c_char) -> *mut c_char {
@@ -2167,6 +2185,36 @@ mod tests {
         // sanity check that the loop is actually entered conditionally.
         let v = call(polars__hash_djb2, json!({"value": ""}));
         assert_eq!(v["hash"].as_u64().unwrap(), 5381);
+    }
+
+    #[test]
+    fn hash_sdbm_known_vectors() {
+        // sdbm seeds at 0, so the empty string hashes to 0.
+        assert_eq!(
+            call(polars__hash_sdbm, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
+        // A single byte is just its value (0*65599 + c).
+        assert_eq!(
+            call(polars__hash_sdbm, json!({"value": "a"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            97
+        );
+        // Two bytes follow the recurrence h*65599 + c, computed by hand.
+        let expected = 97u64.wrapping_mul(65599).wrapping_add(b'b' as u64);
+        assert_eq!(
+            call(polars__hash_sdbm, json!({"value": "ab"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            expected
+        );
+        // Deterministic.
+        let a = call(polars__hash_sdbm, json!({"value": "stryke"}))["hash"].clone();
+        let b = call(polars__hash_sdbm, json!({"value": "stryke"}))["hash"].clone();
+        assert_eq!(a, b);
     }
 
     #[test]
