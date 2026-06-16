@@ -745,37 +745,91 @@ pub extern "C" fn polars__fmt_ordinal(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Encode a number as a Roman numeral (subtractive notation). Shared by
+/// `fmt_roman` and `fmt_from_roman` (which uses it to verify canonical form).
+fn roman_encode(mut n: u64) -> String {
+    let vals = [
+        (1000, "M"),
+        (900, "CM"),
+        (500, "D"),
+        (400, "CD"),
+        (100, "C"),
+        (90, "XC"),
+        (50, "L"),
+        (40, "XL"),
+        (10, "X"),
+        (9, "IX"),
+        (5, "V"),
+        (4, "IV"),
+        (1, "I"),
+    ];
+    let mut out = String::new();
+    for (v, s) in &vals {
+        while n >= *v {
+            out.push_str(s);
+            n -= v;
+        }
+    }
+    out
+}
+
 /// Format roman.
 #[no_mangle]
 pub extern "C" fn polars__fmt_roman(args: *const c_char) -> *mut c_char {
     ffi_call(args, |args| {
-        let mut n = args
+        let n = args
             .get("n")
             .and_then(|v| v.as_u64())
             .ok_or_else(|| anyhow!("missing `n`"))?;
-        let vals = [
-            (1000, "M"),
-            (900, "CM"),
-            (500, "D"),
-            (400, "CD"),
-            (100, "C"),
-            (90, "XC"),
-            (50, "L"),
-            (40, "XL"),
-            (10, "X"),
-            (9, "IX"),
-            (5, "V"),
-            (4, "IV"),
-            (1, "I"),
-        ];
-        let mut out = String::new();
-        for (v, s) in &vals {
-            while n >= *v {
-                out.push_str(s);
-                n -= v;
+        Ok(json!({ "roman": roman_encode(n) }))
+    })
+}
+
+/// Parse a Roman numeral back to a number — the inverse of `fmt_roman`. Accepts a
+/// canonical subtractive numeral (case-insensitive); rejects unknown characters
+/// and non-canonical forms (e.g. `IIII`, `VV`) by re-encoding and comparing, so
+/// `from_roman(roman(n)) == n`. opts: `roman` (or `value`). Returns `{n}`.
+#[no_mangle]
+pub extern "C" fn polars__fmt_from_roman(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let raw = args
+            .get("roman")
+            .or_else(|| args.get("value"))
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `roman`"))?;
+        let s = raw.trim().to_ascii_uppercase();
+        if s.is_empty() {
+            return Err(anyhow!("empty roman numeral"));
+        }
+        let val = |c: char| match c {
+            'M' => 1000i64,
+            'D' => 500,
+            'C' => 100,
+            'L' => 50,
+            'X' => 10,
+            'V' => 5,
+            'I' => 1,
+            _ => 0,
+        };
+        let chars: Vec<char> = s.chars().collect();
+        let mut total: i64 = 0;
+        for i in 0..chars.len() {
+            let v = val(chars[i]);
+            if v == 0 {
+                return Err(anyhow!("invalid roman numeral character `{}`", chars[i]));
+            }
+            let next = chars.get(i + 1).copied().map(val).unwrap_or(0);
+            if v < next {
+                total -= v;
+            } else {
+                total += v;
             }
         }
-        Ok(json!({"roman": out}))
+        let n = u64::try_from(total).map_err(|_| anyhow!("invalid roman numeral `{raw}`"))?;
+        if roman_encode(n) != s {
+            return Err(anyhow!("non-canonical roman numeral `{raw}`"));
+        }
+        Ok(json!({ "n": n }))
     })
 }
 
@@ -2081,6 +2135,42 @@ mod tests {
         for (n, expect) in cases {
             let v = call(polars__fmt_roman, json!({"n": n}));
             assert_eq!(v["roman"].as_str().unwrap(), expect, "roman({n})");
+        }
+    }
+
+    #[test]
+    fn fmt_from_roman_inverts_fmt_roman() {
+        // Round-trips every subtractive case and the full 1..=3999 range.
+        let cases = [
+            (1u64, "I"),
+            (4, "IV"),
+            (49, "XLIX"),
+            (1994, "MCMXCIV"),
+            (3999, "MMMCMXCIX"),
+        ];
+        for (n, roman) in cases {
+            let v = call(polars__fmt_from_roman, json!({ "roman": roman }));
+            assert_eq!(v["n"].as_u64().unwrap(), n, "from_roman({roman})");
+        }
+        for n in 1u64..=3999 {
+            let roman = call(polars__fmt_roman, json!({ "n": n }));
+            let back = call(
+                polars__fmt_from_roman,
+                json!({ "roman": roman["roman"].as_str().unwrap() }),
+            );
+            assert_eq!(back["n"].as_u64().unwrap(), n, "round-trip {n}");
+        }
+        // Case-insensitive.
+        assert_eq!(
+            call(polars__fmt_from_roman, json!({ "roman": "xiv" }))["n"]
+                .as_u64()
+                .unwrap(),
+            14
+        );
+        // Unknown characters, non-canonical forms, and empty input are rejected.
+        for bad in ["ABC", "IIII", "VV", ""] {
+            let v = call(polars__fmt_from_roman, json!({ "roman": bad }));
+            assert!(v.get("error").is_some(), "from_roman({bad:?}) should error");
         }
     }
 

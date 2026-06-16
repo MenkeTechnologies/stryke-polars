@@ -73,6 +73,12 @@ fn Polars::Fmt::roman ($n) {
     Polars::_decode("fmt_roman", polars__fmt_roman(to_json({ n => $n })))->{roman}
 }
 
+## Parse a roman numeral back to a number — inverse of roman. Case-insensitive;
+## rejects unknown characters and non-canonical forms (IIII, VV).
+fn Polars::Fmt::from_roman ($roman) {
+    Polars::_decode("fmt_from_roman", polars__fmt_from_roman(to_json({ roman => $roman })))->{n}
+}
+
 ## Format round.
 fn Polars::Fmt::round ($x, $dp) {
     var %req = (x => $x)
