@@ -1287,6 +1287,34 @@ pub extern "C" fn polars__sum_fletcher16(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Checksum fletcher32 — Fletcher's 32-bit checksum: two running 16-bit sums
+/// mod 65535 over little-endian 16-bit words (an odd final byte is zero-padded),
+/// combined as `(sum2 << 16) | sum1`. The 32-bit companion to `fletcher16` and
+/// distinct from adler32 (mod 65521).
+#[no_mangle]
+pub extern "C" fn polars__sum_fletcher32(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = get_str(&args, "value")?;
+        let bytes = s.as_bytes();
+        let mut sum1: u32 = 0;
+        let mut sum2: u32 = 0;
+        let mut i = 0;
+        while i < bytes.len() {
+            let lo = bytes[i] as u32;
+            let hi = if i + 1 < bytes.len() {
+                bytes[i + 1] as u32
+            } else {
+                0
+            };
+            let word = lo | (hi << 8);
+            sum1 = (sum1 + word) % 65535;
+            sum2 = (sum2 + sum1) % 65535;
+            i += 2;
+        }
+        Ok(json!({"checksum": (sum2 << 16) | sum1}))
+    })
+}
+
 /// Checksum internet.
 #[no_mangle]
 pub extern "C" fn polars__sum_internet(args: *const c_char) -> *mut c_char {
@@ -2101,6 +2129,20 @@ mod tests {
                 .unwrap(),
             0
         );
+    }
+
+    #[test]
+    fn sum_fletcher32_known_vectors() {
+        // Fletcher-32 Wikipedia test vectors (little-endian 16-bit words).
+        let f32 = |s: &str| {
+            call(polars__sum_fletcher32, json!({ "value": s }))["checksum"]
+                .as_u64()
+                .unwrap()
+        };
+        assert_eq!(f32("abcde"), 0xF04F_C729);
+        assert_eq!(f32("abcdef"), 0x5650_2D2A);
+        assert_eq!(f32("abcdefgh"), 0xEBE1_9591);
+        assert_eq!(f32(""), 0);
     }
 
     #[test]

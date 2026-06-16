@@ -23,6 +23,11 @@ fn Polars::Checksum::fletcher16 ($value) {
     Polars::_decode("sum_fletcher16", polars__sum_fletcher16(to_json({ value => $value })))->{checksum}
 }
 
+## Checksum fletcher32 — Fletcher's 32-bit checksum (16-bit words, mod 65535).
+fn Polars::Checksum::fletcher32 ($value) {
+    Polars::_decode("sum_fletcher32", polars__sum_fletcher32(to_json({ value => $value })))->{checksum}
+}
+
 ## Checksum internet.
 fn Polars::Checksum::internet ($value) {
     Polars::_decode("sum_internet", polars__sum_internet(to_json({ value => $value })))->{checksum}

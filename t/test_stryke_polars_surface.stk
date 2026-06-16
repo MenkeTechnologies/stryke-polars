@@ -147,6 +147,7 @@ assert_ok exists &Polars::Categorical::value_counts, "Polars::Categorical::value
 assert_ok exists &Polars::Checksum::adler32, "Polars::Checksum::adler32 exists"
 assert_ok exists &Polars::Checksum::bsd16, "Polars::Checksum::bsd16 exists"
 assert_ok exists &Polars::Checksum::fletcher16, "Polars::Checksum::fletcher16 exists"
+assert_ok exists &Polars::Checksum::fletcher32, "Polars::Checksum::fletcher32 exists"
 assert_ok exists &Polars::Checksum::internet, "Polars::Checksum::internet exists"
 assert_ok exists &Polars::Checksum::simple, "Polars::Checksum::simple exists"
 assert_ok exists &Polars::Checksum::xor, "Polars::Checksum::xor exists"

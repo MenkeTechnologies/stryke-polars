@@ -318,6 +318,12 @@ assert_eq Polars::Checksum::fletcher16("abcde"),  51440, "Checksum::fletcher16: 
 assert_eq Polars::Checksum::fletcher16("abcdef"), 8279,  "Checksum::fletcher16: abcdef = 0x2057"
 assert_eq Polars::Checksum::fletcher16(""),       0,     "Checksum::fletcher16: empty is 0"
 
+# ── Checksum::fletcher32 — Fletcher's 32-bit checksum (Wikipedia vectors) ──
+assert_eq Polars::Checksum::fletcher32("abcde"),    4031760169, "Checksum::fletcher32: abcde = 0xF04FC729"
+assert_eq Polars::Checksum::fletcher32("abcdef"),   1448095018, "Checksum::fletcher32: abcdef = 0x56502D2A"
+assert_eq Polars::Checksum::fletcher32("abcdefgh"), 3957429649, "Checksum::fletcher32: abcdefgh = 0xEBE19591"
+assert_eq Polars::Checksum::fletcher32(""),         0,          "Checksum::fletcher32: empty is 0"
+
 # ══════════════════════════════════════════════════════════════════
 # Run all collected assertions and report.
 # ══════════════════════════════════════════════════════════════════
