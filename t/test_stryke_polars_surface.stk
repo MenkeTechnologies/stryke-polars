@@ -74,6 +74,7 @@ assert_ok exists &Polars::Bit::leading_zeros, "Polars::Bit::leading_zeros exists
 assert_ok exists &Polars::Bit::lsb, "Polars::Bit::lsb exists"
 assert_ok exists &Polars::Bit::msb, "Polars::Bit::msb exists"
 assert_ok exists &Polars::Bit::next_power_of_two, "Polars::Bit::next_power_of_two exists"
+assert_ok exists &Polars::Bit::prev_power_of_two, "Polars::Bit::prev_power_of_two exists"
 assert_ok exists &Polars::Bit::not, "Polars::Bit::not exists"
 assert_ok exists &Polars::Bit::or, "Polars::Bit::or exists"
 assert_ok exists &Polars::Bit::popcount, "Polars::Bit::popcount exists"

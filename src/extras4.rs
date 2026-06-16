@@ -307,6 +307,22 @@ pub extern "C" fn polars__bit_next_power_of_two(args: *const c_char) -> *mut c_c
     })
 }
 
+/// Bit previous power of two: the largest power of two `<= x`. The downward
+/// companion to `next_power_of_two`. 0 has no power-of-two floor and returns
+/// null; otherwise it is `1 << floor(log2(x))`.
+#[no_mangle]
+pub extern "C" fn polars__bit_prev_power_of_two(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let x = get_u64(&args, "x")?;
+        let prev = if x == 0 {
+            None
+        } else {
+            Some(1u64 << x.ilog2())
+        };
+        Ok(json!({ "prev_power_of_two": prev }))
+    })
+}
+
 /// Bit to bin.
 #[no_mangle]
 pub extern "C" fn polars__bit_to_bin(args: *const c_char) -> *mut c_char {
@@ -1963,6 +1979,45 @@ mod tests {
                 v["popcount"].as_u64().unwrap(),
                 expect as u64,
                 "popcount({x})"
+            );
+        }
+    }
+
+    #[test]
+    fn bit_prev_power_of_two_floors_to_a_power_of_two() {
+        // The largest power of two <= x.
+        let cases = [
+            (1u64, Some(1u64)),
+            (2, Some(2)),
+            (3, Some(2)),
+            (4, Some(4)),
+            (5, Some(4)),
+            (7, Some(4)),
+            (8, Some(8)),
+            (1000, Some(512)),
+            (u64::MAX, Some(1u64 << 63)),
+        ];
+        for (x, expect) in cases {
+            let v = call(polars__bit_prev_power_of_two, json!({ "x": x }));
+            assert_eq!(
+                v["prev_power_of_two"].as_u64(),
+                expect,
+                "prev_power_of_two({x})"
+            );
+        }
+        // 0 has no power-of-two floor → null.
+        let z = call(polars__bit_prev_power_of_two, json!({ "x": 0u64 }));
+        assert!(
+            z["prev_power_of_two"].is_null(),
+            "prev_power_of_two(0) is null"
+        );
+        // Pairs with next_power_of_two: for an exact power, both agree.
+        for &p in &[1u64, 2, 16, 1024] {
+            let prev = call(polars__bit_prev_power_of_two, json!({ "x": p }));
+            let next = call(polars__bit_next_power_of_two, json!({ "x": p }));
+            assert_eq!(
+                prev["prev_power_of_two"], next["next_power_of_two"],
+                "exact power {p}"
             );
         }
     }

@@ -68,6 +68,12 @@ fn Polars::Bit::next_power_of_two ($x) {
     Polars::_decode("bit_next_power_of_two", polars__bit_next_power_of_two(to_json({ x => $x })))->{next_power_of_two}
 }
 
+## Bit previous power of two: the largest power of two <= $x (downward companion
+## of next_power_of_two). 0 has no power-of-two floor and yields undef.
+fn Polars::Bit::prev_power_of_two ($x) {
+    Polars::_decode("bit_prev_power_of_two", polars__bit_prev_power_of_two(to_json({ x => $x })))->{prev_power_of_two}
+}
+
 ## Bit not.
 fn Polars::Bit::not ($x) {
     Polars::_decode("bit_not", polars__bit_not(to_json({ x => $x })))->{not}
