@@ -53,6 +53,14 @@ fn Polars::Fmt::parse_bytes ($value) {
     Polars::_decode("fmt_parse_bytes", polars__fmt_parse_bytes(to_json({ value => $value })))->{bytes}
 }
 
+## Parse a compact count back to a number — inverse of human_count. Splits the
+## number from a base-1000 SI suffix (K/M/B/T, case-insensitive; bare number = a
+## plain count), distinct from parse_bytes' base-1024. Whole result → integer,
+## fractional → float. parse_count("1.5K") → 1500, parse_count("2M") → 2000000.
+fn Polars::Fmt::parse_count ($value) {
+    Polars::_decode("fmt_parse_count", polars__fmt_parse_count(to_json({ value => $value })))->{count}
+}
+
 ## Format human duration.
 fn Polars::Fmt::human_duration ($seconds) {
     Polars::_decode("fmt_human_duration", polars__fmt_human_duration(to_json({ seconds => $seconds })))->{formatted}

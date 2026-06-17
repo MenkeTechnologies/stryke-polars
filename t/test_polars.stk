@@ -209,6 +209,12 @@ assert_eq from_json(polars__fmt_human_count(to_json({n => -2500})))->{formatted}
 assert_eq from_json(polars__fmt_human_count(to_json({n => 999})))->{formatted},       "999",  "human_count(999) stays bare"
 assert_eq from_json(polars__fmt_human_count(to_json({n => 1234, precision => 2})))->{formatted}, "1.23K", "human_count precision controls decimals"
 
+assert_eq from_json(polars__fmt_parse_count(to_json({value => "1.5K"})))->{count},  1500,    "parse_count(1.5K) == 1500 (base 1000 SI)"
+assert_eq from_json(polars__fmt_parse_count(to_json({value => "2M"})))->{count},     2000000, "parse_count(2M) == 2_000_000"
+assert_eq from_json(polars__fmt_parse_count(to_json({value => "3m"})))->{count},     3000000, "parse_count suffix is case-insensitive"
+assert_eq from_json(polars__fmt_parse_count(to_json({value => "999"})))->{count},    999,     "parse_count(999) bare number stays a plain count"
+assert_eq from_json(polars__fmt_parse_count(to_json({value => from_json(polars__fmt_human_count(to_json({n => 1500})))->{formatted}})))->{count}, 1500, "parse_count round-trips human_count"
+
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "1h 30m 0s"})))->{seconds}, 5400, "parse_duration(1h 30m 0s) == 5400"
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "90m"})))->{seconds},       5400, "parse_duration(90m) == 5400 (whitespace + unit spelling)"
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "1d"})))->{seconds},       86400, "parse_duration(1d) == 86400 (days)"

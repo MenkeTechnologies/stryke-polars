@@ -791,6 +791,47 @@ pub extern "C" fn polars__fmt_parse_bytes(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Parse a compact count back to a number — the inverse of `fmt_human_count`.
+/// Splits the leading (optionally signed/decimal) number from a base-1000 SI
+/// suffix and multiplies by the matching power of 1000: ``=1, `K`=thousand,
+/// `M`=million, `B`=billion, `T`=trillion (matching `human_count`'s base-1000
+/// scaling, NOT the base-1024 `parse_bytes`). The suffix is case-insensitive; a
+/// missing suffix means a plain count. A whole result is returned as an integer,
+/// a fractional one as a float (`1.5K` → 1500, `1.23` → 1.23). `parse_count(
+/// human_count(n)) ≈ n` within `human_count`'s rounding. opts: `value` (or
+/// `formatted`). Returns `{count}`.
+#[no_mangle]
+pub extern "C" fn polars__fmt_parse_count(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let raw = args
+            .get("value")
+            .or_else(|| args.get("formatted"))
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let s = raw.trim();
+        let split = s.find(|c: char| c.is_ascii_alphabetic()).unwrap_or(s.len());
+        let (num_part, suffix_part) = s.split_at(split);
+        let num: f64 = num_part
+            .trim()
+            .parse()
+            .map_err(|_| anyhow!("invalid number in `{raw}`"))?;
+        let power = match suffix_part.trim().to_ascii_uppercase().as_str() {
+            "" => 0i32,
+            "K" => 1,
+            "M" => 2,
+            "B" => 3,
+            "T" => 4,
+            other => return Err(anyhow!("unknown count suffix `{other}`")),
+        };
+        let value = num * 1000f64.powi(power);
+        if value.fract() == 0.0 {
+            Ok(json!({ "count": value as i64 }))
+        } else {
+            Ok(json!({ "count": value }))
+        }
+    })
+}
+
 /// Format human duration.
 #[no_mangle]
 pub extern "C" fn polars__fmt_human_duration(args: *const c_char) -> *mut c_char {
@@ -2415,6 +2456,46 @@ mod tests {
             "1.23K"
         );
         assert!(call(polars__fmt_human_count, json!({}))
+            .get("error")
+            .is_some());
+    }
+
+    #[test]
+    fn fmt_parse_count_inverts_human_count() {
+        let c = |s: &str| call(polars__fmt_parse_count, json!({ "value": s }))["count"].clone();
+        // Base-1000 SI suffixes (distinct from parse_bytes' base-1024).
+        assert_eq!(c("1.5K"), json!(1500));
+        assert_eq!(c("2M"), json!(2_000_000));
+        assert_eq!(c("1.5B"), json!(1_500_000_000i64));
+        assert_eq!(c("1T"), json!(1_000_000_000_000i64));
+        // Case-insensitive suffix; a bare number is a plain count.
+        assert_eq!(c("3m"), json!(3_000_000));
+        assert_eq!(c("999"), json!(999));
+        // Negatives keep their sign; a fractional result stays a float.
+        assert_eq!(c("-2.5K"), json!(-2500));
+        assert_eq!(c("1.23"), json!(1.23));
+        // Round-trips human_count for values it represents exactly.
+        for n in [0.0f64, 1500.0, 2_000_000.0, 1_500_000_000.0] {
+            let formatted = call(polars__fmt_human_count, json!({ "n": n }))["formatted"]
+                .as_str()
+                .unwrap()
+                .to_string();
+            assert_eq!(
+                call(polars__fmt_parse_count, json!({ "value": formatted }))["count"]
+                    .as_f64()
+                    .unwrap(),
+                n,
+                "round-trip {n}"
+            );
+        }
+        // An unknown suffix and a non-numeric prefix are rejected.
+        assert!(call(polars__fmt_parse_count, json!({ "value": "5 X" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_count, json!({ "value": "K" }))
+            .get("error")
+            .is_some());
+        assert!(call(polars__fmt_parse_count, json!({}))
             .get("error")
             .is_some());
     }
