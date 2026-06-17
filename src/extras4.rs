@@ -711,6 +711,50 @@ pub extern "C" fn polars__fmt_human_bytes(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Format a plain count compactly with SI magnitude suffixes — base-1000, so
+/// `K`/`M`/`B`/`T` mean thousand/million/billion/trillion (distinct from
+/// `human_bytes`, which is base-1024 byte sizes). 1500 → `1.5K`, 2_000_000 → `2M`,
+/// −2500 → `-2.5K`, 999 → `999`. Trailing zeros and the point are trimmed
+/// (`1000` → `1K`, not `1.0K`); rounding that reaches 1000 rolls up to the next
+/// suffix (`999_999` → `1M`). opts: `n` (or `value`), `precision` (decimals, default
+/// 1). Returns `{formatted}`.
+#[no_mangle]
+pub extern "C" fn polars__fmt_human_count(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let n = args
+            .get("n")
+            .or_else(|| args.get("value"))
+            .and_then(|v| v.as_f64())
+            .ok_or_else(|| anyhow!("missing `n`"))?;
+        let prec = args.get("precision").and_then(|v| v.as_u64()).unwrap_or(1) as i32;
+        const SUF: &[&str] = &["", "K", "M", "B", "T"];
+        let neg = n.is_sign_negative() && n != 0.0;
+        let mut m = n.abs();
+        let mut idx = 0;
+        while m >= 1000.0 && idx < SUF.len() - 1 {
+            m /= 1000.0;
+            idx += 1;
+        }
+        let p = 10f64.powi(prec);
+        let mut r = (m * p).round() / p;
+        // Rounding can push the mantissa to 1000 (e.g. 999_999 → 1000K); roll up.
+        if r >= 1000.0 && idx < SUF.len() - 1 {
+            r /= 1000.0;
+            idx += 1;
+            r = (r * p).round() / p;
+        }
+        let mut digits = format!("{r:.*}", prec as usize);
+        if digits.contains('.') {
+            digits = digits
+                .trim_end_matches('0')
+                .trim_end_matches('.')
+                .to_string();
+        }
+        let formatted = format!("{}{}{}", if neg { "-" } else { "" }, digits, SUF[idx]);
+        Ok(json!({ "formatted": formatted }))
+    })
+}
+
 /// Parse a human byte size back to a count — the inverse of `fmt_human_bytes`.
 /// Splits the leading number from a unit suffix and multiplies by the matching
 /// power of 1024 (B=1, KB=1024, MB=1024², … PB), matching `human_bytes`'s
@@ -2335,6 +2379,42 @@ mod tests {
             .get("error")
             .is_some());
         assert!(call(polars__fmt_parse_bytes, json!({}))
+            .get("error")
+            .is_some());
+    }
+
+    #[test]
+    fn fmt_human_count_compacts_with_si_suffixes() {
+        let c = |n: f64| {
+            call(polars__fmt_human_count, json!({ "n": n }))["formatted"]
+                .as_str()
+                .unwrap()
+                .to_string()
+        };
+        // Base-1000 SI magnitudes (distinct from human_bytes' base-1024).
+        assert_eq!(c(1500.0), "1.5K");
+        assert_eq!(c(1000.0), "1K");
+        assert_eq!(c(999.0), "999");
+        assert_eq!(c(2_000_000.0), "2M");
+        assert_eq!(c(1_234_567.0), "1.2M");
+        assert_eq!(c(1_500_000_000.0), "1.5B");
+        assert_eq!(c(1_000_000_000_000.0), "1T");
+        // Negatives keep the sign; zero is bare.
+        assert_eq!(c(-2500.0), "-2.5K");
+        assert_eq!(c(0.0), "0");
+        // Rounding that reaches 1000 rolls up to the next suffix.
+        assert_eq!(c(999_999.0), "1M");
+        // Sub-1000 fractional values keep their decimals (trimmed).
+        assert_eq!(c(12.5), "12.5");
+        // precision controls the mantissa decimals.
+        assert_eq!(
+            call(
+                polars__fmt_human_count,
+                json!({ "n": 1234, "precision": 2 })
+            )["formatted"],
+            "1.23K"
+        );
+        assert!(call(polars__fmt_human_count, json!({}))
             .get("error")
             .is_some());
     }

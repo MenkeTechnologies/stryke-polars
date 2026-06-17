@@ -499,6 +499,7 @@ exports = [
     "polars__fmt_currency",
     "polars__fmt_floor",
     "polars__fmt_human_bytes",
+    "polars__fmt_human_count",
     "polars__fmt_parse_bytes",
     "polars__fmt_human_duration",
     "polars__fmt_parse_duration",

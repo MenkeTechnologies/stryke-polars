@@ -202,6 +202,13 @@ assert_eq from_json(polars__fmt_parse_bytes(to_json({value => "1.5 MB"})))->{byt
 assert_eq from_json(polars__fmt_parse_bytes(to_json({value => "512"})))->{bytes},    512,     "parse_bytes(512) == 512 (bare number is bytes)"
 assert_eq from_json(polars__fmt_parse_bytes(to_json({value => from_json(polars__fmt_human_bytes(to_json({bytes => 1572864})))->{formatted}})))->{bytes}, 1572864, "parse_bytes round-trips human_bytes"
 
+assert_eq from_json(polars__fmt_human_count(to_json({n => 1500})))->{formatted},      "1.5K", "human_count(1500) == 1.5K (base 1000 SI)"
+assert_eq from_json(polars__fmt_human_count(to_json({n => 2000000})))->{formatted},   "2M",   "human_count(2_000_000) == 2M"
+assert_eq from_json(polars__fmt_human_count(to_json({n => 999999})))->{formatted},    "1M",   "human_count(999_999) rounds up to 1M"
+assert_eq from_json(polars__fmt_human_count(to_json({n => -2500})))->{formatted},     "-2.5K", "human_count(-2500) keeps the sign"
+assert_eq from_json(polars__fmt_human_count(to_json({n => 999})))->{formatted},       "999",  "human_count(999) stays bare"
+assert_eq from_json(polars__fmt_human_count(to_json({n => 1234, precision => 2})))->{formatted}, "1.23K", "human_count precision controls decimals"
+
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "1h 30m 0s"})))->{seconds}, 5400, "parse_duration(1h 30m 0s) == 5400"
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "90m"})))->{seconds},       5400, "parse_duration(90m) == 5400 (whitespace + unit spelling)"
 assert_eq from_json(polars__fmt_parse_duration(to_json({value => "1d"})))->{seconds},       86400, "parse_duration(1d) == 86400 (days)"

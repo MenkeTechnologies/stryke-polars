@@ -37,6 +37,15 @@ fn Polars::Fmt::human_bytes ($bytes) {
     Polars::_decode("fmt_human_bytes", polars__fmt_human_bytes(to_json({ bytes => $bytes })))->{formatted}
 }
 
+## Format a plain count compactly with base-1000 SI suffixes (K/M/B/T) — distinct
+## from human_bytes (base-1024 byte sizes). 1500 -> "1.5K", 2_000_000 -> "2M",
+## -2500 -> "-2.5K", 999 -> "999". Trailing zeros trimmed (1000 -> "1K"); rounding
+## that reaches 1000 rolls up (999_999 -> "1M"). $precision = mantissa decimals
+## (default 1). Returns the formatted string.
+fn Polars::Fmt::human_count ($n, $precision = 1) {
+    Polars::_decode("fmt_human_count", polars__fmt_human_count(to_json({ n => $n, precision => $precision })))->{formatted}
+}
+
 ## Parse a human byte size back to a count — inverse of human_bytes. Splits the
 ## number from a unit suffix (B/KB/MB/GB/TB/PB, base 1024, case-insensitive; bare
 ## K/M/… and KiB/MiB also accepted). parse_bytes("1.5 MB") → 1572864.
