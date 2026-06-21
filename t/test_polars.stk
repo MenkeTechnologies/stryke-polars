@@ -361,6 +361,58 @@ assert_eq Polars::Set::is_equal([1, 2], [1, 2, 3]),       0, "Set::is_equal: pro
 assert_eq Polars::Set::is_equal([], []),                  1, "Set::is_equal: two empty sets are equal"
 
 # ══════════════════════════════════════════════════════════════════
+# DataFrame P1.6 — slice / hstack / column-index / dummies / product /
+# unpivot
+# ══════════════════════════════════════════════════════════════════
+
+val %p16 = (
+    k => [10, 20, 30, 40, 50],
+)
+
+# ── slice — [offset, offset+length), negative offset counts from end ──
+val $sl_mid = Polars::DataFrame::slice(\%p16, 1, 2)
+assert_eq scalar(@{$sl_mid->{k}}), 2, "DataFrame::slice(1,2) → 2 rows"
+assert_eq $sl_mid->{k}[0], 20, "DataFrame::slice(1,2) first row is 20"
+assert_eq $sl_mid->{k}[1], 30, "DataFrame::slice(1,2) second row is 30"
+val $sl_tail = Polars::DataFrame::slice(\%p16, -2, 2)
+assert_eq $sl_tail->{k}[0], 40, "DataFrame::slice(-2,2) counts from end (40)"
+assert_eq $sl_tail->{k}[1], 50, "DataFrame::slice(-2,2) second row is 50"
+
+# ── hstack — append another frame's columns side by side ──
+val $hs = Polars::DataFrame::hstack({ a => [1, 2, 3] }, { b => [4, 5, 6] })
+assert_ok defined($hs->{a}) && defined($hs->{b}), "DataFrame::hstack keeps both column sets"
+assert_eq $hs->{a}[2], 3, "DataFrame::hstack left col preserved"
+assert_eq $hs->{b}[0], 4, "DataFrame::hstack right col appended"
+
+# ── get_column_index — zero-based position by name ──
+assert_eq Polars::DataFrame::get_column_index({ a => [1], b => [2], c => [3] }, "b"), 1, "DataFrame::get_column_index(b) == 1"
+assert_eq Polars::DataFrame::get_column_index({ a => [1], b => [2], c => [3] }, "a"), 0, "DataFrame::get_column_index(a) == 0"
+
+# ── to_dummies — one-hot encode ──
+val $dum = Polars::DataFrame::to_dummies({ color => ["red", "blue", "red"] })
+assert_ok defined($dum->{color_red}) && defined($dum->{color_blue}), "DataFrame::to_dummies emits per-value indicator columns"
+assert_eq $dum->{color_red}[0], 1, "DataFrame::to_dummies row0 color_red == 1"
+assert_eq $dum->{color_red}[1], 0, "DataFrame::to_dummies row1 color_red == 0"
+assert_eq $dum->{color_red}[2], 1, "DataFrame::to_dummies row2 color_red == 1"
+
+# ── product — per-column product, 1-row frame ──
+val $prod = Polars::DataFrame::product({ a => [2, 3, 4], b => [1, 5, 2] })
+assert_eq scalar(@{$prod->{a}}), 1, "DataFrame::product is a 1-row frame"
+assert_eq $prod->{a}[0], 24, "DataFrame::product a == 2*3*4 == 24"
+assert_eq $prod->{b}[0], 10, "DataFrame::product b == 1*5*2 == 10"
+
+# ── unpivot — melt wide → long with renames ──
+val $melt = Polars::DataFrame::unpivot(
+    { id => ["x", "y"], m1 => [1, 2], m2 => [3, 4] },
+    ["m1", "m2"],
+    ["id"],
+    "metric",
+    "amount",
+)
+assert_eq scalar(@{$melt->{amount}}), 4, "DataFrame::unpivot 2 rows × 2 cols → 4 long rows"
+assert_ok defined($melt->{id}) && defined($melt->{metric}) && defined($melt->{amount}), "DataFrame::unpivot keeps id + renames variable/value"
+
+# ══════════════════════════════════════════════════════════════════
 # Run all collected assertions and report.
 # ══════════════════════════════════════════════════════════════════
 

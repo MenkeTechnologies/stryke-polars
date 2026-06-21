@@ -82,14 +82,14 @@ Working DataFrame / groupby examples live in `examples/` (`discover.stk`,
 
 ## [0x03] Surface
 
-46 wrapper modules in `lib/`, 1,499 stryke-side fns total
+46 wrapper modules in `lib/`, 1,505 stryke-side fns total
 (`grep -c '^fn ' lib/*.stk`), each calling a `polars__*` cdylib export:
 
 | Module | Package | Fns |
 |---|---|---|
 | `Series.stk` | `Polars::Series` | 206 |
 | `NdArray.stk` | `Polars::NdArray` | 124 |
-| `DataFrame.stk` | `Polars::DataFrame` | 116 |
+| `DataFrame.stk` | `Polars::DataFrame` | 122 |
 | `Ufunc.stk` | `Polars::Ufunc` | 70 |
 | `Index.stk` | `Polars::Index` | 69 |
 | `NdArrayExt.stk` | `Polars::NdArrayExt` | 68 |

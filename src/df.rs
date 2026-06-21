@@ -1990,6 +1990,153 @@ pub extern "C" fn polars__df_replace_value(args: *const c_char) -> *mut c_char {
     })
 }
 
+// ── P1.6: slice / hstack / column-index / dummies / product / unpivot ───────
+
+/// Row slice `[offset, offset+length)`. `offset` may be negative (counts from
+/// the end, polars/pandas `df[offset:]` semantics).
+///
+/// Args:   `{frame, offset: i64, length: u64}`
+/// Result: `{frame}` (the sliced rows)
+#[no_mangle]
+pub extern "C" fn polars__df_slice(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let offset = args
+            .get("offset")
+            .and_then(|v| v.as_i64())
+            .ok_or_else(|| anyhow!("missing argument `offset` (i64)"))?;
+        let length =
+            args.get("length")
+                .and_then(|v| v.as_u64())
+                .ok_or_else(|| anyhow!("missing argument `length` (u64)"))? as usize;
+        return_frame(df.slice(offset, length))
+    })
+}
+
+/// Horizontally stack the columns of `right` onto `frame` (column-wise concat;
+/// both frames must have the same height). pandas `pd.concat([a, b], axis=1)`.
+///
+/// Args:   `{frame, right: {col: [...], ...}}`
+/// Result: `{frame}` (with `right`'s columns appended)
+#[no_mangle]
+pub extern "C" fn polars__df_hstack(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let left = get_frame(&args)?;
+        let right_v = args
+            .get("right")
+            .ok_or_else(|| anyhow!("missing argument `right`"))?;
+        let right = parse_df(right_v)?;
+        let result = left
+            .hstack(right.get_columns())
+            .context("DataFrame::hstack")?;
+        return_frame(result)
+    })
+}
+
+/// Zero-based column position of `column`, or an error if the name is absent.
+/// pandas `df.columns.get_loc(name)`.
+///
+/// Args:   `{frame, column: name}`
+/// Result: `{index: usize}`
+#[no_mangle]
+pub extern "C" fn polars__df_get_column_index(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let name = args
+            .get("column")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing argument `column`"))?;
+        let idx = df
+            .get_column_index(name)
+            .ok_or_else(|| anyhow!("no column named `{name}`"))?;
+        Ok(json!({"index": idx}))
+    })
+}
+
+/// One-hot encode every column (pandas `pd.get_dummies`). Each distinct value
+/// `v` in column `c` becomes a `c<separator>v` indicator column (0/1).
+///
+/// Args:   `{frame, separator?: str (default "_"), drop_first?: bool}`
+/// Result: `{frame}` (the dummy/indicator frame)
+#[no_mangle]
+pub extern "C" fn polars__df_to_dummies(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let separator = args.get("separator").and_then(|v| v.as_str());
+        let drop_first = args
+            .get("drop_first")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let result = df
+            .to_dummies(separator, drop_first)
+            .context("DataFrame::to_dummies")?;
+        return_frame(result)
+    })
+}
+
+/// Product of every column (pandas `df.prod()`). Result: 1-row frame.
+///
+/// Args:   `{frame}`
+/// Result: `{frame}` (one row, the per-column product)
+#[no_mangle]
+pub extern "C" fn polars__df_product(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let result = df
+            .lazy()
+            .select([all().product()])
+            .collect()
+            .context("product")?;
+        return_frame(result)
+    })
+}
+
+/// Unpivot from wide to long format (pandas `pd.melt`). `on` columns are
+/// melted into `variable`/`value` pairs; `index` columns are repeated as
+/// identifier columns.
+///
+/// Args:   `{frame, on: [name, ...], index?: [name, ...],
+///           variable_name?: str (default "variable"),
+///           value_name?: str (default "value")}`
+/// Result: `{frame}` (long-format frame)
+#[no_mangle]
+pub extern "C" fn polars__df_unpivot(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let df = get_frame(&args)?;
+        let str_list = |key: &str| -> Vec<String> {
+            args.get(key)
+                .and_then(|v| v.as_array())
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        let on = str_list("on");
+        if on.is_empty() {
+            return Err(anyhow!("missing argument `on` (non-empty column list)"));
+        }
+        let index = str_list("index");
+        let mut result = df.unpivot(on, index).context("DataFrame::unpivot")?;
+
+        // Honor optional renames of the generated variable/value columns to
+        // match pandas `var_name` / `value_name`. polars' `unpivot` (the
+        // trait method) always emits "variable"/"value"; rename afterward.
+        if let Some(vn) = args.get("variable_name").and_then(|v| v.as_str()) {
+            result
+                .rename("variable", vn.into())
+                .context("rename variable column")?;
+        }
+        if let Some(vn) = args.get("value_name").and_then(|v| v.as_str()) {
+            result
+                .rename("value", vn.into())
+                .context("rename value column")?;
+        }
+        return_frame(result)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;
@@ -2106,5 +2253,182 @@ mod tests {
         assert_eq!(id, vec![2, 2], "two rows with id==2");
         // Ordering is preserved relative to the input, so tags must be "b","d".
         assert_eq!(tag, vec!["b".to_string(), "d".to_string()]);
+    }
+
+    /// `df_slice` must return exactly `length` rows starting at `offset`, and a
+    /// negative `offset` must count from the end. Catches an off-by-one in the
+    /// offset/length wiring and a sign mishandling that would either error or
+    /// return the wrong window.
+    #[test]
+    fn df_slice_positive_and_negative_offset() {
+        let frame = json!({"k": [10, 20, 30, 40, 50]});
+        let mid = call(
+            polars__df_slice,
+            json!({"frame": frame, "offset": 1, "length": 2}),
+        );
+        assert!(mid["error"].is_null(), "slice errored: {mid}");
+        let mid_k: Vec<i64> = mid["frame"]["k"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap())
+            .collect();
+        assert_eq!(mid_k, vec![20, 30], "offset=1 length=2");
+
+        let tail = call(
+            polars__df_slice,
+            json!({"frame": frame, "offset": -2, "length": 2}),
+        );
+        let tail_k: Vec<i64> = tail["frame"]["k"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap())
+            .collect();
+        assert_eq!(tail_k, vec![40, 50], "negative offset counts from end");
+    }
+
+    /// `df_hstack` must append `right`'s columns to the left frame side by side,
+    /// preserving row order and both column sets. Catches a regression where
+    /// hstack is wired to vertical concat (which would change the height) or
+    /// drops one side's columns.
+    #[test]
+    fn df_hstack_appends_columns_side_by_side() {
+        let v = call(
+            polars__df_hstack,
+            json!({
+                "frame": {"a": [1, 2, 3]},
+                "right": {"b": [4, 5, 6]},
+            }),
+        );
+        assert!(v["error"].is_null(), "hstack errored: {v}");
+        let frame = v["frame"].as_object().expect("frame object");
+        assert!(
+            frame.contains_key("a") && frame.contains_key("b"),
+            "both cols: {v}"
+        );
+        let a: Vec<i64> = v["frame"]["a"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        let b: Vec<i64> = v["frame"]["b"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        assert_eq!(a, vec![1, 2, 3]);
+        assert_eq!(b, vec![4, 5, 6]);
+    }
+
+    /// `df_get_column_index` must return the zero-based position of a present
+    /// column and an `error` envelope for an absent one. Catches a 1-based vs
+    /// 0-based off-by-one and a silent `null`/`0` on a missing name.
+    #[test]
+    fn df_get_column_index_present_and_absent() {
+        let frame = json!({"a": [1], "b": [2], "c": [3]});
+        let present = call(
+            polars__df_get_column_index,
+            json!({"frame": frame, "column": "b"}),
+        );
+        assert!(present["error"].is_null(), "errored: {present}");
+        assert_eq!(
+            present["index"].as_u64(),
+            Some(1),
+            "b is index 1: {present}"
+        );
+
+        let absent = call(
+            polars__df_get_column_index,
+            json!({"frame": frame, "column": "zzz"}),
+        );
+        assert!(
+            absent["error"].is_string(),
+            "absent name must error: {absent}"
+        );
+    }
+
+    /// `df_to_dummies` must expand a categorical column into per-value 0/1
+    /// indicator columns named `<col><sep><value>`. Catches a regression where
+    /// the separator default is wrong or the indicator values are inverted.
+    #[test]
+    fn df_to_dummies_expands_categories_to_indicators() {
+        let v = call(
+            polars__df_to_dummies,
+            json!({"frame": {"color": ["red", "blue", "red"]}}),
+        );
+        assert!(v["error"].is_null(), "to_dummies errored: {v}");
+        let frame = v["frame"].as_object().expect("frame object");
+        assert!(
+            frame.contains_key("color_red") && frame.contains_key("color_blue"),
+            "expected color_red + color_blue dummy columns, got {v}"
+        );
+        let red: Vec<i64> = v["frame"]["color_red"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_i64().unwrap())
+            .collect();
+        // Rows 0 and 2 are "red" → 1; row 1 is "blue" → 0.
+        assert_eq!(red, vec![1, 0, 1], "color_red indicator");
+    }
+
+    /// `df_product` must return the per-column product as a single-row frame.
+    /// Catches a regression where it falls back to sum (a swap of the agg verb)
+    /// or returns more than one row.
+    #[test]
+    fn df_product_multiplies_each_column() {
+        let v = call(
+            polars__df_product,
+            json!({"frame": {"a": [2, 3, 4], "b": [1, 5, 2]}}),
+        );
+        assert!(v["error"].is_null(), "product errored: {v}");
+        let a = v["frame"]["a"].as_array().expect("a array");
+        let b = v["frame"]["b"].as_array().expect("b array");
+        assert_eq!(a.len(), 1, "product is a 1-row frame");
+        assert_eq!(a[0].as_i64(), Some(24), "2*3*4");
+        assert_eq!(b[0].as_i64(), Some(10), "1*5*2");
+    }
+
+    /// `df_unpivot` must melt the `on` columns into `variable`/`value` rows
+    /// while repeating the `index` columns, and honor the optional
+    /// `variable_name`/`value_name` renames. Catches a regression where the
+    /// id columns are dropped or the rename is applied to the wrong column.
+    #[test]
+    fn df_unpivot_melts_wide_to_long_with_renames() {
+        let v = call(
+            polars__df_unpivot,
+            json!({
+                "frame": {
+                    "id":  ["x", "y"],
+                    "m1":  [1, 2],
+                    "m2":  [3, 4],
+                },
+                "on": ["m1", "m2"],
+                "index": ["id"],
+                "variable_name": "metric",
+                "value_name": "amount",
+            }),
+        );
+        assert!(v["error"].is_null(), "unpivot errored: {v}");
+        let frame = v["frame"].as_object().expect("frame object");
+        assert!(frame.contains_key("id"), "id retained: {v}");
+        assert!(
+            frame.contains_key("metric"),
+            "variable renamed to metric: {v}"
+        );
+        assert!(frame.contains_key("amount"), "value renamed to amount: {v}");
+        // 2 id rows × 2 melted columns = 4 long rows.
+        let amount = v["frame"]["amount"].as_array().expect("amount array");
+        assert_eq!(amount.len(), 4, "2 rows × 2 melted cols = 4 long rows: {v}");
+        let metrics: Vec<String> = v["frame"]["metric"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect();
+        assert!(metrics.contains(&"m1".to_string()) && metrics.contains(&"m2".to_string()));
     }
 }

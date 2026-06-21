@@ -554,6 +554,53 @@ fn Polars::DataFrame::replace_value ($cols, $column, $from, $to) {
     Polars::_decode("df_replace_value", polars__df_replace_value(to_json({ frame => $cols, column => $column, from => $from, to => $to })))->{frame}
 }
 
+# ── reshape / structure (P1.6) ────────────────────────────────────────
+
+## Row slice `[offset, offset+length)`. `$offset` may be negative (counts
+## from the end, like `df[offset:]`). Returns the sliced frame.
+fn Polars::DataFrame::slice ($cols, $offset, $length) {
+    Polars::_decode("df_slice", polars__df_slice(to_json({ frame => $cols, offset => $offset, length => $length })))->{frame}
+}
+
+## Horizontally stack `$right`'s columns onto the frame (column-wise concat;
+## both frames must share the same height). pandas `concat(axis=1)`.
+fn Polars::DataFrame::hstack ($cols, $right) {
+    Polars::_decode("df_hstack", polars__df_hstack(to_json({ frame => $cols, right => $right })))->{frame}
+}
+
+## Zero-based column position of `$column` (errors if the name is absent).
+## pandas `df.columns.get_loc(name)`.
+fn Polars::DataFrame::get_column_index ($cols, $column) {
+    Polars::_decode("df_get_column_index", polars__df_get_column_index(to_json({ frame => $cols, column => $column })))->{index}
+}
+
+## One-hot encode every column (pandas `get_dummies`). Each distinct value
+## `v` in column `c` becomes a `c<separator>v` indicator column (0/1).
+## `$separator` defaults to "_"; `$drop_first` (bool) omits the first level.
+fn Polars::DataFrame::to_dummies ($cols, $separator, $drop_first) {
+    var %req = (frame => $cols)
+    $req{separator} = $separator if defined $separator
+    $req{drop_first} = $drop_first if defined $drop_first
+    Polars::_decode("df_to_dummies", polars__df_to_dummies(to_json(\%req)))->{frame}
+}
+
+## Product of every column (pandas `df.prod()`). Returns a 1-row frame.
+fn Polars::DataFrame::product ($cols) {
+    Polars::_decode("df_product", polars__df_product(to_json({ frame => $cols })))->{frame}
+}
+
+## Unpivot wide → long (pandas `melt`). `$on` (arrayref) are the columns to
+## melt; `$index` (arrayref, optional) are identifier columns repeated per
+## melted row. `$variable_name`/`$value_name` rename the generated columns
+## (default "variable"/"value").
+fn Polars::DataFrame::unpivot ($cols, $on, $index, $variable_name, $value_name) {
+    var %req = (frame => $cols, on => $on)
+    $req{index} = $index if defined $index
+    $req{variable_name} = $variable_name if defined $variable_name
+    $req{value_name} = $value_name if defined $value_name
+    Polars::_decode("df_unpivot", polars__df_unpivot(to_json(\%req)))->{frame}
+}
+
 # ── pure helper (no frame) ────────────────────────────────────────────
 
 ## Canonicalize and categorize a dtype name (no DataFrame). Accepts aliases
