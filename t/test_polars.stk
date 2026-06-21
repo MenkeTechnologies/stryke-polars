@@ -228,6 +228,15 @@ assert_eq from_json(polars__hash_crc32(to_json({value => "123456789"})))->{hash}
 # djb2 seed: hash("") == 5381.
 assert_eq from_json(polars__hash_djb2(to_json({value => ""})))->{hash}, 5381, "djb2('') == 5381 (initial seed)"
 
+# FNV-1a 32-bit("foobar") == 0xbf9cf968 == 3,214,735,720 — FNV reference vector.
+assert_eq from_json(polars__hash_fnv1a32(to_json({value => "foobar"})))->{hash}, 3214735720, "fnv1a32('foobar') == 0xbf9cf968"
+
+# Fletcher-16("abcde") == 0xC8F0 == 51,440 — Wikipedia vector.
+assert_eq from_json(polars__hash_fletcher16(to_json({value => "abcde"})))->{hash}, 51440, "fletcher16('abcde') == 0xC8F0"
+
+# BKDR("a") == 97 (seed 131, single byte == its value).
+assert_eq from_json(polars__hash_bkdr(to_json({value => "a"})))->{hash}, 97, "bkdr('a') == 97"
+
 # Adler-32("Wikipedia") == 0x11E60398 == 300,286,872 — RFC 1950 vector.
 assert_eq from_json(polars__sum_adler32(to_json({value => "Wikipedia"})))->{checksum}, 300286872, "Adler32('Wikipedia') == 0x11E60398"
 

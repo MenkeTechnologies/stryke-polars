@@ -8,9 +8,24 @@ package Polars::Hash
 
 use Polars
 
+## Hash ap — Arash Partow alternating odd/even mixing hash (seed 0xAAAAAAAA).
+fn Polars::Hash::ap ($value) {
+    Polars::_decode("hash_ap", polars__hash_ap(to_json({ value => $value })))->{hash}
+}
+
+## Hash bkdr — Kernighan & Ritchie hash (seed 131, h = h*131 + c).
+fn Polars::Hash::bkdr ($value) {
+    Polars::_decode("hash_bkdr", polars__hash_bkdr(to_json({ value => $value })))->{hash}
+}
+
 ## Hash crc32.
 fn Polars::Hash::crc32 ($value) {
     Polars::_decode("hash_crc32", polars__hash_crc32(to_json({ value => $value })))->{hash}
+}
+
+## Hash dek — Donald E. Knuth hash (seed = length, h = (h<<5) ^ (h>>27) ^ c).
+fn Polars::Hash::dek ($value) {
+    Polars::_decode("hash_dek", polars__hash_dek(to_json({ value => $value })))->{hash}
 }
 
 ## Hash djb2.
@@ -18,14 +33,44 @@ fn Polars::Hash::djb2 ($value) {
     Polars::_decode("hash_djb2", polars__hash_djb2(to_json({ value => $value })))->{hash}
 }
 
+## Hash djb2a — xor variant of djb2 (h = h*33 ^ c).
+fn Polars::Hash::djb2a ($value) {
+    Polars::_decode("hash_djb2a", polars__hash_djb2a(to_json({ value => $value })))->{hash}
+}
+
+## Hash elf — System V ABI ELF symbol-table hash.
+fn Polars::Hash::elf ($value) {
+    Polars::_decode("hash_elf", polars__hash_elf(to_json({ value => $value })))->{hash}
+}
+
+## Hash fletcher16 — Fletcher-16 checksum hash ((s2<<8)|s1 over mod-255 sums).
+fn Polars::Hash::fletcher16 ($value) {
+    Polars::_decode("hash_fletcher16", polars__hash_fletcher16(to_json({ value => $value })))->{hash}
+}
+
+## Hash fnv1 — FNV-1 64-bit (multiply-then-xor variant; companion of fnv1a).
+fn Polars::Hash::fnv1 ($value) {
+    Polars::_decode("hash_fnv1", polars__hash_fnv1(to_json({ value => $value })))->{hash}
+}
+
 ## Hash fnv1a.
 fn Polars::Hash::fnv1a ($value) {
     Polars::_decode("hash_fnv1a", polars__hash_fnv1a(to_json({ value => $value })))->{hash}
 }
 
+## Hash fnv1a32 — FNV-1a 32-bit (offset 0x811c9dc5, prime 0x01000193).
+fn Polars::Hash::fnv1a32 ($value) {
+    Polars::_decode("hash_fnv1a32", polars__hash_fnv1a32(to_json({ value => $value })))->{hash}
+}
+
 ## Hash jenkins.
 fn Polars::Hash::jenkins ($value) {
     Polars::_decode("hash_jenkins", polars__hash_jenkins(to_json({ value => $value })))->{hash}
+}
+
+## Hash js — Justin Sobel bitwise hash (seed 1315423911).
+fn Polars::Hash::js ($value) {
+    Polars::_decode("hash_js", polars__hash_js(to_json({ value => $value })))->{hash}
 }
 
 ## Hash murmur32.
@@ -35,8 +80,22 @@ fn Polars::Hash::murmur32 ($value, $seed) {
     Polars::_decode("hash_murmur32", polars__hash_murmur32(to_json(\%req)))->{hash}
 }
 
+## Hash pjw — Peter J. Weinberger hash (AT&T / dragon-book form).
+fn Polars::Hash::pjw ($value) {
+    Polars::_decode("hash_pjw", polars__hash_pjw(to_json({ value => $value })))->{hash}
+}
+
+## Hash rs — Robert Sedgwick hash (evolving multiplier a *= 378551).
+fn Polars::Hash::rs ($value) {
+    Polars::_decode("hash_rs", polars__hash_rs(to_json({ value => $value })))->{hash}
+}
+
+## Hash sax — shift-add-xor hash (h ^= (h<<5) + (h>>2) + c).
+fn Polars::Hash::sax ($value) {
+    Polars::_decode("hash_sax", polars__hash_sax(to_json({ value => $value })))->{hash}
+}
+
 ## Hash sdbm — the classic companion of djb2 (h = c + (h<<6) + (h<<16) - h).
 fn Polars::Hash::sdbm ($value) {
     Polars::_decode("hash_sdbm", polars__hash_sdbm(to_json({ value => $value })))->{hash}
 }
-

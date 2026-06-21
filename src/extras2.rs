@@ -827,6 +827,237 @@ pub extern "C" fn polars__hash_murmur32(args: *const c_char) -> *mut c_char {
     })
 }
 
+/// Hash fnv1 — FNV-1 64-bit (the multiply-then-xor variant; FNV-1a is xor-then
+/// -multiply). Offset basis 0xcbf29ce484222325, prime 0x100000001b3, u64 wrapping.
+#[no_mangle]
+pub extern "C" fn polars__hash_fnv1(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u64 = 0xcbf29ce484222325;
+        for b in s.bytes() {
+            h = h.wrapping_mul(0x100000001b3);
+            h ^= b as u64;
+        }
+        Ok(json!({"hash": h}))
+    })
+}
+
+/// Hash fnv1a32 — FNV-1a 32-bit. Offset basis 0x811c9dc5, prime 0x01000193,
+/// u32 wrapping. Companion to the 64-bit `fnv1a` already in the family.
+#[no_mangle]
+pub extern "C" fn polars__hash_fnv1a32(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = 0x811c9dc5;
+        for b in s.bytes() {
+            h ^= b as u32;
+            h = h.wrapping_mul(0x01000193);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash djb2a — the xor variant of djb2 (`h = h*33 ^ c` instead of `h*33 + c`).
+/// Same 5381 seed, u64 wrapping.
+#[no_mangle]
+pub extern "C" fn polars__hash_djb2a(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u64 = 5381;
+        for b in s.bytes() {
+            h = h.wrapping_mul(33) ^ (b as u64);
+        }
+        Ok(json!({"hash": h}))
+    })
+}
+
+/// Hash bkdr — Brian Kernighan & Dennis Ritchie hash (seed 131, `h = h*131 + c`),
+/// 32-bit wrapping. From the canonical Arash Partow general-purpose hash set.
+#[no_mangle]
+pub extern "C" fn polars__hash_bkdr(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let seed: u32 = 131;
+        let mut h: u32 = 0;
+        for b in s.bytes() {
+            h = h.wrapping_mul(seed).wrapping_add(b as u32);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash sdbm — already provided; this is the closely related shift-add-xor `sax`
+/// hash (`h ^= (h<<5) + (h>>2) + c`), 32-bit wrapping. From the canonical
+/// general-purpose hash set.
+#[no_mangle]
+pub extern "C" fn polars__hash_sax(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = 0;
+        for b in s.bytes() {
+            h ^= (h << 5).wrapping_add(h >> 2).wrapping_add(b as u32);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash rs — Robert Sedgwick hash (multiplier `a` evolves by `a *= 378551` each
+/// step, `h = h*a + c`), 32-bit wrapping. From the canonical general-purpose set.
+#[no_mangle]
+pub extern "C" fn polars__hash_rs(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let b: u32 = 378551;
+        let mut a: u32 = 63689;
+        let mut h: u32 = 0;
+        for c in s.bytes() {
+            h = h.wrapping_mul(a).wrapping_add(c as u32);
+            a = a.wrapping_mul(b);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash js — Justin Sobel bitwise hash (seed 1315423911,
+/// `h ^= (h<<5) + c + (h>>2)`), 32-bit wrapping. From the canonical set.
+#[no_mangle]
+pub extern "C" fn polars__hash_js(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = 1315423911;
+        for c in s.bytes() {
+            h ^= (h << 5).wrapping_add(c as u32).wrapping_add(h >> 2);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash pjw — Peter J. Weinberger hash (the AT&T form popularised in the dragon
+/// book), 32-bit: shift by 4, fold the top nibble back in via a 24-bit shift.
+/// This is the classic PJW; the System-V ELF variant is `hash_elf`.
+#[no_mangle]
+pub extern "C" fn polars__hash_pjw(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        const BITS: u32 = 32;
+        let three_quarters = (BITS * 3) / 4; // 24
+        let one_eighth = BITS / 8; // 4
+        let high_bits: u32 = 0xFFFFFFFF << (BITS - one_eighth);
+        let mut h: u32 = 0;
+        for b in s.bytes() {
+            h = (h << one_eighth).wrapping_add(b as u32);
+            let test = h & high_bits;
+            if test != 0 {
+                h = (h ^ (test >> three_quarters)) & !high_bits;
+            }
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash elf — System V ABI ELF hash (used in ELF symbol tables): shift by 4,
+/// fold the top nibble down by 24 bits, then clear it. Distinct from `hash_pjw`.
+#[no_mangle]
+pub extern "C" fn polars__hash_elf(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = 0;
+        for b in s.bytes() {
+            h = (h << 4).wrapping_add(b as u32);
+            let g = h & 0xf0000000;
+            if g != 0 {
+                h ^= g >> 24;
+            }
+            h &= !g;
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash ap — Arash Partow hash: alternating odd/even byte mixing, seed
+/// 0xAAAAAAAA, 32-bit wrapping. From the canonical general-purpose hash set.
+#[no_mangle]
+pub extern "C" fn polars__hash_ap(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = 0xAAAAAAAA;
+        for (i, c) in s.bytes().enumerate() {
+            if i & 1 == 0 {
+                h ^= (h << 7) ^ (c as u32).wrapping_mul(h >> 3);
+            } else {
+                h ^= !((h << 11).wrapping_add((c as u32) ^ (h >> 5)));
+            }
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash dek — Donald E. Knuth hash (TAOCP vol. 3): seed = length,
+/// `h = (h<<5) ^ (h>>27) ^ c`, 32-bit wrapping.
+#[no_mangle]
+pub extern "C" fn polars__hash_dek(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut h: u32 = s.len() as u32;
+        for c in s.bytes() {
+            h = (h << 5) ^ (h >> 27) ^ (c as u32);
+        }
+        Ok(json!({"hash": h as u64}))
+    })
+}
+
+/// Hash fletcher16 — Fletcher-16 checksum over the bytes (two running mod-255
+/// sums combined as `(s2<<8)|s1`). Test vectors: "abcde"→0xC8F0, "abcdef"→0x2057.
+#[no_mangle]
+pub extern "C" fn polars__hash_fletcher16(args: *const c_char) -> *mut c_char {
+    ffi_call(args, |args| {
+        let s = args
+            .get("value")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| anyhow!("missing `value`"))?;
+        let mut s1: u32 = 0;
+        let mut s2: u32 = 0;
+        for b in s.bytes() {
+            s1 = (s1 + b as u32) % 255;
+            s2 = (s2 + s1) % 255;
+        }
+        Ok(json!({"hash": ((s2 << 8) | s1) as u64}))
+    })
+}
+
 // ── encoding: base64 / hex ─────────────────────────────────────────────────
 
 /// Encoding base64.
@@ -2235,6 +2466,167 @@ mod tests {
         // CRC32("123456789") = 0xCBF43926 — universal test vector for CRC-32/ISO-HDLC.
         let v = call(polars__hash_crc32, json!({"value": "123456789"}));
         assert_eq!(v["hash"].as_u64().unwrap(), 0xCBF43926);
+    }
+
+    #[test]
+    fn hash_fnv1_known_vectors() {
+        // FNV-1 64-bit reference vectors: "" → offset basis, "a" → 0xaf63bd4c8601b7be.
+        assert_eq!(
+            call(polars__hash_fnv1, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xcbf29ce484222325
+        );
+        assert_eq!(
+            call(polars__hash_fnv1, json!({"value": "a"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xaf63bd4c8601b7be
+        );
+        // FNV-1 (mul-then-xor) must differ from FNV-1a (xor-then-mul) on "a".
+        let a1 = call(polars__hash_fnv1, json!({"value": "a"}))["hash"].clone();
+        let a1a = call(polars__hash_fnv1a, json!({"value": "a"}))["hash"].clone();
+        assert_ne!(a1, a1a);
+    }
+
+    #[test]
+    fn hash_fnv1a32_known_vectors() {
+        // FNV-1a 32-bit reference vectors.
+        assert_eq!(
+            call(polars__hash_fnv1a32, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0x811c9dc5
+        );
+        assert_eq!(
+            call(polars__hash_fnv1a32, json!({"value": "a"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xe40c292c
+        );
+        assert_eq!(
+            call(polars__hash_fnv1a32, json!({"value": "foobar"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xbf9cf968
+        );
+    }
+
+    #[test]
+    fn hash_djb2a_xor_variant() {
+        // Seed 5381, "" stays at the seed; "a" = 5381*33 ^ 97 computed by hand.
+        assert_eq!(
+            call(polars__hash_djb2a, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            5381
+        );
+        let expected = 5381u64.wrapping_mul(33) ^ (b'a' as u64);
+        assert_eq!(
+            call(polars__hash_djb2a, json!({"value": "a"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            expected
+        );
+        // xor variant must differ from additive djb2 on "ab".
+        let a = call(polars__hash_djb2a, json!({"value": "ab"}))["hash"].clone();
+        let b = call(polars__hash_djb2, json!({"value": "ab"}))["hash"].clone();
+        assert_ne!(a, b);
+    }
+
+    #[test]
+    fn hash_bkdr_recurrence() {
+        // Seed 131: ""→0, "a"→97, "ab"→97*131+98 (by hand), all u32-wrapping.
+        assert_eq!(
+            call(polars__hash_bkdr, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
+        assert_eq!(
+            call(polars__hash_bkdr, json!({"value": "a"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            97
+        );
+        let expected = 97u32.wrapping_mul(131).wrapping_add(b'b' as u32) as u64;
+        assert_eq!(
+            call(polars__hash_bkdr, json!({"value": "ab"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            expected
+        );
+    }
+
+    #[test]
+    fn hash_fletcher16_known_vectors() {
+        // Wikipedia Fletcher-16 test vectors.
+        assert_eq!(
+            call(polars__hash_fletcher16, json!({"value": "abcde"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xC8F0
+        );
+        assert_eq!(
+            call(polars__hash_fletcher16, json!({"value": "abcdef"}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0x2057
+        );
+        // Empty input → 0 (both running sums stay zero).
+        assert_eq!(
+            call(polars__hash_fletcher16, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
+    }
+
+    #[test]
+    fn hash_seeded_variants_are_deterministic_and_bounded() {
+        // The remaining string hashes (pjw/elf/ap/dek/rs/js/sax) must be
+        // deterministic, fit in u32, and seeded distinctly enough that the
+        // empty string already separates seed-0 from seed-loaded families.
+        for f in [
+            polars__hash_pjw,
+            polars__hash_elf,
+            polars__hash_ap,
+            polars__hash_dek,
+            polars__hash_rs,
+            polars__hash_js,
+            polars__hash_sax,
+        ] {
+            let a = call(f, json!({"value": "stryke"}))["hash"].clone();
+            let b = call(f, json!({"value": "stryke"}))["hash"].clone();
+            assert_eq!(a, b, "non-deterministic hash");
+            assert!(a.as_u64().unwrap() <= u32::MAX as u64, "hash exceeds u32");
+        }
+        // Seeded vs unseeded empty-string behaviour: js/ap carry non-zero seeds.
+        assert_eq!(
+            call(polars__hash_js, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            1315423911
+        );
+        assert_eq!(
+            call(polars__hash_ap, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0xAAAAAAAA
+        );
+        // pjw and elf both seed at 0.
+        assert_eq!(
+            call(polars__hash_pjw, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
+        assert_eq!(
+            call(polars__hash_elf, json!({"value": ""}))["hash"]
+                .as_u64()
+                .unwrap(),
+            0
+        );
     }
 
     #[test]
