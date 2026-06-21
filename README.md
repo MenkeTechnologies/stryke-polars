@@ -72,8 +72,8 @@ s pkg install -g github:MenkeTechnologies/stryke-polars
 ```perl
 use Polars
 
-my $v = Polars::version()
-say "stryke-polars $v->{version} (polars $v->{polars}, ndarray $v->{ndarray})"
+val $v = Polars::version()
+p "stryke-polars $v->{version} (polars $v->{polars}, ndarray $v->{ndarray})"
 ```
 
 Working DataFrame / groupby examples live in `examples/` (`discover.stk`,
