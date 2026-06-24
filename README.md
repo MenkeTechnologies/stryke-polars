@@ -20,6 +20,8 @@ pandas DataFrame + Series + Index + IO, numpy ndarray + ufuncs + linalg + random
 
 ### [`strykelang`](https://github.com/MenkeTechnologies/strykelang) &middot; [`MenkeTechnologiesMeta`](https://github.com/MenkeTechnologies/MenkeTechnologiesMeta) · [`stryke-arrow`](https://github.com/MenkeTechnologies/stryke-arrow) · [`stryke-duckdb`](https://github.com/MenkeTechnologies/stryke-duckdb) · [`stryke-parquet`](https://github.com/MenkeTechnologies/stryke-parquet)
 
+### [`Read the Docs`](https://menketechnologies.github.io/stryke-polars/) &middot; [`Engineering Report`](https://menketechnologies.github.io/stryke-polars/report.html)
+
 ---
 
 ## Table of Contents
