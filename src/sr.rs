@@ -563,7 +563,7 @@ pub extern "C" fn polars__sr_fill_null(args: *const c_char) -> *mut c_char {
         return_series(
             &s.fill_null(FillNullStrategy::Zero)
                 .ok()
-                .and_then(|x| if v == 0.0 { Some(x) } else { None })
+                .filter(|_x| v == 0.0)
                 .unwrap_or_else(|| {
                     let f = s.cast(&DataType::Float64).unwrap();
                     let ca = f.f64().unwrap();
